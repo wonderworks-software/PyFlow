@@ -39,8 +39,8 @@ if IS_PYTHON2:
 else:
     from enum import IntEnum, Flag, auto, Enum
 
-from PyFlow import findPinClassByType
-from PyFlow.Core.version import Version
+from PyFlow.PyFlow import findPinClassByType
+from PyFlow.PyFlow.Core.version import Version
 
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1

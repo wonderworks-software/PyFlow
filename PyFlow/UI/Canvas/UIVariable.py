@@ -15,28 +15,28 @@
 
 import json
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QInputDialog
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QLineEdit
+from qtpy.QtWidgets import QComboBox
+from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QLabel
+from qtpy.QtWidgets import QSpacerItem
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QInputDialog
 
-from PyFlow import getHashableDataTypes
-from PyFlow.Core.Common import *
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
-from PyFlow import getPinDefaultValueByType
-from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
-from PyFlow import findPinClassByType
-from PyFlow import getAllPinClasses
+from PyFlow.PyFlow import getHashableDataTypes
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
+from PyFlow.PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
+from PyFlow.PyFlow import findPinClassByType
+from PyFlow.PyFlow import getAllPinClasses
 
 
 # Colored rounded rect
@@ -229,7 +229,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(valueCategory)
 
     def onFindRefsClicked(self):
-        from PyFlow.App import PyFlow
+        from PyFlow.PyFlow.App import PyFlow
         refs = [n.getWrapper() for n in self._rawVariable.findRefs()]
         app = self.variablesWidget.pyFlowInstance
         if "Search results" not in [t.name() for t in app.getRegisteredTools()]:

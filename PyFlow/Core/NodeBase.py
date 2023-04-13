@@ -28,11 +28,11 @@ except:
 from types import MethodType
 import collections
 import traceback
-from PyFlow import getPinDefaultValueByType
-from PyFlow import getRawNodeInstance
-from PyFlow.Core.Common import *
-from PyFlow.Core.Interfaces import INode
-from PyFlow import CreateRawPin
+from PyFlow.PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow import getRawNodeInstance
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Interfaces import INode
+from PyFlow.PyFlow import CreateRawPin
 
 from datetime import datetime
 
@@ -329,7 +329,7 @@ class NodeBase(INode):
         return self.graph() == self.graph().graphManager.activeGraph()
 
     def kill(self, *args, **kwargs):
-        from PyFlow.Core.PathsRegistry import PathsRegistry
+        from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
 
         if self.uid not in self.graph().getNodes():
             return

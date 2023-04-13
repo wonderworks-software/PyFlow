@@ -17,10 +17,10 @@ from nine import str
 from blinker import Signal
 import json
 
-from PyFlow import findPinClassByType
-from PyFlow import getPinDefaultValueByType
-from PyFlow.Core.Common import *
-from PyFlow.Core.Interfaces import IItemBase
+from PyFlow.PyFlow import findPinClassByType
+from PyFlow.PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Interfaces import IItemBase
 
 
 class Variable(IItemBase):

@@ -14,12 +14,12 @@
 
 
 
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.Core.Common import *
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 
 # Variable setter node
 

@@ -13,10 +13,10 @@
 ## limitations under the License.
 
 
-from PyFlow.UI.Canvas.UICommon import DEFAULT_IN_EXEC_NAME
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
+from PyFlow.PyFlow.UI.Canvas.UICommon import DEFAULT_IN_EXEC_NAME
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
 
 
 class UISwitchOnString(UINodeBase):

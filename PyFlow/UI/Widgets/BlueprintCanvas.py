@@ -26,36 +26,36 @@ try:
 except:
     from inspect import getargspec
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtWidgets
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
+from qtpy.QtWidgets import *
 
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.UI.Canvas.CanvasBase import CanvasBase
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Canvas.SelectionRect import SelectionRect
-from PyFlow.UI.Canvas.UIConnection import UIConnection
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Canvas.UINodeBase import NodeActionButtonBase
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase, PinGroup
-from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Canvas.AutoPanController import AutoPanController
-from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
-from PyFlow.Core.PinBase import PinBase
-from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.Input import InputManager, InputAction, InputActionType
-from PyFlow.UI.Views.VariablesWidget import (
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI.Canvas.CanvasBase import CanvasBase
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Canvas.SelectionRect import SelectionRect
+from PyFlow.PyFlow.UI.Canvas.UIConnection import UIConnection
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import NodeActionButtonBase
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase, PinGroup
+from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.PyFlow.UI.Canvas.AutoPanController import AutoPanController
+from PyFlow.PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.PyFlow.Core.PinBase import PinBase
+from PyFlow.PyFlow.Core.NodeBase import NodeBase
+from PyFlow.PyFlow.Input import InputManager, InputAction, InputActionType
+from PyFlow.PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
 )
 
-from PyFlow import getRawNodeInstance
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow import getRawNodeInstance
+from PyFlow.PyFlow.Core.Common import *
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
@@ -1781,13 +1781,13 @@ class BlueprintCanvasWidget(QWidget):
         self.canvas.requestFillProperties.connect(self.pyFlowInstance.onRequestFillProperties)
         self.canvas.requestClearProperties.connect(self.pyFlowInstance.onRequestClearProperties)
 
-        rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
-        nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
+        rxLettersAndNumbers = QtCore.QRegularExpression('^[a-zA-Z0-9]*$')
+        nameValidator = QtGui.QRegularExpressionValidator(rxLettersAndNumbers, self.leCompoundName)
         self.leCompoundName.setValidator(nameValidator)
         self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
 
-        rxLetters = QtCore.QRegExp('[a-zA-Z]+(\|[a-zA-Z]+)*')
-        categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
+        rxLetters = QtCore.QRegularExpression('[a-zA-Z]+(\|[a-zA-Z]+)*')
+        categoryValidator = QtGui.QRegularExpressionValidator(rxLetters, self.leCompoundCategory)
         self.leCompoundCategory.setValidator(categoryValidator)
         self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
 

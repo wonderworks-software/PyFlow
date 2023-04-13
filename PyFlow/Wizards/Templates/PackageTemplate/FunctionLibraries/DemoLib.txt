@@ -1,6 +1,6 @@
-from PyFlow.Core.Common import *
-from PyFlow.Core import FunctionLibraryBase
-from PyFlow.Core import IMPLEMENT_NODE
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import FunctionLibraryBase
+from PyFlow.PyFlow.Core import IMPLEMENT_NODE
 
 
 class DemoLib(FunctionLibraryBase):

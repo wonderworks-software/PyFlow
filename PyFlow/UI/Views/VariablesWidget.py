@@ -18,19 +18,19 @@ import json
 from types import MethodType
 import uuid
 
-from Qt import QtCore, QtGui
-from Qt.QtWidgets import (
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QWidget,
     QAbstractItemView
 )
 
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Canvas.UIVariable import UIVariable
-from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
-from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.Canvas.UIVariable import UIVariable
+from PyFlow.PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
+from PyFlow.PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.PyFlow.Core.Common import *
 
 VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"

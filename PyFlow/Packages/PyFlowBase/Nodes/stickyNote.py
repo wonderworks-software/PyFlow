@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core import NodeBase
 
 
 class stickyNote(NodeBase):

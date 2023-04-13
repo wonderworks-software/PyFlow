@@ -13,17 +13,17 @@
 # limitations under the License.
 
 from math import atan2, degrees
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QStyle
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QStyle
 
-from PyFlow import getPinFromData
+from PyFlow.PyFlow import getPinFromData
 
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.Core.Common import *
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
 
 InvalidNodePenColor = Colors.Red
 ExposedPropertiesColor = Colors.NodeNameRectBlue

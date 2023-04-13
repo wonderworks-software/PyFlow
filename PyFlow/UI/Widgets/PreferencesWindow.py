@@ -15,11 +15,11 @@
 
 from nine import str
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Core.Common import SingletonDecorator
 
 
 class CategoryButton(QPushButton):

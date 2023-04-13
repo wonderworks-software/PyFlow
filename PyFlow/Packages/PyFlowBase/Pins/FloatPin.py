@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import PinBase
+from PyFlow.PyFlow.Core import PinBase
 
 
 class FloatPin(PinBase):

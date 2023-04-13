@@ -15,11 +15,11 @@
 
 from math import pi
 
-from PyFlow.Core import(
+from PyFlow.PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 
 class FloatLib(FunctionLibraryBase):

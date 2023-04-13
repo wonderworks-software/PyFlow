@@ -15,10 +15,10 @@
 
 from copy import copy
 
-from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
-from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import *
-from PyFlow import CreateRawPin
+from PyFlow.PyFlow.Packages.PyFlowBase import PACKAGE_NAME
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow import CreateRawPin
 
 
 class setVar(NodeBase):

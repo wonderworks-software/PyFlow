@@ -16,10 +16,10 @@
 import os
 import json
 
-from Qt import QtCore, QtGui
+from qtpy import QtCore, QtGui
 
-from PyFlow.Core.Common import *
-from PyFlow.Input import InputAction, InputManager, InputActionType
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Input import InputAction, InputManager, InputActionType
 
 
 @SingletonDecorator
@@ -100,4 +100,4 @@ class ConfigManager(object):
         InputManager().registerAction(InputAction(name="App.NewFile", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_N, modifiers=QtCore.Qt.ControlModifier))
         InputManager().registerAction(InputAction(name="App.Save", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_S, modifiers=QtCore.Qt.ControlModifier))
         InputManager().registerAction(InputAction(name="App.SaveAs", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_S, modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier))
-        InputManager().registerAction(InputAction(name="App.Load", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_O, modifiers=QtCore.Qt.ControlModifier))
+        #InputManager().registerAction(InputAction(name="App.Load", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_O, modifiers=QtCore.Qt.ControlModifier))

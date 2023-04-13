@@ -21,19 +21,19 @@ try:
 except:
     from inspect import getargspec
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
-from PyFlow import GET_PACKAGES
-from PyFlow import GET_PACKAGE_PATH
+from PyFlow.PyFlow import GET_PACKAGES
+from PyFlow.PyFlow import GET_PACKAGE_PATH
 
-from PyFlow.Core.Common import *
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.Core.NodeBase import NodeBase
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.Core.NodeBase import NodeBase
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 class NodeBoxLineEdit(QLineEdit):

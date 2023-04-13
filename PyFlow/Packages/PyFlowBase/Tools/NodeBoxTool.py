@@ -14,11 +14,11 @@
 
 
 from nine import str
-from Qt import QtCore
-from Qt import QtGui
+from qtpy import QtCore
+from qtpy import QtGui
 
-from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.PyFlow.UI.Tool.Tool import DockTool
+from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
 
 
 class NodeBoxTool(DockTool):

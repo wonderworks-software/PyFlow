@@ -16,13 +16,13 @@
 import os
 import platform
 from copy import copy, deepcopy
-from PyFlow.Core import(
+from PyFlow.PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
-from PyFlow import getHashableDataTypes
-from PyFlow.Core.Common import *
-from PyFlow.Core.PathsRegistry import PathsRegistry
+from PyFlow.PyFlow import getHashableDataTypes
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
 from nine import IS_PYTHON2
 
 

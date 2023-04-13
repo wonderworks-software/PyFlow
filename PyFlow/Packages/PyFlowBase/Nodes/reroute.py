@@ -13,9 +13,9 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.PyFlow.Core.Common import *
 
 
 class reroute(NodeBase):

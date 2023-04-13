@@ -13,15 +13,15 @@
 ## limitations under the License.
 
 import uuid
-from Qt import QtGui
-from Qt import QtCore
-from Qt.QtWidgets import *
-from PyFlow.Core.Common import *
-from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.IConvexHullBackDrop import IConvexHullBackDrop
+from qtpy import QtGui
+from qtpy import QtCore
+from qtpy.QtWidgets import *
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.NodeBase import NodeBase
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.IConvexHullBackDrop import IConvexHullBackDrop
 
 
 class UIForLoopBeginNode(UINodeBase, IConvexHullBackDrop):

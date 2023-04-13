@@ -13,10 +13,10 @@
 ## limitations under the License.
 
 
-from PyFlow.Tests.TestsBase import *
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Tests.TestsBase import *
+from PyFlow.PyFlow.Core.Common import *
 from collections import Counter
-from PyFlow.Input import *
+from PyFlow.PyFlow.Input import *
 import time
 
 

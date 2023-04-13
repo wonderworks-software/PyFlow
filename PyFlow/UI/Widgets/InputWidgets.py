@@ -13,17 +13,17 @@
 ## limitations under the License.
 
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QGridLayout
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QMenu
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QGridLayout
+from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QSpacerItem
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QMenu
 
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 
 UI_INPUT_WIDGET_PINS_FACTORIES = {}

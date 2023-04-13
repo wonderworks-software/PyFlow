@@ -8,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCompat, QtCore, QtGui, QtWidgets
+from qtpy import QtCompat, QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):

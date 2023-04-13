@@ -13,14 +13,14 @@
 ## limitations under the License.
 
 
-from Qt import QtCore
+from qtpy import QtCore
 
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
-from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
 
 
 class UIGraphInputs(UINodeBase):

@@ -14,12 +14,12 @@
 
 
 from nine import str
-from PyFlow.UI.Tool.Tool import ShelfTool
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
-from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
+from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
+from PyFlow.PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
 
-from Qt import QtGui
-from Qt.QtWidgets import QFileDialog
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog
 
 
 class ScreenshotTool(ShelfTool):

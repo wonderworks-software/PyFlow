@@ -1,6 +1,6 @@
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
-from PyFlow.Packages.@PACKAGE_NAME.Pins.DemoPin import DemoPin
-from PyFlow.Packages.@PACKAGE_NAME.UI.UIDemoPin import UIDemoPin
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.PyFlow.Packages.@PACKAGE_NAME.Pins.DemoPin import DemoPin
+from PyFlow.PyFlow.Packages.@PACKAGE_NAME.UI.UIDemoPin import UIDemoPin
 
 
 def createUIPin(owningNode, raw_instance):

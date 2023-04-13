@@ -15,8 +15,8 @@
 
 from blinker import Signal
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.Common import *
 
 
 class graphInputs(NodeBase):

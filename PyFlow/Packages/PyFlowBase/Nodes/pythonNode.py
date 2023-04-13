@@ -15,10 +15,10 @@
 
 from types import MethodType
 
-from PyFlow import getPinDefaultValueByType
-from PyFlow.Core.Common import getUniqNameFromList
-from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
+from PyFlow.PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow.Core.Common import getUniqNameFromList
+from PyFlow.PyFlow.Core.NodeBase import NodeBase
+from PyFlow.PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
 
 class pythonNode(NodeBase):

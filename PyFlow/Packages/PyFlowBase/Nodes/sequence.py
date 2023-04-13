@@ -13,11 +13,11 @@
 ## limitations under the License.
 
 
-from PyFlow import CreateRawPin
-from PyFlow.Core import NodeBase
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Core.Common import *
-from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
+from PyFlow.PyFlow import CreateRawPin
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class sequence(NodeBase):

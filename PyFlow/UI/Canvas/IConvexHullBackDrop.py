@@ -13,12 +13,12 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
-from Qt import QtCore
-from PyFlow.UI.Canvas.loopBackDrop import backDrop
-from PyFlow.Core.PathsRegistry import PathsRegistry
-from PyFlow.UI.Utils.ConvexHull import convex_hull
-from PyFlow.UI.Canvas.Painters import ConnectionPainter
+from qtpy import QtGui
+from qtpy import QtCore
+from PyFlow.PyFlow.UI.Canvas.loopBackDrop import backDrop
+from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
+from PyFlow.PyFlow.UI.Utils.ConvexHull import convex_hull
+from PyFlow.PyFlow.UI.Canvas.Painters import ConnectionPainter
 
 class IConvexHullBackDrop(object):
     """Convex hull backdrop routines. Used by for loop and while loop nodes"""

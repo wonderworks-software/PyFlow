@@ -13,57 +13,57 @@
 ## limitations under the License.
 
 
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
-from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
-from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
-from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
-from PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
-from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
-from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
-from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
-from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
-from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
     graphInputs,
     graphOutputs
 )
-from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
-from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 
-from PyFlow.Packages.PyFlowBase.Nodes.compound import compound
-from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
-from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
-from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
-from PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.compound import compound
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.constant import constant
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
 
-from PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
-from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 
-from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
-from PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
 
-from PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
-from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
-from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
-from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
-from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
-from PyFlow.Packages.PyFlowBase.UI.UIStickyNote import UIStickyNote
-from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
-from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
-from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIStickyNote import UIStickyNote
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
     UIGraphInputs,
     UIGraphOutputs
 )
-from PyFlow.Packages.PyFlowBase.UI.UIFloatRamp import UIFloatRamp
-from PyFlow.Packages.PyFlowBase.UI.UIColorRamp import UIColorRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIFloatRamp import UIFloatRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIColorRamp import UIColorRamp
 
-from PyFlow.Packages.PyFlowBase.UI.UICompoundNode import UICompoundNode
-from PyFlow.Packages.PyFlowBase.UI.UIConstantNode import UIConstantNode
-from PyFlow.Packages.PyFlowBase.UI.UIConvertToNode import UIConvertToNode
-from PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode import UIMakeDictNode
-from PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode import UIForLoopBeginNode
-from PyFlow.Packages.PyFlowBase.UI.UIWhileLoopBeginNode import UIWhileLoopBeginNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UICompoundNode import UICompoundNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIConstantNode import UIConstantNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIConvertToNode import UIConvertToNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode import UIMakeDictNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode import UIForLoopBeginNode
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIWhileLoopBeginNode import UIWhileLoopBeginNode
 
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
 
 def createUINode(raw_instance):

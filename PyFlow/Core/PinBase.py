@@ -20,11 +20,11 @@ import weakref
 import json
 from nine import str
 
-from PyFlow.Core.Interfaces import IPin
-from PyFlow.Core.Common import *
-from PyFlow.Core.PathsRegistry import PathsRegistry
-from PyFlow.Core.EvaluationEngine import EvaluationEngine
-from PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow.Core.Interfaces import IPin
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
+from PyFlow.PyFlow.Core.EvaluationEngine import EvaluationEngine
+from PyFlow.PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):

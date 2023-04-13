@@ -16,13 +16,13 @@
 import unittest
 from nine import str
 
-from PyFlow.Core.Common import *
-from PyFlow import(
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow import(
     INITIALIZE,
     GET_PACKAGES
 )
 
-from PyFlow.Core import(
+from PyFlow.PyFlow.Core import(
     GraphBase,
     PinBase,
     NodeBase,

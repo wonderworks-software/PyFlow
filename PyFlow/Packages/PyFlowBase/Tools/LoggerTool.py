@@ -14,15 +14,16 @@
 
 
 from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QAction, QTextBrowser
-from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.ConfigManager import ConfigManager
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
+from qtpy.QtWidgets import QAction, QTextBrowser
+from PyFlow.PyFlow.UI.Tool.Tool import DockTool
+from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.Core.Common import SingletonDecorator
+from PyFlow.PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
 import json

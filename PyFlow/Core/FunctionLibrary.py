@@ -107,7 +107,7 @@ try:
 except:
     from inspect import getargspec
 
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 empty = {}
 

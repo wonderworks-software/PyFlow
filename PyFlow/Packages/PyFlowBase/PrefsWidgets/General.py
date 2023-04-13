@@ -15,12 +15,12 @@
 
 import os
 
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
 
 
 class GeneralPreferences(CategoryWidgetBase):

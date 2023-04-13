@@ -15,10 +15,10 @@
 
 from nine import str
 import uuid
-from Qt import QtWidgets
-from Qt import QtGui, QtCore
+from qtpy import QtWidgets
+from qtpy import QtGui, QtCore
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 class ToolBase(object):

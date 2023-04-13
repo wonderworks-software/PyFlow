@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 
 class ISerializable(object):

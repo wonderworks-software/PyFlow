@@ -26,7 +26,7 @@ from copy import copy
 import os
 import json
 
-from PyFlow.Packages import *
+from PyFlow.PyFlow.Packages import *
 
 
 __all__ = [
@@ -109,7 +109,7 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
 
 
 def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
-    from PyFlow.Core.NodeBase import NodeBase
+    from PyFlow.PyFlow.Core.NodeBase import NodeBase
     package = GET_PACKAGE_CHECKED(packageName)
     # try find function first
     if libName is not None:
@@ -156,12 +156,12 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
 
 
 def INITIALIZE(additionalPackageLocations=[], software=""):
-    from PyFlow.UI.Tool import REGISTER_TOOL
-    from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
-    from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
-    from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
-    from PyFlow import ConfigManager
-    from Qt.QtWidgets import QMessageBox
+    from PyFlow.PyFlow.UI.Tool import REGISTER_TOOL
+    from PyFlow.PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
+    from PyFlow.PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
+    from PyFlow.PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
+    from PyFlow.PyFlow import ConfigManager
+    from qtpy.QtWidgets import QMessageBox
 
     packagePaths = Packages.__path__
 

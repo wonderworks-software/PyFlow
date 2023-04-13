@@ -17,19 +17,19 @@ import json
 import logging
 import os
 
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QInputDialog
+from qtpy.QtWidgets import QMessageBox
 
-from PyFlow import GET_PACKAGE_PATH, GET_PACKAGES
-from PyFlow.UI.Canvas.UICommon import validateGraphDataPackages
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from PyFlow.Core.Common import *
-from PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow import GET_PACKAGE_PATH, GET_PACKAGES
+from PyFlow.PyFlow.UI.Canvas.UICommon import validateGraphDataPackages
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
 
 
 logger = logging.getLogger(None)

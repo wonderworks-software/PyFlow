@@ -16,10 +16,10 @@
 from nine import *
 import logging
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Core.Common import *
 
 
 class consoleOutput(NodeBase):

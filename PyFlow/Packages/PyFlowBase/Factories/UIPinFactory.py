@@ -13,12 +13,12 @@
 ## limitations under the License.
 
 
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
-from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
-from PyFlow.Packages.PyFlowBase.Pins.ExecPin import ExecPin
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.ExecPin import ExecPin
 
-from PyFlow.Packages.PyFlowBase.UI.UIAnyPin import UIAnyPin
-from PyFlow.Packages.PyFlowBase.UI.UIExecPin import UIExecPin
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIAnyPin import UIAnyPin
+from PyFlow.PyFlow.Packages.PyFlowBase.UI.UIExecPin import UIExecPin
 
 
 def createUIPin(owningNode, raw_instance):

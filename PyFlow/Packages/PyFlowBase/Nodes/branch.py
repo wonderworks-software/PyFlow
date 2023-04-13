@@ -13,10 +13,10 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import *
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class branch(NodeBase):

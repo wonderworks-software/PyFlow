@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import QComboBox
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from qtpy.QtWidgets import QComboBox
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
 
 class UIMakeDictNode(UINodeBase):

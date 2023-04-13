@@ -13,14 +13,14 @@
 ## limitations under the License.
 
 
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.Core.Common import *
-from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 
 
 # Variable getter node

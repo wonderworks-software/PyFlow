@@ -16,9 +16,9 @@
 from nine import str
 from blinker import Signal
 
-from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.Core.Common import *
-from PyFlow.Core import version
+from PyFlow.PyFlow.Core.GraphBase import GraphBase
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import version
 
 ROOT_GRAPH_NAME = str('root')
 

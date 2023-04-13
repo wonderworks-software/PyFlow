@@ -1,5 +1,5 @@
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
 class FileDialog(QFileDialog):
     """docstring for ExecInputWidget"""

@@ -13,7 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-from PyFlow.Core.version import currentVersion
+from PyFlow.PyFlow.Core.version import currentVersion
 # -- Project information -----------------------------------------------------
 
 project = 'PyFlow'

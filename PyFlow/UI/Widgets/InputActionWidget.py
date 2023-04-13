@@ -13,13 +13,13 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
-from PyFlow.Input import InputActionType
-from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
-from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
-from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
+from PyFlow.PyFlow.Input import InputActionType
+from PyFlow.PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
+from PyFlow.PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
+from PyFlow.PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 
 
 class InputActionWidget(QWidget):

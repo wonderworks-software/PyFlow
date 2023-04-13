@@ -17,10 +17,10 @@ import uuid
 from blinker import Signal
 from collections import OrderedDict
 
-from PyFlow.Core.Common import *
-from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import SingletonDecorator
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.ConfigManager import ConfigManager
 
 
 class _EditorState(object):

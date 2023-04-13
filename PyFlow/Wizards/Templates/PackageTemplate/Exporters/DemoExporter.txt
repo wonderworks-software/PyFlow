@@ -1,6 +1,6 @@
 from datetime import datetime
-from PyFlow.UI.UIInterfaces import IDataExporter
-from PyFlow.Core.version import Version
+from PyFlow.PyFlow.UI.UIInterfaces import IDataExporter
+from PyFlow.PyFlow.Core.version import Version
 
 
 class DemoExporter(IDataExporter):

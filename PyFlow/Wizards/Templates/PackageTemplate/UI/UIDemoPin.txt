@@ -1,5 +1,5 @@
-from PyFlow.Packages.@PACKAGE_NAME import PACKAGE_NAME
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.PyFlow.Packages.@PACKAGE_NAME import PACKAGE_NAME
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase
 
 
 class UIDemoPin(UIPinBase):

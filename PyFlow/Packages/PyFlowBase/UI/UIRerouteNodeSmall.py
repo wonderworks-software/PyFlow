@@ -13,12 +13,12 @@
 ## limitations under the License.
 
 
-from Qt import QtCore
-from Qt.QtWidgets import QSizePolicy
+from qtpy import QtCore
+from qtpy.QtWidgets import QSizePolicy
 
-from PyFlow.UI.Utils.stylesheet import Colors
-from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
 
 class UIRerouteNodeSmall(UINodeBase):

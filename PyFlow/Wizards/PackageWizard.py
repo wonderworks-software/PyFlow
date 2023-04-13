@@ -16,14 +16,14 @@
 import os
 import shutil
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
-from PyFlow import Wizards
-from PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
-from PyFlow.Wizards.PkgGen import *
-from PyFlow import Packages
+from PyFlow.PyFlow import Wizards
+from PyFlow.PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
+from PyFlow.PyFlow.Wizards.PkgGen import *
+from PyFlow.PyFlow import Packages
 
 
 class PackageWizard(WizardDialogueBase):

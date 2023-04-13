@@ -14,8 +14,9 @@
 
 
 import sys
-from PyFlow.App import PyFlow
-from Qt.QtWidgets import QApplication
+from PyFlow.PyFlow.App import PyFlow
+from qtpy.QtWidgets import QApplication
+from qtpy.QtGui import QGuiApplication
 
 
 def main():
@@ -23,9 +24,8 @@ def main():
 
     instance = PyFlow.instance(software="standalone")
     if instance is not None:
-        app.setActiveWindow(instance)
         instance.show()
-
+        instance.activateWindow()
         try:
             sys.exit(app.exec_())
         except Exception as e:

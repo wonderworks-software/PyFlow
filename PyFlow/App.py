@@ -26,38 +26,39 @@ import shutil
 from string import ascii_letters
 import random
 
-from Qt import QtGui
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtGui
+from qtpy import QtCore
+from qtpy.QtWidgets import *
+from qtpy.QtGui import QUndoStack
 
-from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import currentProcessorTime
-from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.Core.PathsRegistry import PathsRegistry
-from PyFlow.Core.version import *
-from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
-from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Tool import GET_TOOLS
-from PyFlow.UI.Tool import REGISTER_TOOL
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
-from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+from PyFlow.PyFlow import GET_PACKAGES
+from PyFlow.PyFlow.Core.Common import currentProcessorTime
+from PyFlow.PyFlow.Core.Common import SingletonDecorator
+from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
+from PyFlow.PyFlow.Core.version import *
+from PyFlow.PyFlow.Core.GraphBase import GraphBase
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
+from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool, DockTool
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.Tool import GET_TOOLS
+from PyFlow.PyFlow.UI.Tool import REGISTER_TOOL
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
+from PyFlow.PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 try:
-    from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+    from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
     pass
-from PyFlow.Wizards.PackageWizard import PackageWizard
-from PyFlow import INITIALIZE
-from PyFlow.Input import InputAction, InputActionType
-from PyFlow.Input import InputManager
-from PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Wizards.PackageWizard import PackageWizard
+from PyFlow.PyFlow import INITIALIZE
+from PyFlow.PyFlow.Input import InputAction, InputActionType
+from PyFlow.PyFlow.Input import InputManager
+from PyFlow.PyFlow.ConfigManager import ConfigManager
 
 import PyFlow.UI.resources
 

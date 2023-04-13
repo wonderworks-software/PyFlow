@@ -13,12 +13,12 @@
 ## limitations under the License.
 
 
-from Qt import QtWidgets
-from Qt import QtGui, QtCore
+from qtpy import QtWidgets
+from qtpy import QtGui, QtCore
 
-from PyFlow.UI.Canvas.Painters import PinPainter
-from PyFlow import findPinClassByType, getAllPinClasses
-from PyFlow.Core.Common import PinDirection
+from PyFlow.PyFlow.UI.Canvas.Painters import PinPainter
+from PyFlow.PyFlow import findPinClassByType, getAllPinClasses
+from PyFlow.PyFlow.Core.Common import PinDirection
 
 
 _PIN_SIZE = 15

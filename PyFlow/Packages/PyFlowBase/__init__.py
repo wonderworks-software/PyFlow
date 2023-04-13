@@ -3,100 +3,100 @@
 PACKAGE_NAME = 'PyFlowBase'
 from collections import OrderedDict
 
-from PyFlow.UI.UIInterfaces import IPackage
+from PyFlow.PyFlow.UI.UIInterfaces import IPackage
 
 # Pins
-from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
-from PyFlow.Packages.PyFlowBase.Pins.BoolPin import BoolPin
-from PyFlow.Packages.PyFlowBase.Pins.ExecPin import ExecPin
-from PyFlow.Packages.PyFlowBase.Pins.FloatPin import FloatPin
-from PyFlow.Packages.PyFlowBase.Pins.IntPin import IntPin
-from PyFlow.Packages.PyFlowBase.Pins.StringPin import StringPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.BoolPin import BoolPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.ExecPin import ExecPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.FloatPin import FloatPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.IntPin import IntPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Pins.StringPin import StringPin
 
 # Function based nodes
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.ArrayLib import ArrayLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.BoolLib import BoolLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.DefaultLib import DefaultLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.FloatLib import FloatLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.IntLib import IntLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib import MathLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbstractLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
-from PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.ArrayLib import ArrayLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.BoolLib import BoolLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.DefaultLib import DefaultLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.FloatLib import FloatLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.IntLib import IntLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib import MathLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbstractLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
+from PyFlow.PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
 
 # Class based nodes
-from PyFlow.Packages.PyFlowBase.Nodes.branch import branch
-from PyFlow.Packages.PyFlowBase.Nodes.tick import tick
-from PyFlow.Packages.PyFlowBase.Nodes.charge import charge
-from PyFlow.Packages.PyFlowBase.Nodes.delay import delay
-from PyFlow.Packages.PyFlowBase.Nodes.deltaTime import deltaTime
-from PyFlow.Packages.PyFlowBase.Nodes.doN import doN
-from PyFlow.Packages.PyFlowBase.Nodes.doOnce import doOnce
-from PyFlow.Packages.PyFlowBase.Nodes.flipFlop import flipFlop
-from PyFlow.Packages.PyFlowBase.Nodes.forLoop import forLoop
-from PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
-from PyFlow.Packages.PyFlowBase.Nodes.loopEnd import loopEnd
-from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
-from PyFlow.Packages.PyFlowBase.Nodes.forEachLoop import forEachLoop
-from PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
-from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
-from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
-from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
-from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
-from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
-from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
-from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
-from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
-from PyFlow.Packages.PyFlowBase.Nodes.makeArray import makeArray
-from PyFlow.Packages.PyFlowBase.Nodes.makeList import makeList
-from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
-from PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
-from PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
-from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
-from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
-from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
-from PyFlow.Packages.PyFlowBase.Nodes.stringToArray import stringToArray
-from PyFlow.Packages.PyFlowBase.Nodes.cliexit import cliexit
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.branch import branch
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.tick import tick
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.charge import charge
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.delay import delay
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.deltaTime import deltaTime
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.doN import doN
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.doOnce import doOnce
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.flipFlop import flipFlop
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.forLoop import forLoop
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.loopEnd import loopEnd
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.forEachLoop import forEachLoop
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.timer import timer
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeArray import makeArray
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeList import makeList
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.stringToArray import stringToArray
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.cliexit import cliexit
 
 
-from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
-from PyFlow.Packages.PyFlowBase.Nodes.address import address
-from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import graphInputs, graphOutputs
-from PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
-from PyFlow.Packages.PyFlowBase.Nodes.compound import compound
-from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
-from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
-from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.address import address
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.graphNodes import graphInputs, graphOutputs
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.compound import compound
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.constant import constant
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 
 
-from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
-from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
+from PyFlow.PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
 
-from PyFlow.Packages.PyFlowBase.Tools.ScreenshotTool import ScreenshotTool
-from PyFlow.Packages.PyFlowBase.Tools.NodeBoxTool import NodeBoxTool
-from PyFlow.Packages.PyFlowBase.Tools.SearchResultsTool import SearchResultsTool
-from PyFlow.Packages.PyFlowBase.Tools.AlignLeftTool import AlignLeftTool
-from PyFlow.Packages.PyFlowBase.Tools.AlignRightTool import AlignRightTool
-from PyFlow.Packages.PyFlowBase.Tools.AlignTopTool import AlignTopTool
-from PyFlow.Packages.PyFlowBase.Tools.AlignBottomTool import AlignBottomTool
-from PyFlow.Packages.PyFlowBase.Tools.HistoryTool import HistoryTool
-from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
-from PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
-from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
-from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.ScreenshotTool import ScreenshotTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.NodeBoxTool import NodeBoxTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.SearchResultsTool import SearchResultsTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.AlignLeftTool import AlignLeftTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.AlignRightTool import AlignRightTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.AlignTopTool import AlignTopTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.AlignBottomTool import AlignBottomTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.HistoryTool import HistoryTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
-from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
 
 # Factories
-from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
-from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
-from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
+from PyFlow.PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
+from PyFlow.PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
+from PyFlow.PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 
 # Prefs widgets
-from PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
-from PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
-from PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
+from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
+from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
+from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
 
 
 _FOO_LIBS = {

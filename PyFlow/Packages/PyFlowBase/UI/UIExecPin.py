@@ -13,15 +13,15 @@
 ## limitations under the License.
 
 
-from Qt import (
+from qtpy import (
     QtGui,
     QtCore
 )
 
-from PyFlow.Core import PinBase
-from PyFlow.Core.Common import *
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
-from PyFlow.UI.Canvas.Painters import PinPainter
+from PyFlow.PyFlow.Core import PinBase
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.PyFlow.UI.Canvas.Painters import PinPainter
 
 
 class UIExecPin(UIPinBase):

@@ -17,14 +17,14 @@ import weakref
 from blinker import Signal
 from collections import Counter
 
-from PyFlow.Core.Common import *
-from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import CreateRawPin
-from PyFlow import getRawNodeInstance
-from PyFlow import findPinClassByType
-from PyFlow import getPinDefaultValueByType
-from PyFlow.Core.Variable import Variable
-from PyFlow.Core.Interfaces import ISerializable
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.NodeBase import NodeBase
+from PyFlow.PyFlow import CreateRawPin
+from PyFlow.PyFlow import getRawNodeInstance
+from PyFlow.PyFlow import findPinClassByType
+from PyFlow.PyFlow import getPinDefaultValueByType
+from PyFlow.PyFlow.Core.Variable import Variable
+from PyFlow.PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
@@ -428,7 +428,7 @@ class GraphBase(ISerializable):
         :type jsonTemplate: dict
         :rtype: bool
         """
-        from PyFlow.Core.PathsRegistry import PathsRegistry
+        from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
 
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self._nodes:

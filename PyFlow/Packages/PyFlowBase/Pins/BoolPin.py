@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import PinBase
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import PinBase
+from PyFlow.PyFlow.Core.Common import *
 
 
 class BoolPin(PinBase):

@@ -15,20 +15,20 @@
 
 import weakref
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QPlainTextEdit
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QGraphicsWidget
+from qtpy.QtWidgets import QMenu
+from qtpy.QtWidgets import QInputDialog
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtWidgets import QPlainTextEdit
 
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.stylesheet import Colors, editableStyleSheet
-from PyFlow.UI.Canvas.Painters import PinPainter
-from PyFlow.UI.Canvas.WatchPinValueItem import WatchItem
-from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors, editableStyleSheet
+from PyFlow.PyFlow.UI.Canvas.Painters import PinPainter
+from PyFlow.PyFlow.UI.Canvas.WatchPinValueItem import WatchItem
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
 
 
 UI_PINS_FACTORIES = {}

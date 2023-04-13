@@ -16,9 +16,9 @@
 from collections import Counter
 from collections import defaultdict
 
-from Qt import QtCore, QtGui
+from qtpy import QtCore, QtGui
 
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 
 class InputActionType(Enum):
@@ -122,14 +122,17 @@ class InputAction(object):
         saveData = {}
         saveData["name"] = self._name
         saveData["group"] = self._group
-        saveData["mouse"] = int(self.__data["mouse"])
-        saveData["actionType"] = self.actionType.value
 
-        key = self.__data["key"]
-        saveData["key"] = int(key) if key is not None else None
+        try:
+            saveData["mouse"] = int(self.__data["mouse"])
+            saveData["actionType"] = self.actionType.value
+            key = self.__data["key"]
+            saveData["key"] = int(key) if key is not None else None
+            modifiersList = self._modifiersToList(self.__data["modifiers"])
+            saveData["modifiers"] = [int(i) for i in modifiersList]
+        except:
+            print(self.__data["mouse"])
 
-        modifiersList = self._modifiersToList(self.__data["modifiers"])
-        saveData["modifiers"] = [int(i) for i in modifiersList]
         return saveData
 
     def fromJson(self, jsonData):
@@ -166,8 +169,12 @@ class InputManager(object):
         return self.__actions
 
     def registerAction(self, action):
-        if action not in self.__actions[action.getName()]:
-            self.__actions[action.getName()].append(action)
+
+        try:
+            if action not in self.__actions[action.getName()]:
+                self.__actions[action.getName()].append(action)
+        except:
+            print("Getting Error None Error")
 
     def loadFromData(self, data):
         for actionName, actionVariants in data.items():

@@ -1,5 +1,5 @@
-from PyFlow.Core.Common import *
-from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
 
 
 @SingletonDecorator

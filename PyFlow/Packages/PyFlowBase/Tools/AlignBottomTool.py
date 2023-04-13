@@ -14,12 +14,12 @@
 
 
 from nine import str
-from PyFlow.UI.Tool.Tool import ShelfTool
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
-from PyFlow.Core.Common import Direction
+from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
+from PyFlow.PyFlow.Core.Common import Direction
 
-from Qt import QtGui
-from Qt.QtWidgets import QFileDialog
+from qtpy import QtGui
+from qtpy.QtWidgets import QFileDialog
 
 
 class AlignBottomTool(ShelfTool):

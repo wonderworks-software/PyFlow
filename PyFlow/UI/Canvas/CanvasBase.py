@@ -1,9 +1,9 @@
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 class CanvasBase(QGraphicsView):

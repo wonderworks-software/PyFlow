@@ -16,12 +16,12 @@
 from copy import copy
 import sys
 import struct
-from Qt import QtGui, QtCore, QtWidgets
+from qtpy import QtGui, QtCore, QtWidgets
 
-from PyFlow.UI.Canvas.UICommon import SessionDescriptor
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet, Colors
-from PyFlow.Core.Common import *
-from PyFlow.Core import structs
+from PyFlow.PyFlow.UI.Canvas.UICommon import SessionDescriptor
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet, Colors
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core import structs
 
 
 FLOAT_SLIDER_DRAG_STEPS = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]

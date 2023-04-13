@@ -15,26 +15,27 @@
 
 from nine import str
 import logging
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtSvg
-from Qt.QtWidgets import *
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Core.Common import *
-from PyFlow.UI.Canvas.UIPinBase import (
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtSvg
+from qtpy.QtWidgets import *
+
+from PyFlow.PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
     PinGroup
 )
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
-from PyFlow.UI.UIInterfaces import IUINode
-from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
-from PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.UI.Canvas.UICommon import *
+from PyFlow.PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.PyFlow.UI.UIInterfaces import IUINode
+from PyFlow.PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
 
 from collections import OrderedDict
 
@@ -55,10 +56,10 @@ class CollapseNodeActionButton(NodeActionButtonBase):
             self.svgIcon.setElementId("Collapse")
 
 
-class NodeNameValidator(QtGui.QRegExpValidator):
+class NodeNameValidator(QtGui.QRegularExpressionValidator):
     """docstring for NodeNameValidator."""
     def __init__(self, parent=None):
-        super(NodeNameValidator, self).__init__(QtCore.QRegExp('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
+        super(NodeNameValidator, self).__init__(QtCore.QRegularExpression('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
 
 
 class InputTextField(QGraphicsTextItem):

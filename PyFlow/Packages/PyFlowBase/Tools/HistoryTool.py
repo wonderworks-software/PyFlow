@@ -14,13 +14,13 @@
 
 
 from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
-from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Tool.Tool import DockTool
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
 
 
 class HistoryEntry(QListWidgetItem):

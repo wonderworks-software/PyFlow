@@ -19,23 +19,23 @@ import os
 import uuid
 import logging
 
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QInputDialog
-from Qt import QtCore
+from qtpy.QtWidgets import QAction
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QInputDialog
+from qtpy import QtCore
 
-from PyFlow import GET_PACKAGES
-from PyFlow import GET_PACKAGE_PATH
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow import GET_PACKAGES
+from PyFlow.PyFlow import GET_PACKAGE_PATH
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.PyFlow.ConfigManager import ConfigManager
 
 logger = logging.getLogger(None)
 
 
 INITIAL_CODE = """
 
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Common import *
 
 def prepareNode(node):
     node.createInputPin(pinName="inExec", dataType="ExecPin", foo=node.processNode)

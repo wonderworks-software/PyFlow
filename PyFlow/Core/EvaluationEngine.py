@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from PyFlow.Core.Common import *
-from PyFlow.Core.Interfaces import IEvaluationEngine
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.Interfaces import IEvaluationEngine
 
 
 class DefaultEvaluationEngine_Impl(IEvaluationEngine):

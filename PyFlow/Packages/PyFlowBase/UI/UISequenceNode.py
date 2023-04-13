@@ -13,9 +13,9 @@
 ## limitations under the License.
 
 
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
+from PyFlow.PyFlow.UI import RESOURCES_DIR
+from PyFlow.PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
 
 
 class UISequenceNode(UINodeBase):

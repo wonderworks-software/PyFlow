@@ -16,14 +16,14 @@
 import json
 from collections import defaultdict
 
-from Qt.QtWidgets import *
+from qtpy.QtWidgets import *
 
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Input import InputAction, InputManager
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
-from PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
-from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
-from PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Input import InputAction, InputManager
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
+from PyFlow.PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
+from PyFlow.PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
+from PyFlow.PyFlow.UI.Canvas.UICommon import clearLayout
 
 
 class InputPreferences(CategoryWidgetBase):

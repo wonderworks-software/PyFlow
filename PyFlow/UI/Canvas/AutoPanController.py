@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
-from PyFlow.Core.Common import *
+from qtpy import QtGui
+from PyFlow.PyFlow.Core.Common import *
 
 
 class AutoPanController(object):

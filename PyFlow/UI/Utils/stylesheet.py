@@ -24,10 +24,10 @@ if IS_PYTHON2:
 else:
     from enum import IntEnum
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 
-from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.ConfigManager import ConfigManager
+from PyFlow.PyFlow.Core.Common import SingletonDecorator
+from PyFlow.PyFlow.ConfigManager import ConfigManager
 
 
 FILE_DIR = os.path.dirname(__file__)

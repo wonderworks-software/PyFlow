@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from PyFlow.Core.Interfaces import ICodeCompiler
+from PyFlow.PyFlow.Core.Interfaces import ICodeCompiler
 
 class Py3FunctionCompiler(ICodeCompiler):
     """Compiles string to python function

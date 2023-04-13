@@ -1,10 +1,10 @@
-from Qt import QtCore
-from Qt import QtGui
+from qtpy import QtCore
+from qtpy import QtGui
 
-from Qt.QtWidgets import *
+from qtpy.QtWidgets import *
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.PyFlow.Core.Common import *
 
 
 class WatchItem(QGraphicsTextItem):

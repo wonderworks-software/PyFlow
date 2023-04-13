@@ -1,6 +1,6 @@
 import ptvsd
 import pymxs
-from PyFlow.App import PyFlow
+from PyFlow.PyFlow.App import PyFlow
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 

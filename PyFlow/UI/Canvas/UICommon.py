@@ -14,9 +14,9 @@
 
 
 from docutils import core
-from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow import GET_PACKAGES
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
 
 
 # DEFAULT_WIDGET_VARIANT = "DefaultWidget"

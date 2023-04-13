@@ -13,10 +13,10 @@
 ## limitations under the License.
 
 
-from PyFlow import findPinClassByType
-from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
-from Qt import QtGui
+from PyFlow.PyFlow import findPinClassByType
+from PyFlow.PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
+from PyFlow.PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from qtpy import QtGui
 
 
 class UIAnyPin(UIPinBase):

@@ -18,7 +18,7 @@ import shutil
 from string import ascii_uppercase
 from random import choice
 
-from PyFlow import Wizards
+from PyFlow.PyFlow import Wizards
 
 
 def generatePackageInit(packageName,
@@ -33,42 +33,42 @@ def generatePackageInit(packageName,
                         bIncludePrefsWindget=False):
     result = "PACKAGE_NAME = '{0}'\n\n".format(packageName)
     result += "from collections import OrderedDict\n"
-    result += "from PyFlow.UI.UIInterfaces import IPackage\n\n"
+    result += "from PyFlow.PyFlow.UI.UIInterfaces import IPackage\n\n"
 
     if bIncludePin:
         result += "# Pins\n"
-        result += "from PyFlow.Packages.{0}.Pins.DemoPin import DemoPin\n\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Pins.DemoPin import DemoPin\n\n".format(packageName)
 
     if bIncludeFooLib:
         result += "# Function based nodes\n"
-        result += "from PyFlow.Packages.{0}.FunctionLibraries.DemoLib import DemoLib\n\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.FunctionLibraries.DemoLib import DemoLib\n\n".format(packageName)
 
     if bIncludeClassNode:
         result += "# Class based nodes\n"
-        result += "from PyFlow.Packages.{0}.Nodes.DemoNode import DemoNode\n\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Nodes.DemoNode import DemoNode\n\n".format(packageName)
 
     if bIncludeTool:
         result += "# Tools\n"
-        result += "from PyFlow.Packages.{0}.Tools.DemoShelfTool import DemoShelfTool\n".format(packageName)
-        result += "from PyFlow.Packages.{0}.Tools.DemoDockTool import DemoDockTool\n\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Tools.DemoShelfTool import DemoShelfTool\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Tools.DemoDockTool import DemoDockTool\n\n".format(packageName)
 
     if bIncludeExporter:
         result += "# Exporters\n"
-        result += "from PyFlow.Packages.{0}.Exporters.DemoExporter import DemoExporter\n\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Exporters.DemoExporter import DemoExporter\n\n".format(packageName)
 
     result += "# Factories\n"
     if bIncludeUIPinFactory:
-        result += "from PyFlow.Packages.{0}.Factories.UIPinFactory import createUIPin\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Factories.UIPinFactory import createUIPin\n".format(packageName)
 
     if bIncludeUINodeFactory:
-        result += "from PyFlow.Packages.{0}.Factories.UINodeFactory import createUINode\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Factories.UINodeFactory import createUINode\n".format(packageName)
 
     if bIncludePinInputWidgetFactory:
-        result += "from PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(packageName)
 
     if bIncludePrefsWindget:
         result += "# Prefs widgets\n"
-        result += "from PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(packageName)
+        result += "from PyFlow.PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(packageName)
 
     result += "\n"
 

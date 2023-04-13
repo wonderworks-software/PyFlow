@@ -14,14 +14,14 @@
 
 
 from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QUndoView
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QVBoxLayout
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QUndoView
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QVBoxLayout
 
-from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.VariablesWidget import VariablesWidget
+from PyFlow.PyFlow.UI.Tool.Tool import DockTool
+from PyFlow.PyFlow.UI.Views.VariablesWidget import VariablesWidget
 
 
 class VariablesTool(DockTool):

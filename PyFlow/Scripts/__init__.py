@@ -20,13 +20,13 @@ import json
 import threading
 import time
 
-from PyFlow.App import PyFlow
-from PyFlow import graphUiParser
-from Qt.QtWidgets import QApplication
-from PyFlow import INITIALIZE
-from PyFlow.Core.Common import *
-from PyFlow.Core.version import currentVersion
-from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.PyFlow.App import PyFlow
+from PyFlow.PyFlow import graphUiParser
+from qtpy.QtWidgets import QApplication
+from PyFlow.PyFlow import INITIALIZE
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.Core.version import currentVersion
+from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
 
 
 def getGraphArguments(data, parser):

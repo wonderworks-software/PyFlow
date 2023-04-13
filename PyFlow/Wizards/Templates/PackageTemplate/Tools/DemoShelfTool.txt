@@ -1,8 +1,8 @@
 from nine import str
-from PyFlow.UI.Tool.Tool import ShelfTool
-from PyFlow.Core.Common import Direction
+from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool
+from PyFlow.PyFlow.Core.Common import Direction
 
-from Qt import QtGui
+from qtpy import QtGui
 
 
 class DemoShelfTool(ShelfTool):

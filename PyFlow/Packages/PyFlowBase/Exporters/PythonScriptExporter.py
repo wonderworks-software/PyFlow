@@ -14,15 +14,15 @@
 
 
 from datetime import datetime
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QMessageBox
 
-from PyFlow import getRawNodeInstance
-from PyFlow.Core.Common import *
-from PyFlow.UI.UIInterfaces import IDataExporter
-from PyFlow import getRawNodeInstance
-from PyFlow.Core.version import Version
-from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
+from PyFlow.PyFlow import getRawNodeInstance
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow.UI.UIInterfaces import IDataExporter
+from PyFlow.PyFlow import getRawNodeInstance
+from PyFlow.PyFlow.Core.version import Version
+from PyFlow.PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
 
 def nodeToScript(node, supportedDataTypes, supportedStructures):

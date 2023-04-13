@@ -16,11 +16,11 @@
 from copy import copy
 import uuid
 
-from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
-from PyFlow.Core import NodeBase
-from PyFlow.Core.Variable import Variable
-from PyFlow.Core.Common import *
-from PyFlow import CreateRawPin
+from PyFlow.PyFlow.Packages.PyFlowBase import PACKAGE_NAME
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.Variable import Variable
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow import CreateRawPin
 
 
 class getVar(NodeBase):

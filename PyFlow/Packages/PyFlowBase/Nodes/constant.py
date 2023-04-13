@@ -13,11 +13,11 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Core.Common import *
-from PyFlow import findPinClassByType, getAllPinClasses
-from PyFlow import CreateRawPin
+from PyFlow.PyFlow.Core import NodeBase
+from PyFlow.PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.PyFlow.Core.Common import *
+from PyFlow.PyFlow import findPinClassByType, getAllPinClasses
+from PyFlow.PyFlow import CreateRawPin
 from copy import copy
 
 class constant(NodeBase):

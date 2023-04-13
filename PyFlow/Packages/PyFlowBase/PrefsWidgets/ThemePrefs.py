@@ -18,14 +18,14 @@ import inspect
 import json
 from collections import defaultdict
 
-from Qt.QtWidgets import *
-from Qt import QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtGui
 
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
-from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet, ConnectionTypes
-from PyFlow.UI.Widgets.PreferencesWindow import *
+from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
+from PyFlow.PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
+from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet, ConnectionTypes
+from PyFlow.PyFlow.UI.Widgets.PreferencesWindow import *
 import PyFlow.UI as UIModule
 
 
