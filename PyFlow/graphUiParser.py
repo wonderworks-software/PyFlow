@@ -27,7 +27,7 @@ from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-import PyFlow.UI.resources
+import PyFlow.PyFlow.UI.resources
 
 
 def run(filePath):

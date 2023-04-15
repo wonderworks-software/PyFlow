@@ -121,7 +121,7 @@ class BlueprintCanvas(CanvasBase):
         self.realTimeLineValidPen = QtGui.QPen(self._realTimeLineValidPen, 2.0, QtCore.Qt.SolidLine)
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self._drawRealtimeLine = False
-        self._sortcuts_enabled = True
+        self._shortcuts_enabled = True
         self.autoPanController = AutoPanController()
 
         self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
@@ -359,13 +359,13 @@ class BlueprintCanvas(CanvasBase):
             e.Tick()
 
     def isShortcutsEnabled(self):
-        return self._sortcuts_enabled
+        return self._shortcuts_enabled
 
     def disableSortcuts(self):
-        self._sortcuts_enabled = False
+        self._shortcuts_enabled = False
 
     def enableSortcuts(self):
-        self._sortcuts_enabled = True
+        self._shortcuts_enabled = True
 
     def onNewFile(self, keepRoot=True):
         self.getApp().undoStack.clear()
@@ -1381,6 +1381,7 @@ class BlueprintCanvas(CanvasBase):
             nodeTemplate['y'] = scenePos.y()
             nodeTemplate['meta']['label'] = nodeType
             nodeTemplate['uuid'] = str(uuid.uuid4())
+
             try:
                 self.tempnode.isTemp = False
                 self.tempnode = None

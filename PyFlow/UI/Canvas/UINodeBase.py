@@ -36,6 +36,7 @@ from PyFlow.PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.PyFlow.UI.UIInterfaces import IUINode
 from PyFlow.PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
 from PyFlow.PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.PyFlow.Core.Common import SVGIcon
 
 from collections import OrderedDict
 
@@ -46,7 +47,9 @@ class CollapseNodeActionButton(NodeActionButtonBase):
     """docstring for CollapseNodeActionButton."""
     def __init__(self, svgFilePath, action, uiNode):
         super(CollapseNodeActionButton, self).__init__(svgFilePath, action, uiNode)
-        self.svgIcon.setElementId("Collapse")
+        pass
+        #Todo Fix this svg
+        #self.svgIcon.setElementId("Collapse")
 
     def mousePressEvent(self, event):
         super(CollapseNodeActionButton, self).mousePressEvent(event)
@@ -235,6 +238,17 @@ class NodeName(QGraphicsWidget):
         self.setPos(rect.topLeft())
         self.labelItem.setGeometry(rect)
 
+class SvgWidget(QWidget):
+    def __init__(self, svg_file, parent=None):
+        super().__init__(parent)
+        self.renderer = QtSvg.QSvgRenderer(svg_file)
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        self.renderer.render(painter)
+
+    def sizeHint(self):
+        return self.renderer.defaultSize()
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     """
@@ -358,8 +372,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         self.setLayout(self.nodeLayout)
 
-        self.svgIcon = QtSvg.QGraphicsSvgItem(self)
-        self.svgIcon.setPos(-6, -6)
+        self.svgIcon = SVGIcon(self)
+        #todo svg broken
+        #self.svgIcon.setParentItem(self)
+        #self.svgIcon.setPos(-6, -6)
 
         self._image = None
         self.canvasRef = None

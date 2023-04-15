@@ -61,7 +61,8 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).__init__()
         self.setGraphicsItem(self)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
-        self.setCacheMode(self.DeviceCoordinateCache)
+        # Todo Fix This
+        #self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(1)
         self.setParentItem(owningNode)

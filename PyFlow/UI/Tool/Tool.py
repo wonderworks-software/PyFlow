@@ -142,6 +142,51 @@ class ShelfTool(ToolBase):
     def do(self):
         print(self.name(), "called!", self.canvas)
 
+class FormTool(QtWidgets.QDialog, ToolBase):
+    """Base class for form tools
+    """
+    def __init__(self):
+        FormTool.__init__(self)
+        QtWidgets.QDockWidget.__init__(self)
+        super().__init__()
+        self.setToolTip(self.toolTip())
+
+        self.setObjectName(self.uniqueName())
+        self.setTitleBarWidget(DockTitleBar(self))
+        self.setFloating(False)
+
+    def supportedSoftwares(self):
+        """Under what software to work
+        """
+        return ["any"]
+
+    @staticmethod
+    def defaultDockArea():
+        return QtCore.Qt.LeftDockWidgetArea
+
+    @staticmethod
+    def isSingleton():
+        return False
+
+    def onShow(self):
+        super(DockTool, self).onShow()
+        self.setWindowTitle(self.name())
+
+    @staticmethod
+    def getIcon():
+        return None
+
+    def restoreState(self, settings):
+        super(FormTool, self).restoreState(settings)
+        self.setObjectName(self.uniqueName())
+
+    def closeEvent(self, event):
+        self.onDestroy()
+        self.parent().unregisterToolInstance(self)
+        event.accept()
+
+    def addButton(self, button):
+        self.titleBarWidget().addButton(button)
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """Base class for dock tools
@@ -150,7 +195,10 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         ToolBase.__init__(self)
         QtWidgets.QDockWidget.__init__(self)
         self.setToolTip(self.toolTip())
-        self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
+        self.setFeatures(QtWidgets.QDockWidget.DockWidgetClosable |
+                 QtWidgets.QDockWidget.DockWidgetFloatable |
+                 QtWidgets.QDockWidget.DockWidgetMovable)
+
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
         self.setObjectName(self.uniqueName())
         self.setTitleBarWidget(DockTitleBar(self))
@@ -193,7 +241,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.layout().setContentsMargins(0, 0, 0, 1)
         self.buttonsLay = QtWidgets.QHBoxLayout()
         self.buttonsLay.setSpacing(1)
-        self.buttonsLay.setMargin(1)
+        self.buttonsLay.setContentsMargins(1, 1, 1, 1)
         self.box = QtWidgets.QGroupBox("")
         self.box.setLayout(self.buttonsLay)
         self.box.setObjectName("Docked")
@@ -256,10 +304,10 @@ class DockTitleBar(QtWidgets.QWidget):
 
     def onFeaturesChanged(self, features):
         if not features & QtWidgets.QDockWidget.DockWidgetVerticalTitleBar:
-            self.closeButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetClosable)
-            self.dockButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetFloatable)
+            self.closeButton.setVisible(bool(
+                features & QtWidgets.QDockWidget.DockWidgetClosable))
+            self.dockButton.setVisible(bool(
+                features & QtWidgets.QDockWidget.DockWidgetFloatable))
         else:
             raise ValueError('vertical title bar not supported')
 

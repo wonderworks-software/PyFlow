@@ -175,7 +175,12 @@ class editableStyleSheet():
             if topWindow:
                 topWindow.setStyleSheet(self.getStyleSheet())
                 for widget in topWindow.allWidgets():
-                    widget.update()
+                    if isinstance(widget, QtWidgets.QListView):
+                        widget.viewport().update()
+                    elif isinstance(widget, QtWidgets.QHeaderView):
+                        widget.viewport().update()
+                    else:
+                        widget.update()
 
     def getStyleSheet(self):
         MainColor_Lighter = QtGui.QColor(self.MainColor)

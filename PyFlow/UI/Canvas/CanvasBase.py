@@ -94,7 +94,10 @@ class CanvasBase(QGraphicsView):
         topLeft = xfo.map(self.rect().topLeft())
         bottomRight = xfo.map(self.rect().bottomRight())
         center = (topLeft + bottomRight) * 0.5
-        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
+        angle_delta = event.angleDelta()
+        vertical_delta = angle_delta.y() / 8  # Convert to degrees
+
+        zoomFactor = 1.0 + vertical_delta * self._mouseWheelZoomRate
 
         self.zoom(zoomFactor)
 

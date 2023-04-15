@@ -54,13 +54,16 @@ try:
     from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
     pass
-from PyFlow.PyFlow.Wizards.PackageWizard import PackageWizard
+
+from PyFlow.PyFlow.UI.Forms.PackageBuilder import PackageBuilder
+#from PyFlow.PyFlow.Wizards.PackageWizard import PackageWizard
+
 from PyFlow.PyFlow import INITIALIZE
 from PyFlow.PyFlow.Input import InputAction, InputActionType
 from PyFlow.PyFlow.Input import InputManager
 from PyFlow.PyFlow.ConfigManager import ConfigManager
 
-import PyFlow.UI.resources
+import PyFlow.PyFlow.UI.resources
 
 EDITOR_TARGET_FPS = 60
 
@@ -222,7 +225,7 @@ class PyFlow(QMainWindow):
 
         pluginsMenu = self.menuBar.addMenu("Plugins")
         packagePlugin = pluginsMenu.addAction("Create package...")
-        packagePlugin.triggered.connect(PackageWizard.run)
+        packagePlugin.triggered.connect(PackageBuilder.PackageBuilder.run)
 
         helpMenu = self.menuBar.addMenu("Help")
         helpMenu.addAction("Homepage").triggered.connect(lambda _=False, url="https://wonderworks-software.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(url))
@@ -430,7 +433,7 @@ class PyFlow(QMainWindow):
 
         # Tick all graphs
         # each graph will tick owning raw nodes
-        # each raw node will tick it's ui wrapper if it exists
+        # each raw node will tick is ui wrapper if it exists
         self.graphManager.get().Tick(deltaTime)
 
         # Tick canvas. Update ui only stuff such animation etc.

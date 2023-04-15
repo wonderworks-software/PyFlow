@@ -349,7 +349,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             pressed_text = json.dumps(jsonTemplate)
             mime_data.setText(pressed_text)
             drag.setMimeData(mime_data)
-            drag.exec_()
+            drag.exec()
 
     def update(self):
         for category in self.categoryPaths.values():
@@ -359,8 +359,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             else:
                 category.setBackground(
                     0, editableStyleSheet().BgColorBright.lighter(150))
-        super(NodeBoxTreeWidget, self).update()
-
+        self.viewport().update()
 
 class NodeBoxSizeGrip(QSizeGrip):
     """docstring for NodeBoxSizeGrip."""

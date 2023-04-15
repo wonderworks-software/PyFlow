@@ -17,7 +17,7 @@ from qtpy import QtCore, QtGui
 from qtpy import QtSvg
 from qtpy.QtWidgets import QGraphicsWidget
 from qtpy.QtWidgets import QSizePolicy
-
+from PyFlow.PyFlow.Core.Common import SVGIcon
 
 class NodeActionButtonBase(QGraphicsWidget):
     """Base class for all node's actions buttons.
@@ -31,7 +31,11 @@ class NodeActionButtonBase(QGraphicsWidget):
         self.setGraphicsItem(self)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
         self.action = action
-        self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
+
+        self.svgIcon = SVGIcon(svgFilePath)
+        #todo svg broken
+        #self.svgIcon.setParentItem(self)
+
         self.setToolTip(self.action.toolTip())
         self.hovered = False
         uiNode._actionButtons.add(self)
