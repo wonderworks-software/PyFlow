@@ -106,7 +106,7 @@ class TypeWidget(QWidget):
 # Variable class
 class UIVariable(QWidget, IPropertiesViewSupport):
     def __init__(self, rawVariable, variablesWidget, parent=None):
-        super(UIVariable, self).__init__(parent)
+        super(UIVariable, self).__init__()
         self._rawVariable = rawVariable
         self.variablesWidget = variablesWidget
         # ui

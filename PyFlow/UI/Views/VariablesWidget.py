@@ -62,7 +62,7 @@ class VariablesWidget(QWidget, Ui_Form):
     """docstring for VariablesWidget"""
 
     def __init__(self, pyFlowInstance, parent=None):
-        super(VariablesWidget, self).__init__(parent)
+        super(VariablesWidget, self).__init__()
         self.setupUi(self)
         self.pyFlowInstance = pyFlowInstance
         self.pyFlowInstance.graphManager.get().graphChanged.connect(self.onGraphChanged)

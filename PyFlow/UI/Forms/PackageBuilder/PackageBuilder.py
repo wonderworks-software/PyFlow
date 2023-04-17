@@ -313,13 +313,13 @@ class PackageBuilder(QDialog):
         functions = inspect.getmembers(package, predicate=inspect.isfunction)
 
         print(f"Package name: {package_name}\n")
-        print("Classes:")
+        '''print("Classes:")
         for _, cls in classes:
             print_class_info(cls)
 
         print("Functions:")
         for _, function in functions:
-            print_function_info(function)
+            print_function_info(function)'''
 
     def onPinScan(self):
         packageRoot = Packages.__path__[0]
@@ -370,7 +370,7 @@ class PackageBuilder(QDialog):
             self.loadCodeData(filefullpath)
 
 
-        if filefullpath.find("\\FunctionLibrary") != -1:
+        if filefullpath.find("\\FunctionLibraries") != -1:
             self.loadAllFunctions()
             #todo: check if package level was selected
             deft = it.text(col)
@@ -423,7 +423,7 @@ class PackageBuilder(QDialog):
             deft = it.text(col)
             self.ui.txtNodeFileName.setText(deft)
             self.selectedNodeDataName = deft.replace(".py", "")
-            filefullpath = os.path.join(filefullpath, deft)
+            #filefullpath = os.path.join(filefullpath, deft)
             self.loadNodeProperties(filefullpath)
             self.parseNodePins()
             self.ui.twPackage.setCurrentIndex(3)

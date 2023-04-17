@@ -583,6 +583,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @image.setter
     def image(self, value):
         self._image = value
+        #todo: 'SVGIcon' object has no attribute 'renderer'
         self.svgIcon.renderer().load(value)
         elementName = QtCore.QFileInfo(value).baseName()
         self.svgIcon.setElementId(elementName)
