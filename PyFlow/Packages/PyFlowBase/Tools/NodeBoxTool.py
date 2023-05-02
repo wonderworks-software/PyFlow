@@ -17,6 +17,7 @@ from nine import str
 from qtpy import QtCore
 from qtpy import QtGui
 
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
 
@@ -48,6 +49,9 @@ class NodeBoxTool(DockTool):
     def toolTip():
         return "Available nodes"
 
+    @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "screenshot_icon.png")
     @staticmethod
     def name():
         return str("NodeBox")

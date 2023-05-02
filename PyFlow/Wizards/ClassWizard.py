@@ -16,33 +16,25 @@
 import os
 import shutil
 #import subprocess
-import uuid
-import inspect
-import importlib
 
-from PyFlow.PyFlow import Packages
-
-from qtpy import QtGui
 from qtpy import QtCore
+from qtpy import QtGui
 from qtpy.QtWidgets import *
-
-from qtpy.uic import loadUiType, loadUi
+from qtpy.uic import loadUiType
 from qtpy import QtUiTools
-from blinker import Signal
 
+from PyFlow.PyFlow.Wizards import Forms
+from PyFlow.PyFlow import Wizards
+from PyFlow.PyFlow.Wizards.ClassDialogueBase import ClassDialogueBase
+from PyFlow.PyFlow.Wizards.PkgGen import *
+from PyFlow.PyFlow import Packages
 
 path = os.path.dirname(os.path.abspath(__file__))
 packageRoot = Packages.__path__[0]
 
-uiFile = os.path.join(path, 'PackageBuilder3.ui')
-#WindowTemplate, TemplateBaseClass = loadUiType(uiFile)
-RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UI/resources/")
 
-from qtpy.QtCore import QItemSelectionModel #Because Pyside hijacked from pyqt
-from qtpy.QtCore import QSortFilterProxyModel, QRegularExpression, QModelIndex
-from qtpy.QtGui import QStandardItemModel, QStandardItem
-from PyFlow.PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
-from PyFlow.PyFlow.UI.Tool.Tool import FormTool
+uiFile = os.path.join(path, 'Forms\\ClassManager - Import.ui')
+#WindowTemplate, TemplateBaseClass = loadUiType(uiFile)
 
 class TableComboModel(QComboBox):
     #Should combine with to customWidgets
@@ -134,23 +126,22 @@ class TableComboModel(QComboBox):
         #print("Combo Index changed:", index) #, self.sender().x(), self.y)
         #self.currentIndexChanged2.emit(self.dataout)
 
-class PackageBuilder(QDialog):
-    def __init__(self, parent=None):
-        super(PackageBuilder, self).__init__(parent)
+        
+class ClassWizard(QMdiSubWindow):
+    def __init__(self):
+        QMdiSubWindow.__init__(self)
 
-        self.ui = QtUiTools.QUiLoader().load(uiFile, self)
-        self.PackageName = "PackageBuilder"
-        self.actionRegister = None
+        self.ui = QtUiTools.QUiLoader().load(uiFile)
 
-        self.defaultfolderlist = ["Commands", "FunctionLibraries", "Nodes", "Pins", "PrefsWidgets", "Tools", "UI"]
+        self.defaultfolderlist = ["Exporters", "Factories", "FunctionLibraries", "Nodes", "Pins", "PrefsWidgets", "Tools",
+                             "UI"]
+
         packageRoot = Packages.__path__[0]
         self.ui.txtPackageFolderLocation.setText(packageRoot)
 
         packagelistmodel = QtGui.QStandardItemModel(0, 1)
         rowcount = 0
         self.functiondict = {}
-        self.pindict = {}
-
         self.pindefs = {}
         self.pindefs["Inputs"] = {}
         self.pindefs["Outputs"] = {}
@@ -179,66 +170,15 @@ class PackageBuilder(QDialog):
         self.ui.txtPackageFilter.textChanged.connect(self.onChangeFilterValue)
         self.ui.tvPackageItems.header().hide()
 
+        self.ui.tvPackageItems.itemClicked.connect(self.onItemClicked)
+
         #self.ui.tblFInputPins.selectionModel().selectionChanged.connect(self.on_tblFInputPins_Changed)
         self.ui.tblFInputPins.clicked.connect(self.on_tblFInputPins_clicked)
 
         #self.ui.tblFOutputPins.selectionModel().selectionChanged.connect(self.on_tblFOutputPins_Changed)
         self.ui.tblFOutputPins.clicked.connect(self.on_tblFOutputPins_clicked)
-        self.ui.tvPackageItems.itemClicked.connect(self.on_tvPackageItems_clicked)
 
         self.onPinScan()
-
-    def supportedSoftwares(self):
-        """Under what software to work
-        """
-        return ["any"]
-
-    def getMenuOrder(self):
-        menuOrder = ["Tools", "Windows", "Help"]
-        return menuOrder
-
-    def getMenuLayout(self):
-        menuDict = {}
-        separatorCount = 0
-        packageList = []
-        menuDict["Packages"] = packageList
-
-        fileMenuList = []
-        menuDict["File"] = fileMenuList
-
-        packageToolList = []
-        packageToolList.append({"Action": "Add Action", "Package": "PackageBuilder", "PackageGroup": "ProgramBase","Instance": self, "Command": "PackageBuilder"})
-        menuDict["Tools"] = packageToolList
-
-        windowMenuList = []
-        menuDict["Windows"] = windowMenuList
-
-        helpMenuList = []
-        helpMenuList.append({"Action": "Add Action", "Package": "ProgramBase", "PackageGroup": "ProgramBase", "Instance": self, "Command": "About"})
-        helpMenuList.append({"Action": "Add Action", "Package": "ProgramBase", "PackageGroup": "ProgramBase", "Instance": self, "Command": "HomePage"})
-        menuDict["Help"] = helpMenuList
-
-        return menuDict
-
-    def getRibbonOrder(self):
-        ribbonOrder = ["Tools"]
-        return ribbonOrder
-
-    def getRibbonLayout(self):
-        ribbonBarDict = {}
-        ribbonItems = []
-        ribbonItems.append({"Bar": "ProgramBase", "Section": "Tools", "Widget": "Small Button", "SmallIcon": RESOURCES_DIR + "new_file_icon.png", "LargeIcon": RESOURCES_DIR + "new_file_icon.png", "Action": "Add Action", "Package": "ProgramBase", "PackageGroup": "ProgramBase","Instance": self, "Command": "ToolBar"})
-        ribbonBarDict["Tools"] = ribbonItems
-        return ribbonBarDict
-
-    def getToolBarLayout(self):
-
-        toolBarDict = {}
-        pyFlowToolBar = []
-        pyFlowToolBar.append({"Bar": "Bar 1", "Section": "Section 1", "Widget": "Small Button", "Action": "Add Action", "Package": "PyFlow", "PackageGroup": "PyFlow", "Instance": self, "Command": "NewFile"})
-        toolBarDict["File"] = pyFlowToolBar
-
-        return toolBarDict
 
     def onChangeFilterValue(self, text):
         #self.packagelistModelproxy.setFilterKeyColumn(text)
@@ -251,9 +191,6 @@ class PackageBuilder(QDialog):
         #selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex(), 0, None).data()
         packagepath = os.path.join(packageRoot, selectedpackage)
         self.ui.tvPackageItems.clear()
-        CommandList = {}
-        FunctionList = {}
-        PrefsWidgetsList = {}
 
         for directories in os.listdir(packagepath):
             if directories[1] != "_":
@@ -262,66 +199,37 @@ class PackageBuilder(QDialog):
                 #parent.setFlags(parent.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
                 filepath = os.path.join(packagepath, directories)
                 for file in os.listdir(filepath):
-                    if file[1] != "_" and file[-3:]==".py":
+                    if file[1] != "_":
                         child = QTreeWidgetItem(parent)
-                        #child.clicked.connect(self.on_tvPackageItems_clicked)
                         #child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
-                        child.setText(0, file[:-3])
+                        child.setText(0, file)
                         #child.setCheckState(0, QtCore.Qt.Unchecked)
                         filefullpath = os.path.join(filepath, file)
 
                         try:
                             f = open(filefullpath, "r")
                             for lineitem in f:
-                                if directories[1] == "FunctionLibrary":
-                                    if len(lineitem) > 10:
-                                        if lineitem[:5] == "class":
-                                            classnamestart = lineitem.find(" ")
-                                            classnameend  = lineitem.find("(")
-                                            #child2 = QTreeWidgetItem(child)
+                                if len(lineitem) > 10:
+                                    if lineitem[:5] == "class":
+                                        classnamestart = lineitem.find(" ")
+                                        classnameend  = lineitem.find("(")
+                                        #child2 = QTreeWidgetItem(child)
+                                        #child2.setFlags(child2.flags() | QtCore.Qt.ItemIsUserCheckable)
+                                        #child2.setText(0, lineitem[classnamestart+1:classnameend])
+                                        #child2.setCheckState(0, QtCore.Qt.Unchecked)
+                                    if lineitem.find("def ") != -1:
+                                        if lineitem[8] != "_":
+                                            classnamestart = 7
+                                            classnameend = lineitem.find("(")
+                                            child2 = QTreeWidgetItem(child)
                                             #child2.setFlags(child2.flags() | QtCore.Qt.ItemIsUserCheckable)
-                                            #child2.setText(0, lineitem[classnamestart+1:classnameend])
-                                            #child2.setCheckState(0, QtCore.Qt.Unchecked)
-                                        if lineitem.find("def ") != -1:
-                                            if lineitem[8] != "_":
-                                                classnamestart = 7
-                                                classnameend = lineitem.find("(")
-                                                child2 = QTreeWidgetItem(child)
-                                                #child2.setFlags(child2.flags() | QtCore.Qt.ItemIsUserCheckable)
-                                                classname = lineitem[classnamestart+1:classnameend]
-                                                if file.find(lineitem[classnamestart+1:classnameend]) == -1:
-                                                    functionname = lineitem[classnamestart+1:classnameend]
-                                                    child2.setText(0, functionname)
-                                                    #child2.setCheckState(0, QtCore.Qt.Unchecked)
+                                            classname = lineitem[classnamestart+1:classnameend]
+                                            if file.find(lineitem[classnamestart+1:classnameend]) == -1:
+                                                functionname = lineitem[classnamestart+1:classnameend]
+                                                child2.setText(0, functionname)
+                                                #child2.setCheckState(0, QtCore.Qt.Unchecked)
                         except:
                             pass
-
-
-    def packageScan(self):
-        print(f"Class name: {cls.__name__}")
-        print("Methods:")
-        methods = inspect.getmembers(cls, predicate=inspect.isfunction)
-        for _, method in methods:
-            print(method)
-
-    def analyze_package(package_name):
-        try:
-            package = importlib.import_module(package_name)
-        except ImportError:
-            print(f"Error: Package '{package_name}' not found.")
-            return
-
-        classes = inspect.getmembers(package, predicate=inspect.isclass)
-        functions = inspect.getmembers(package, predicate=inspect.isfunction)
-
-        print(f"Package name: {package_name}\n")
-        '''print("Classes:")
-        for _, cls in classes:
-            print_class_info(cls)
-
-        print("Functions:")
-        for _, function in functions:
-            print_function_info(function)'''
 
     def onPinScan(self):
         packageRoot = Packages.__path__[0]
@@ -334,7 +242,7 @@ class PackageBuilder(QDialog):
                     self.pinDict[PinName] = directories
 
     @QtCore.Slot(QTreeWidgetItem, int)
-    def on_tvPackageItems_clicked(self, it, col):
+    def onItemClicked(self, it, col):
         parents = []
         current_item = it
         current_parent = current_item.parent()
@@ -347,33 +255,21 @@ class PackageBuilder(QDialog):
 
         filefullpath = Packages.__path__[0] + "\\"
         selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
-        selecteditem = it.text(col) + ".py"
         filefullpath = os.path.join(filefullpath, selectedpackage)
         for items in parents:
             filefullpath = os.path.join(filefullpath, items)
 
-        filefullpath = os.path.join(filefullpath, selecteditem)
-
-        if filefullpath.find("\\Commands") != -1:
-
-            #todo: check if package level was selected
+        if filefullpath.find("\\Nodes") != -1:
             deft = it.text(col)
-            self.workingFile = filefullpath
-            self.initializeform
-            self.initializePinData
-            filename = filefullpath.split("\\")[-1]
-            self.ui.txtFunctionFileName.setText(filename)
-            self.ui.txtFunctionName.setText(deft)
-            self.ui.twPackage.setCurrentIndex(1)
-            implementdata = ""
-            definitiondata = ""
-            codedata = ""
-
-            self.loadCodeData(filefullpath)
-
+            self.ui.txtNodeFileName.setText(deft)
+            self.selectedNodeDataName = deft.replace(".py","")
+            filefullpath = os.path.join(filefullpath, deft)
+            self.loadNodeProperties(filefullpath)
+            self.parseNodePins()
+            self.ui.twPackage.setCurrentIndex(3)
 
         if filefullpath.find("\\FunctionLibraries") != -1:
-            self.loadAllFunctions()
+
             #todo: check if package level was selected
             deft = it.text(col)
             self.workingFile = filefullpath
@@ -417,34 +313,14 @@ class PackageBuilder(QDialog):
 
                 if deft in self.functiondict:
                     self.loadPinTable(deft)
-
             except:
                 pass
-
-        if filefullpath.find("\\Nodes") != -1:
-            deft = it.text(col)
-            self.ui.txtNodeFileName.setText(deft)
-            self.selectedNodeDataName = deft.replace(".py", "")
-            #filefullpath = os.path.join(filefullpath, deft)
-            self.loadNodeProperties(filefullpath)
-            self.parseNodePins()
-            self.ui.twPackage.setCurrentIndex(3)
-
-        if filefullpath.find("\\Pins") != -1:
-            self.loadPinProperties(filefullpath)
-            print(self.pindict)
-
-        if filefullpath.find("\\SQL") != -1:
-            deft = it.text(col)
-            self.loadTableProperties(filefullpath)
-            self.ui.twPackage.setCurrentIndex(8)
 
     def onOpenPackageFolder(self):
 
         #print(Packages.__path__[0] + "\\")
         os.startfile(Packages.__path__[0])
         #subprocess.Popen(r'explorer' + Packages.__path__[0] + "\\")
-
 
     def loadFunctionProperties(self, filefullpath, functionname):
 
@@ -517,75 +393,6 @@ class PackageBuilder(QDialog):
                     codedata.append(lineitem[8:])'''
         except:
             pass
-
-
-    def loadCodeData(self, filefullpath):
-        codenotes = 0
-        importlist = []
-        importstart = 0
-        classstart = 0
-        super = 0
-        staticmethod = []
-        definition = []
-        codedata = []
-
-        filesize = len(open(filefullpath).readlines())
-        f = open(filefullpath, "r")
-
-        for index, lineitem in enumerate(f):
-            #Reading the parts of the code (Implement, Def, Code)
-            codedata.append(lineitem)
-
-            if lineitem.find("import") != -1:
-                importlist.append(index)
-
-            if lineitem.find("class") != -1:
-                classstart = index
-
-            if lineitem.find("def") != -1:
-                definition.append(index)
-
-        defCount = len(definition)
-        for count, defitem in enumerate(definition):
-            line = codedata[defitem]
-            if count == defCount-1:
-                endCodeBlock = len(codedata)
-            else:
-                endCodeBlock = definition[count+1]-1
-
-            if codedata[defitem - 1].find("@staticmethod") != -1:
-                staticmethod = True
-            else:
-                staticmethod = False
-
-            if codedata[defitem].find("__init__") != -1:
-                if codedata[defitem].find("super") != -1:
-                    pass
-
-            if codedata[defitem].find("toolTip") != -1:
-                for row in range(defitem,endCodeBlock):
-                    line2 = codedata[row]
-                    if codedata[row].find("return") != -1:
-                        tooltip = codedata[row][15:]
-                        self.ui.txtCommandToolTip.setText(tooltip)
-
-            if codedata[defitem].find("getIcon") != -1:
-                for row in range(defitem, endCodeBlock):
-                    if codedata[row].find("return") != -1:
-                        getIcon = codedata[row][15:]
-                        self.ui.txtCommandgetIcon.setText(getIcon)
-
-            if codedata[defitem].find("name") != -1:
-                for row in range(defitem, endCodeBlock):
-                    if codedata[row].find("return") != -1:
-                        name = codedata[row][15:]
-                        self.ui.txtCommandName.setText(name)
-
-            if codedata[defitem].find("do") != -1:
-                code = ""
-                for codeline in codedata[defitem:endCodeBlock]:
-                    code += codeline
-                self.ui.txtCommandCode.setText(code)
 
     def parseFunctionFile(self, defname):
             #https://nedbatchelder.com/text/python-parsers.html
@@ -1094,176 +901,176 @@ class PackageBuilder(QDialog):
     def writepindata(self):
         self.functiondict = {}
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSSupportedDataTypes_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["SUPPORTED_DATA_TYPES"] = self.ui.txtPSSupportedDataTypes.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSSupportedDataTypes_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["SUPPORTED_DATA_TYPES"] = self.ui.txtPSSupportedDataTypes.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSConstraint_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["CONSTRAINT"] = self.ui.txtPSConstraint.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSConstraint_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["CONSTRAINT"] = self.ui.txtPSConstraint.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSStructConstraint_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["STRUCT_CONSTRAINT"] = self.ui.txtPSStructConstraint.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSStructConstraint_stateChanged(self):
         a = self.ui.txtPSStructConstraint.text()
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["STRUCT_CONSTRAINT"] = self.ui.txtPSStructConstraint.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSDisableOptions_stateChanged(self):
         a = self.ui.chkPSDisableOptions.isChecked()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.setFunctionDirty()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSDisableOptions_textChanged(self):
         b = self.ui.txtPSDisableOptions.text()
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSInputWidget_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["INPUT_WIDGET_VARIANT"] = self.ui.txtPSInputWidget.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSInputWidget_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["INPUT_WIDGET_VARIANT"] = self.ui.txtPSInputWidget.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSDescription_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["DESCRIPTION"] = self.ui.txtPSDescription.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSDescription_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["DESCRIPTION"] = self.ui.txtPSDescription.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSValueList_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["VALUE_LIST"] = self.ui.txtPSValueList.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSValueList_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["VALUE_LIST"] = self.ui.txtPSValueList.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSValueRange_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["VALUE_RANGE"] = self.ui.txtPSValueRange.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSValueRange_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["VALUE_RANGE"] = self.ui.txtPSValueRange.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkPSDraggerSteps_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["DRAGGER_STEPS"] = self.ui.txtPSDraggerSteps.text()
 
-    #@QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def on_txtPSDraggerSteps_textChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["DRAGGER_STEPS"] = self.ui.txtPSDraggerSteps.text()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkArraySupported_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["ArraySupported"] = self.ui.chkArraySupported.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkDictionarySupported_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["DictSupported"] = self.ui.chkDictionarySupported.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkSupportOnlyArrays_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["SupportsOnlyArrays"] = self.ui.chkSupportOnlyArrays.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkAllowMultipleConnections_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["AllowMultipleConnections"] = self.ui.chkAllowMultipleConnections.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkChangeTypeOnConnection_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["ChangeTypeOnConnection"] = self.ui.chkChangeTypeOnConnection.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkRenamingEnabled_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["RenamingEnabled"] = self.ui.chkRenamingEnabled.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkDynamic_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["Dynamic"] = self.ui.chkDynamic.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkAlwaysPushDirty_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["AlwaysPushDirty"] = self.ui.chkAlwaysPushDirty.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkStorable_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["Storable"] = self.ui.chkStorable.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkAllowAny_stateChanged(self, value):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
         self.pindefs[self.selectedPinDir][self.selectedPinName]["AllowAny"] = self.ui.chkAllowAny.isChecked()
 
-    #@QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_chkDictionaryElementSupported_stateChanged(self):
         self.setFunctionDirty()
         self.pinDictCheck(self.selectedPinDir, self.selectedPinName)
@@ -1279,7 +1086,7 @@ class PackageBuilder(QDialog):
         else:
             return(False)
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdUpOrderFInputPin_clicked(self):
         order = self.pindefs["Inputs"][self.selectedPinName]["Order"]
 
@@ -1292,7 +1099,7 @@ class PackageBuilder(QDialog):
 
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdDownOrderFInputPin_clicked(self):
         order = self.pindefs["Inputs"][self.selectedPinName]["Order"]
 
@@ -1305,7 +1112,7 @@ class PackageBuilder(QDialog):
 
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdAddFInputPin_clicked(self):
         self.setFunctionDirty()
         if self.ui.txtFunctionName.text() != "":
@@ -1324,7 +1131,7 @@ class PackageBuilder(QDialog):
             self.pindefs["Inputs"][newPinName]["Order"] = len(self.pindefs["Inputs"])
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdRemoveFInputPin_clicked(self):
         self.setFunctionDirty()
         order = self.pindefs["Inputs"][self.selectedPinName]["Order"]
@@ -1334,7 +1141,7 @@ class PackageBuilder(QDialog):
                 data["Order"] -= 1
         self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdUpOrderFOutputPin_clicked(self):
         order = self.pindefs["Outputs"][self.selectedPinName]["Order"]
 
@@ -1347,7 +1154,7 @@ class PackageBuilder(QDialog):
 
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdDownOrderFOutputPin_clicked(self):
         order = self.pindefs["Outputs"][self.selectedPinName]["Order"]
 
@@ -1360,7 +1167,7 @@ class PackageBuilder(QDialog):
 
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdAddFOutputPin_clicked(self):
         self.setFunctionDirty()
         if self.ui.txtFunctionName.text() != "":
@@ -1379,7 +1186,7 @@ class PackageBuilder(QDialog):
             self.pindefs["Outputs"][newPinName]["Order"] = len(self.pindefs["Outputs"])
             self.loadPinTable(self.ui.txtFunctionName.text())
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdRemoveFOutputPin_clicked(self):
         self.setFunctionDirty()
         order = self.pindefs["Outputs"][self.selectedPinName]["Order"]
@@ -1395,14 +1202,14 @@ class PackageBuilder(QDialog):
         self.ui.cmdSaveFunction.setVisible(True)
         self.ui.cmdSaveFunction.setStyleSheet("background-color: red")
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdSaveFunction_clicked(self):
         self.ui.cmdSaveFunction.setEnabled(False)
         self.ui.cmdSaveFunction.setVisible(False)
         self.writeFunction()
         self.writeFile()
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdCreateNewFunction_clicked(self):
         functionName = self.ui.txtFunctionName.text()
         if functionName not in self.functiondict:
@@ -1577,7 +1384,10 @@ class PackageBuilder(QDialog):
                 else:
                     ddata += "))"
 
+
+
                 defoutdata.append(ddata)
+
 
         self.functiondict[defname]["Implement"] = implementdata
         self.functiondict[defname]["Definition"] = defindata + defoutdata
@@ -1803,39 +1613,6 @@ class PackageBuilder(QDialog):
                 pass
 
 
-    def loadTableProperties(self, filefullpath):
-            className = None
-            tableName = None
-            baseName = None
-
-            fieldName = None
-            fieldDataType = None
-            fieldSize = None
-            fieldOptions = None
-
-            try:
-                filesize = len(open(filefullpath).readlines())
-                f = open(filefullpath, "r")
-
-                for index, lineitem in enumerate(f):
-                    if lineitem.find("__tablename__") != -1:
-                        print(lineitem)
-                    if lineitem.find("class ") != -1:
-                        print(lineitem)
-                        codedata = []
-                        if className:
-                            pass
-                    else:
-                        codedata.append(lineitem.replace("    ","").replace("\n",""))
-
-                    if className:
-                        fieldName = None
-                        fieldDataType = None
-                        fieldSize = None
-                        fieldOptions = None
-            except:
-                pass
-
     def parseNodePins(self):
         defname = self.selectedNodeDataName
         self.selectedNodeData[defname]["PinDefs"] = {}
@@ -2012,139 +1789,7 @@ class PackageBuilder(QDialog):
                 itemdata = z.strip().split(":")
                 #print(itemdata[0], itemdata[1].strip())'''
 
-
-    def loadPinProperties(self, filefullpath):
-
-        previousitem = ""
-        implementdata = ""
-        readingimplementdata = -1
-        readingdefdata = 0
-        defdata = ""
-        codedata = []
-        eof = 0
-        defname = ""
-        code = ""
-        codedescription = ""
-        NestDict = {}
-        try:
-            filesize = len(open(filefullpath).readlines())
-            f = open(filefullpath, "r")
-
-            for index, lineitem in enumerate(f):
-                #Reading the parts of the code (Implement, Def, Code)
-                if lineitem.find("class") != -1:
-                    self.intro = code
-                precode = code
-                code += lineitem
-                codedata.append(lineitem)
-                #print(lineitem)
-                if lineitem.find("super") != -1:
-                    code = ""
-                    codedata = []
-
-                if lineitem.find("@staticmethod") != -1 or index == filesize-1:
-                    readingdefdata = 0
-                    if precode.find("@staticmethod") != -1:
-                        NestDict = {}
-                        implement2 = implementdata
-                        NestDict["Implement"] = implement2.replace("@staticmethod", "")
-                        NestDict["Definition"] = defdata
-                        NestDict["CodeDescription"] = codedescription
-                        NestDict["Code"] = codedata[:-1]
-                        self.pindict[defname] = NestDict
-
-                        #self.parseFunctionFile(defname)
-                        break
-                    else:
-                        implementdata = ""
-
-                if lineitem.find("def ") != -1 and lineitem.find(" " + defname) != -1:
-                    defnamestart = 7
-                    defnameend = lineitem.find("(")
-                    defname = lineitem[defnamestart + 1:defnameend]
-                    readingdefdata = 1
-
-                if readingdefdata == 1:
-                    if lineitem.find("def ") != -1:
-                        lineitem = lineitem[defnameend+1:]
-                    readingimplementdata = 0
-                    defdata += lineitem.strip()
-                    if defdata[-1] == ":":
-                        readingdefdata = 0
-                        codedata = []
-        except:
-            pass
-
-
-    def loadPinData(self, filefullpath):
-        codenotes = 0
-        importlist = []
-        importstart = 0
-        classstart = 0
-        super = 0
-        staticmethod = []
-        definition = []
-        codedata = []
-
-        filesize = len(open(filefullpath).readlines())
-        f = open(filefullpath, "r")
-
-        for index, lineitem in enumerate(f):
-            #Reading the parts of the code (Implement, Def, Code)
-            codedata.append(lineitem)
-
-            if lineitem.find("import") != -1:
-                importlist.append(index)
-
-            if lineitem.find("class") != -1:
-                classstart = index
-
-            if lineitem.find("def") != -1:
-                definition.append(index)
-
-        defCount = len(definition)
-        for count, defitem in enumerate(definition):
-            line = codedata[defitem]
-            if count == defCount-1:
-                endCodeBlock = len(codedata)
-            else:
-                endCodeBlock = definition[count+1]-1
-
-            if codedata[defitem - 1].find("@staticmethod") != -1:
-                staticmethod = True
-            else:
-                staticmethod = False
-
-            if codedata[defitem].find("__init__") != -1:
-                if codedata[defitem].find("super") != -1:
-                    pass
-
-            if codedata[defitem].find("toolTip") != -1:
-                for row in range(defitem,endCodeBlock):
-                    line2 = codedata[row]
-                    if codedata[row].find("return") != -1:
-                        tooltip = codedata[row][15:]
-                        self.ui.txtCommandToolTip.setText(tooltip)
-
-            if codedata[defitem].find("getIcon") != -1:
-                for row in range(defitem, endCodeBlock):
-                    if codedata[row].find("return") != -1:
-                        getIcon = codedata[row][15:]
-                        self.ui.txtCommandgetIcon.setText(getIcon)
-
-            if codedata[defitem].find("name") != -1:
-                for row in range(defitem, endCodeBlock):
-                    if codedata[row].find("return") != -1:
-                        name = codedata[row][15:]
-                        self.ui.txtCommandName.setText(name)
-
-            if codedata[defitem].find("do") != -1:
-                code = ""
-                for codeline in codedata[defitem:endCodeBlock]:
-                    code += codeline
-                self.ui.txtCommandCode.setText(code)
-
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def on_cmdUpdateInit_clicked(self):
         packageRoot = Packages.__path__[0]
         selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
@@ -2386,21 +2031,12 @@ class PackageBuilder(QDialog):
         f.write("    def PrefsWidgets():\n")
         f.write("        return _PREFS_WIDGETS")
 
+
     def onDone(self):
         # if we are here, everything is correct
         self.accept()
 
     @staticmethod
     def run():
-        instance = PackageBuilder()
-        #instance.show()
-        instance.exec()
-
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-
-    w = PackageBuilder()
-    w.show()
-
-    sys.exit(app.exec_())
+        instance = ClassWizard()
+        #instance.exec()

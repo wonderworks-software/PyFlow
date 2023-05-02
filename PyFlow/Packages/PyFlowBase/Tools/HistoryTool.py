@@ -123,5 +123,9 @@ class HistoryTool(DockTool):
         return "Undo stack"
 
     @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "screenshot_icon.png")
+
+    @staticmethod
     def name():
         return str("History")

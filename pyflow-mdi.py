@@ -14,7 +14,7 @@
 
 
 import sys
-from PyFlow.PyFlow.App import PyFlow
+from PyFlow.PyFlow.AppMDI import PyFlow
 from qtpy.QtWidgets import QApplication
 from qtpy.QtGui import QGuiApplication
 
@@ -22,7 +22,7 @@ from qtpy.QtGui import QGuiApplication
 def main():
     app = QApplication(sys.argv)
 
-    instance = PyFlow.instance(software="standalone")
+    instance = PyFlow.PyFlow(software="standalone")
     if instance is not None:
         instance.show()
         instance.activateWindow()
@@ -30,8 +30,6 @@ def main():
             sys.exit(app.exec_())
         except Exception as e:
             print(e)
-            instance.pyFlowConsole.writeError(e)
-            raise e
 
 
 if __name__ == '__main__':

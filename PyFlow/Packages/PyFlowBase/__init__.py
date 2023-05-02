@@ -176,12 +176,15 @@ _TOOLS[AlignLeftTool.__name__] = AlignLeftTool
 _TOOLS[AlignRightTool.__name__] = AlignRightTool
 _TOOLS[AlignTopTool.__name__] = AlignTopTool
 _TOOLS[AlignBottomTool.__name__] = AlignBottomTool
-_TOOLS[HistoryTool.__name__] = HistoryTool
+
 _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
-_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
-_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
-_TOOLS[LoggerTool.__name__] = LoggerTool
+
+_MAIN_TOOLS = OrderedDict()
+_MAIN_TOOLS[LoggerTool.__name__] = LoggerTool
+_MAIN_TOOLS[HistoryTool.__name__] = HistoryTool
+_MAIN_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
+_MAIN_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter

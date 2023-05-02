@@ -67,5 +67,9 @@ class PropertiesTool(DockTool):
         return "Properties editing and displaying"
 
     @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "screenshot_icon.png")
+
+    @staticmethod
     def name():
         return str("Properties")

@@ -26,7 +26,7 @@ from PyFlow.PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
 from PyFlow.PyFlow.UI.Utils.stylesheet import editableStyleSheet, ConnectionTypes
 from PyFlow.PyFlow.UI.Widgets.PreferencesWindow import *
-import PyFlow.UI as UIModule
+import PyFlow.PyFlow.UI as UIModule
 
 
 THEMES_PATH = os.path.join(UIModule.__path__[0], "Themes")

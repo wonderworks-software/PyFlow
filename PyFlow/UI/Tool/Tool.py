@@ -226,7 +226,7 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
 
     def closeEvent(self, event):
         self.onDestroy()
-        self.parent().unregisterToolInstance(self)
+        self.unregisterToolInstance(self)
         event.accept()
 
     def addButton(self, button):
