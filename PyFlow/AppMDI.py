@@ -1,45 +1,17 @@
-#!/usr/bin/env python
+## Copyright 2023 David Lario
 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
 
-#############################################################################
-##
-## Copyright (C) 2013 Riverbank Computing Limited.
-## Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-## All rights reserved.
-##
-## This file is part of the examples of PyQt.
-##
-## $QT_BEGIN_LICENSE:BSD$
-## You may use this file under the terms of the BSD license as follows:
-##
-## "Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are
-## met:
-##   * Redistributions of source code must retain the above copyright
-##     notice, this list of conditions and the following disclaimer.
-##   * Redistributions in binary form must reproduce the above copyright
-##     notice, this list of conditions and the following disclaimer in
-##     the documentation and/or other materials provided with the
-##     distribution.
-##   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-##     the names of its contributors may be used to endorse or promote
-##     products derived from this software without specific prior written
-##     permission.
-##
-## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-## A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-## OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-## SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-## LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-## DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-## THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-## $QT_END_LICENSE$
-##
-#############################################################################
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
 
 import os
 import sys
@@ -68,7 +40,7 @@ from PyFlow.PyFlow.UI.Canvas.UICommon import *
 from PyFlow.PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool, DockTool
+from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool, DockTool, FormTool
 from PyFlow.PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.PyFlow.UI.Tool import REGISTER_TOOL
@@ -79,7 +51,7 @@ try:
     from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
     pass
-from PyFlow.PyFlow.Wizards.ClassWizard import ClassWizard
+from PyFlow.PyFlow.Wizards.PackageBuilder import PackageBuilder
 from PyFlow.PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow.PyFlow import INITIALIZE
 from PyFlow.PyFlow.Input import InputAction, InputActionType
@@ -328,62 +300,6 @@ class pyflowChild(QMdiSubWindow):
     def getMenuBar(self):
         return self.menuBar
 
-    def populateMenu(self):
-        fileMenu = self.menuBar.addMenu("&File")
-        newFileAction = fileMenu.addAction("New file")
-        newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
-        newFileAction.triggered.connect(self.newFile)
-
-        loadAction = fileMenu.addAction("Load")
-        loadAction.setIcon(QtGui.QIcon(":/folder_open_icon.png"))
-        loadAction.triggered.connect(self.load)
-
-        saveAction = fileMenu.addAction("Save")
-        saveAction.setIcon(QtGui.QIcon(":/save_icon.png"))
-        saveAction.triggered.connect(self.save)
-
-        saveAsAction = fileMenu.addAction("Save as")
-        saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
-        saveAsAction.triggered.connect(lambda: self.save(True))
-
-        IOMenu = fileMenu.addMenu("Custom IO")
-        for packageName, package in GET_PACKAGES().items():
-            # exporters
-            exporters = None
-            try:
-                exporters = package.GetExporters()
-            except:
-                continue
-            pkgMenu = IOMenu.addMenu(packageName)
-            for exporterName, exporterClass in exporters.items():
-                fileFormatMenu = pkgMenu.addMenu(exporterClass.displayName())
-                fileFormatMenu.setToolTip(exporterClass.toolTip())
-                if exporterClass.createExporterMenu():
-                    exportAction = fileFormatMenu.addAction("Export")
-                    exportAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doExport(app))
-                if exporterClass.createImporterMenu():
-                    importAction = fileFormatMenu.addAction("Import")
-                    importAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doImport(app))
-
-        editMenu = self.menuBar.addMenu("Edit")
-        preferencesAction = editMenu.addAction("Preferences")
-        preferencesAction.setIcon(QtGui.QIcon(":/options_icon.png"))
-        preferencesAction.triggered.connect(self.showPreferencesWindow)
-
-        pluginsMenu = self.menuBar.addMenu("Tools")
-        packageInitScan = pluginsMenu.addAction("Update initfile")
-        packageInitScan.triggered.connect(ClassWizard.run)
-        packagePlugin = pluginsMenu.addAction("Create package...")
-        packagePlugin.triggered.connect(PackageWizard.run)
-
-        self.windowMenu = self.menuBar.addMenu("&Window")
-        self.updateWindowMenu
-        self.windowMenu.aboutToShow.connect(self.updateWindowMenu)
-
-        helpMenu = self.menuBar.addMenu("Help")
-        helpMenu.addAction("Homepage").triggered.connect(lambda _=False, url="https://wonderworks-software.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(url))
-        helpMenu.addAction("Docs").triggered.connect(lambda _=False, url="https://pyflow.readthedocs.io/en/latest/": QtGui.QDesktopServices.openUrl(url))
-
     def getToolBarLayout(self):
 
         toolBarDict = {}
@@ -498,6 +414,44 @@ class pyflowChild(QMdiSubWindow):
                     settings.beginGroup(ToolClass.name())
                     ToolInstance.restoreState(settings)
                     settings.endGroup()
+
+                if issubclass(ToolClass, FormTool):
+                    ToolInstance = ToolClass()
+                    # prevent to be garbage collected
+                    self.registerToolInstance(ToolInstance)
+                    ToolInstance.setAppInstance(self.parent)
+                    action = QAction(self)
+                    action.setIcon(ToolInstance.getIcon())
+                    action.setText(ToolInstance.name())
+                    action.setToolTip(ToolInstance.toolTip())
+                    action.setObjectName(ToolInstance.name())
+                    action.triggered.connect(ToolInstance.do)
+
+                    #showToolAction.triggered.connect(ToolInstance.do)
+                    #self.invokeFormByName(packageName, ToolClass.name())
+                    action.triggered.connect(
+                        lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeFormByName(pkgName, toolName))
+                    #ToolInstance.do()
+
+                    menus = self.parent.menuBar.findChildren(QMenu)
+                    pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
+                    toolsMenu = getOrCreateMenu(self.parent.menuBar, "Tools")
+                    self.parent.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
+                    packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
+                    toolsMenu.addMenu(packageSubMenu)
+                    showToolAction = packageSubMenu.addAction(action)
+
+                    settings.beginGroup("DockTools")
+                    childGroups = settings.childGroups()
+                    for dockToolGroupName in childGroups:
+                        # This dock tool data been saved on last shutdown
+                        settings.beginGroup(dockToolGroupName)
+                        if dockToolGroupName in [t.uniqueName() for t in self._tools]:
+                            settings.endGroup()
+                            continue
+                        toolName = dockToolGroupName.split("::")[0]
+                        self.invokeDockToolByName(packageName, toolName, settings)
+                        settings.endGroup()
                     settings.endGroup()
 
                 if issubclass(ToolClass, DockTool):
@@ -514,7 +468,6 @@ class pyflowChild(QMdiSubWindow):
                     showToolAction.triggered.connect(
                         lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeDockToolByName(pkgName,
                                                                                                              toolName))
-
                     settings.beginGroup("DockTools")
                     childGroups = settings.childGroups()
                     for dockToolGroupName in childGroups:
@@ -634,8 +587,9 @@ class pyflowChild(QMdiSubWindow):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
             if issubclass(ToolClass, toolClass):
-                if ToolClass.name() == toolName:
-                    return ToolClass
+                pass
+            if ToolClass.name() == toolName:
+                return ToolClass
         return None
 
     def createToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
@@ -647,8 +601,10 @@ class pyflowChild(QMdiSubWindow):
                     continue
 
             if issubclass(ToolClass, toolClass):
-                if ToolClass.name() == toolName:
-                    return ToolClass()
+                pass
+
+            if ToolClass.name() == toolName:
+                return ToolClass()
         return None
 
     def getRegisteredTools(self, classNameFilters=[]):
@@ -660,6 +616,35 @@ class pyflowChild(QMdiSubWindow):
                 if tool.__class__.__name__ in classNameFilters:
                     result.append(tool)
             return result
+
+    def invokeFormByName(self, packageName, name, settings=None):
+        # invokeDockToolByName Invokes dock tool by tool name and package name
+        # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
+        toolClass = self.getToolClassByName(packageName, name, FormTool)
+        if toolClass is None:
+            return
+        isSingleton = toolClass.isSingleton()
+        if isSingleton:
+            # check if already registered
+            if name in [t.name() for t in self._tools]:
+                for tool in self._tools:
+                    if tool.name() == name:
+                        tool.show()
+                        tool.onShow()
+                        # Highlight window
+                        print("highlight", tool.uniqueName())
+                return
+        ToolInstance = self.createToolInstanceByClass(packageName, name, FormTool)
+        if ToolInstance:
+            self.registerToolInstance(ToolInstance)
+            if settings is not None:
+                ToolInstance.restoreState(settings)
+                if not self.parent.restoreDockWidget(ToolInstance):
+                    # handle if ui state was not restored
+                    pass
+            ToolInstance.setAppInstance(self.parent)
+            ToolInstance.onShow()
+        return ToolInstance
 
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
@@ -912,8 +897,6 @@ class MDIMain(QMainWindow):
         preferencesAction.triggered.connect(self.showPreferencesWindow)
 
         pluginsMenu = self.menuBar.addMenu("Tools")
-        packageInitScan = pluginsMenu.addAction("Update initfile")
-        packageInitScan.triggered.connect(ClassWizard.run)
         packagePlugin = pluginsMenu.addAction("Create package...")
         packagePlugin.triggered.connect(PackageWizard.run)
 
@@ -981,7 +964,7 @@ class MDIMain(QMainWindow):
                         settings.endGroup()
                         settings.endGroup()
 
-                    if issubclass(ToolClass, DockTool):
+                    if issubclass(ToolClass, DockTool) or issubclass(ToolClass, FormTool):
                         menus = self.menuBar.findChildren(QMenu)
                         pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
                         toolsMenu = getOrCreateMenu(self.menuBar, "Tools")
@@ -1020,6 +1003,58 @@ class MDIMain(QMainWindow):
             return toolbar
     def getToolBar(self):
         return self.toolBarDict
+
+    def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
+        registeredTools = GET_TOOLS()
+        for ToolClass in registeredTools[packageName]:
+            if issubclass(ToolClass, toolClass):
+                if ToolClass.name() == toolName:
+                    return ToolClass
+        return None
+
+    def createToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
+        registeredTools = GET_TOOLS()
+        for ToolClass in registeredTools[packageName]:
+            supportedSoftwares = ToolClass.supportedSoftwares()
+            if "any" not in supportedSoftwares:
+                if self.currentSoftware not in supportedSoftwares:
+                    continue
+
+            if issubclass(ToolClass, toolClass):
+                if ToolClass.name() == toolName:
+                    return ToolClass()
+        return None
+
+    def invokeDockToolByName(self, packageName, name, settings=None):
+        # invokeDockToolByName Invokes dock tool by tool name and package name
+        # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
+        toolClass = self.getToolClassByName(packageName, name, DockTool)
+        if toolClass is None:
+            return
+        isSingleton = toolClass.isSingleton()
+        if isSingleton:
+            # check if already registered
+            if name in [t.name() for t in self._tools]:
+                for tool in self._tools:
+                    if tool.name() == name:
+                        tool.show()
+                        tool.onShow()
+                        # Highlight window
+                        print("highlight", tool.uniqueName())
+                return
+        ToolInstance = self.createToolInstanceByClass(packageName, name, DockTool)
+        if ToolInstance:
+            self.registerToolInstance(ToolInstance)
+            if settings is not None:
+                ToolInstance.restoreState(settings)
+                if not self.parent.restoreDockWidget(ToolInstance):
+                    # handle if ui state was not restored
+                    pass
+            else:
+                self.parent.addDockWidget(ToolInstance.defaultDockArea(), ToolInstance)
+            ToolInstance.setAppInstance(self)
+            ToolInstance.onShow()
+        return ToolInstance
 
     def loadFromFile(self, filePath):
         with open(filePath, 'r') as f:
@@ -1191,6 +1226,12 @@ class MDIMain(QMainWindow):
         child.copyAvailable.connect(self.copyAct.setEnabled)'''
         return child
 
+    def newFileFromUi(self, MDIClass):
+        child = MDIClass.ui
+        MDIClass.uuid = uuid.uuid4()
+        self.mdiArea.addSubWindow(child)
+        child.show()
+
     def createActions(self):
         self.newAct = QAction(QIcon(':/images/new.png'), "&New", self,
                               shortcut=QKeySequence.New, statusTip="Create a new file",
@@ -1282,9 +1323,12 @@ class MDIMain(QMainWindow):
         activeSubWindow = self.mdiArea.activeSubWindow()
 
         if activeSubWindow:
-            guid = activeSubWindow.guid
-            self.hidealltool(guid)
-            return activeSubWindow.widget()
+            try:
+                guid = activeSubWindow.widget().guid
+                self.hidealltool(guid)
+                return activeSubWindow.widget()
+            except:
+                pass
         return None
 
     def findMdiChild(self, fileName):
@@ -1370,6 +1414,10 @@ class MDIMain(QMainWindow):
         instance.currentSoftware = software
         SessionDescriptor().software = instance.currentSoftware
         return instance
+
+    def unregisterToolInstance(self, instance):
+        if instance in self._tools:
+            self._tools.remove(instance)
 
     def registerToolInstance(self, instance):
         """Registers tool instance reference

@@ -98,6 +98,10 @@ from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPrefer
 from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
 from PyFlow.PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
 
+# [Forms]
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PackageBuilder import PackageBuilder
+#from PyFlow.PyFlow.UI.Forms.TextEditor import TextEditor
+
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
@@ -180,11 +184,13 @@ _TOOLS[AlignBottomTool.__name__] = AlignBottomTool
 _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
 
-_MAIN_TOOLS = OrderedDict()
-_MAIN_TOOLS[LoggerTool.__name__] = LoggerTool
-_MAIN_TOOLS[HistoryTool.__name__] = HistoryTool
-_MAIN_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
-_MAIN_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
+_TOOLS[PackageBuilder.__name__] = PackageBuilder
+#_TOOLS[TextEditor.__name__] = TextEditor
+
+_TOOLS[LoggerTool.__name__] = LoggerTool
+_TOOLS[HistoryTool.__name__] = HistoryTool
+_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
+_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter

@@ -98,6 +98,7 @@ class ToolBase(object):
         else:
             self.uid = uuid.uuid4()
 
+    #TODO UPDATES THIS FOR WHEN WINDOWS CHANGES TO ACTIVE INSTANCE
     def setAppInstance(self, pyFlowInstance):
         if self.pyFlowInstance is None:
             self.pyFlowInstance = pyFlowInstance
@@ -142,35 +143,30 @@ class ShelfTool(ToolBase):
     def do(self):
         print(self.name(), "called!", self.canvas)
 
-class FormTool(QtWidgets.QDialog, ToolBase):
+class FormTool(QtWidgets.QMdiSubWindow, ToolBase):
     """Base class for form tools
     """
     def __init__(self):
-        FormTool.__init__(self)
-        QtWidgets.QDockWidget.__init__(self)
-        super().__init__()
+        ToolBase.__init__(self)
+        QtWidgets.QMdiSubWindow.__init__(self)
         self.setToolTip(self.toolTip())
-
         self.setObjectName(self.uniqueName())
-        self.setTitleBarWidget(DockTitleBar(self))
-        self.setFloating(False)
 
-    def supportedSoftwares(self):
+    def supportedSoftwares():
         """Under what software to work
         """
         return ["any"]
-
-    @staticmethod
-    def defaultDockArea():
-        return QtCore.Qt.LeftDockWidgetArea
 
     @staticmethod
     def isSingleton():
         return False
 
     def onShow(self):
-        super(DockTool, self).onShow()
+        super(FormTool, self).onShow()
         self.setWindowTitle(self.name())
+
+    def contextMenuBuilder(self):
+        return None
 
     @staticmethod
     def getIcon():
@@ -185,8 +181,8 @@ class FormTool(QtWidgets.QDialog, ToolBase):
         self.parent().unregisterToolInstance(self)
         event.accept()
 
-    def addButton(self, button):
-        self.titleBarWidget().addButton(button)
+    def do(self):
+        print(self.name(), "called!", self.canvas)
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """Base class for dock tools
@@ -226,12 +222,11 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
 
     def closeEvent(self, event):
         self.onDestroy()
-        self.unregisterToolInstance(self)
+        self.parent().unregisterToolInstance(self)
         event.accept()
 
     def addButton(self, button):
         self.titleBarWidget().addButton(button)
-
 
 class DockTitleBar(QtWidgets.QWidget):
     def __init__(self, dockWidget, renamable=False):

@@ -155,7 +155,9 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
                         return compoundNode
 
 
-def INITIALIZE(additionalPackageLocations=[], software=""):
+def INITIALIZE(additionalPackageLocations=None, software=""):
+    if additionalPackageLocations is None:
+        additionalPackageLocations = []
     from PyFlow.PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY

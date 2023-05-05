@@ -1,4 +1,4 @@
-## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+## Copyright 2023 David Lario
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ from blinker import Signal
 path = os.path.dirname(os.path.abspath(__file__))
 packageRoot = Packages.__path__[0]
 
-uiFile = os.path.join(path, 'PackageBuilder3.ui')
+uiFile = os.path.join(path, 'PackageBuilder.ui')
 #WindowTemplate, TemplateBaseClass = loadUiType(uiFile)
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UI/resources/")
 
@@ -44,99 +44,9 @@ from qtpy.QtGui import QStandardItemModel, QStandardItem
 from PyFlow.PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
 from PyFlow.PyFlow.UI.Tool.Tool import FormTool
 
-class TableComboModel(QComboBox):
-    #Should combine with to customWidgets
-    #currentIndexChanged2 = pyqtSignal([dict])
-
-    def __init__(self, parent, *args, **kwargs):
-        super(TableComboModel, self).__init__(parent)
-        #super(ComboModel, self).currentIndexChanged[dict].connect(self.currentIndexChangedDictionary)
-
-        self.setModel(kwargs['dataModel'])
-        self.setModelColumn(1)
-        self.column = kwargs['column']
-        self.row = kwargs['row']
-        self.id = kwargs['id']
-
-        self.dataout = {}
-        self.dataout['id'] = kwargs['id']
-        self.dataout['column'] = kwargs['column']
-        self.dataout['row'] = kwargs['row']
-        self.dataout['dataModel'] = kwargs['dataModel']
-        self.newItemName = ""
-
-        #for key in kwargs:
-        #    print("another keyword arg: %s: %s" % (key, kwargs[key]))
-
-        #self.currentIndexChanged.connect(self.currentIndexChangedDictionary)
-        self.currentIndexChanged.connect(self.on_currentIndexChanged)
-        self.currentIndexChanged.connect(self.currentIndexChangedDictionary)
-        self.editTextChanged.connect(self.on_newInformation)
-        self.setEditable(True)
-
-    def column(self):
-        return self.x
-
-    def row(self):
-        return self.y
-
-    def rowCount(self, parent=QtCore.QModelIndex()):
-        if parent.isValid():
-            return 0
-        return len(self.dbIds)
-
-    def columnCount(self, parent=QtCore.QModelIndex()):
-        if parent.isValid():
-            return 0
-        return 2
-
-    def setValue(self, index, column=0):
-        for row in range(self.model().rowCount()):
-            if str(self.model().index(row, column).data()) == str(index):
-                #print(self.model().index(row, 0).data(), index)
-                self.setCurrentIndex(row)
-                break
-
-    def data(self, index, role=QtCore.Qt.DisplayRole):
-        #print('ComboModel data')
-        if not index.isValid() or ( role != QtGui.Qt.DisplayRole and role != QtGui.Qt.EditRole ):
-            print('ComboModel return invalid QVariant')
-            return QtCore.QVariant()
-        if index.column() == 0:
-            return QtCore.QVariant(self.dbIds[index.row()])
-        if index.column() == 1:
-            return QtCore.QVariant(self.dbValues[index.row()])
-        print('ComboModel return invalid QVariant')
-        return QtCore.QVariant()
-
-    def currentIndexChangedDictionary(self, index):
-        #print("Combo Index changed2:", index)
-        #self.dataout['index'] = index
-        self.dataout['value'] = self.dataout['dataModel'].index(index, 0).data()
-        #self.currentIndexChanged2.emit(self.dataout)
-
-    def on_newInformation(self, newName):
-        if 1==2:
-            if newName != "":
-                self.newItemName = newName
-            else:
-                #Create a new model that has old and new data
-                cmbTableModel = QStandardItemModel(0, 1, self)
-                cmbTableModel.setItem(0, 1, QStandardItem(self.newItemName))
-
-                for row in range(self.dataout['dataModel'].rowCount()):
-                    cmbTableModel.setItem(row+1, 1, QStandardItem(self.dataout['dataModel'].index(row,1).data()))
-
-                self.setModel(cmbTableModel)
-
-    def on_currentIndexChanged(self, index):
-        pass
-        #print("Combo Index changed:", index) #, self.sender().x(), self.y)
-        #self.currentIndexChanged2.emit(self.dataout)
-
-class PackageBuilder(QDialog):
-    def __init__(self, parent=None):
-        super(PackageBuilder, self).__init__(parent)
+class PackageBuilder(QMdiSubWindow):
+    def __init__(self, main, parent):
+        QMdiSubWindow.__init__(self)
 
         self.ui = QtUiTools.QUiLoader().load(uiFile, self)
         self.PackageName = "PackageBuilder"
@@ -161,7 +71,6 @@ class PackageBuilder(QDialog):
         self.selectedPinName = ""
         self.selectedPinDir = ""
         self.workingFile = ""
-
 
         for directories in os.listdir(packageRoot):
             if directories[1] != "_":
@@ -188,10 +97,12 @@ class PackageBuilder(QDialog):
 
         self.onPinScan()
 
-    def supportedSoftwares(self):
+    @staticmethod
+    def supportedSoftwares():
         """Under what software to work
         """
         return ["any"]
+
 
     def getMenuOrder(self):
         menuOrder = ["Tools", "Windows", "Help"]
