@@ -84,7 +84,7 @@ from PyFlow.PyFlow.Packages.PyFlowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
 from PyFlow.PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
-from PyFlow.PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
+#from PyFlow.PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 from PyFlow.PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
 
@@ -187,7 +187,7 @@ _TOOLS[VariablesTool.__name__] = VariablesTool
 _TOOLS[PackageBuilder.__name__] = PackageBuilder
 #_TOOLS[TextEditor.__name__] = TextEditor
 
-_TOOLS[LoggerTool.__name__] = LoggerTool
+#_TOOLS[LoggerTool.__name__] = LoggerTool
 _TOOLS[HistoryTool.__name__] = HistoryTool
 _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
 _TOOLS[NodeBoxTool.__name__] = NodeBoxTool

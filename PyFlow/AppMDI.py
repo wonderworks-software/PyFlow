@@ -24,6 +24,7 @@ import shutil
 from string import ascii_letters
 import random
 
+from PySide6.QtCore import QCoreApplication
 #import mdi_rc
 from qtpy import QtGui
 from qtpy import QtCore
@@ -51,8 +52,7 @@ try:
     from PyFlow.PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
     pass
-from PyFlow.PyFlow.Wizards.PackageBuilder import PackageBuilder
-from PyFlow.PyFlow.Wizards.PackageWizard import PackageWizard
+from PyFlow.PyFlow.UI.Forms.PackageBuilder import PackageBuilder
 from PyFlow.PyFlow import INITIALIZE
 from PyFlow.PyFlow.Input import InputAction, InputActionType
 from PyFlow.PyFlow.Input import InputManager
@@ -116,8 +116,6 @@ class pyflowChild(QMdiSubWindow):
 
         self.isModified = False
         self._modified = False
-
-        self.parent = parent
 
         #self.windowMapper.mapped[QWidget].connect(self.setActiveSubWindow)
 
@@ -426,12 +424,6 @@ class pyflowChild(QMdiSubWindow):
                     action.setToolTip(ToolInstance.toolTip())
                     action.setObjectName(ToolInstance.name())
                     action.triggered.connect(ToolInstance.do)
-
-                    #showToolAction.triggered.connect(ToolInstance.do)
-                    #self.invokeFormByName(packageName, ToolClass.name())
-                    action.triggered.connect(
-                        lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeFormByName(pkgName, toolName))
-                    #ToolInstance.do()
 
                     menus = self.parent.menuBar.findChildren(QMenu)
                     pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
@@ -791,6 +783,7 @@ class pyflowChild(QMdiSubWindow):
     def startMainLoop(self):
         self.tick_timer.timeout.connect(self.mainLoop)
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
+        QCoreApplication.processEvents()
 
     def stopMainLoop(self):
         self.tick_timer.stop()
@@ -898,7 +891,7 @@ class MDIMain(QMainWindow):
 
         pluginsMenu = self.menuBar.addMenu("Tools")
         packagePlugin = pluginsMenu.addAction("Create package...")
-        packagePlugin.triggered.connect(PackageWizard.run)
+        packagePlugin.triggered.connect(self.createPackagebBuilder)
 
         self.windowMenu = self.menuBar.addMenu("&Window")
         self.updateWindowMenu
@@ -926,71 +919,69 @@ class MDIMain(QMainWindow):
 
         self.toolBarDict[self.guid] = toolbar
 
-        a = 1
-        if a == 1:
-            geo = settings.value('Editor/geometry')
-            if geo is not None:
-                self.restoreGeometry(geo)
-            state = settings.value('Editor/state')
-            if state is not None:
-                self.restoreState(state)
-            settings.beginGroup("Tools")
+        geo = settings.value('Editor/geometry')
+        if geo is not None:
+            self.restoreGeometry(geo)
+        state = settings.value('Editor/state')
+        if state is not None:
+            self.restoreState(state)
+        settings.beginGroup("Tools")
 
-            for packageName, registeredToolSet in GET_TOOLS().items():
-                for ToolClass in registeredToolSet:
-                    if issubclass(ToolClass, ShelfTool):
-                        ToolInstance = ToolClass()
-                        # prevent to be garbage collected
-                        self.registerToolInstance(ToolInstance)
-                        ToolInstance.setAppInstance(self)
-                        action = QAction(self)
-                        action.setIcon(ToolInstance.getIcon())
-                        action.setText(ToolInstance.name())
-                        action.setToolTip(ToolInstance.toolTip())
-                        action.setObjectName(ToolInstance.name())
-                        action.triggered.connect(ToolInstance.do)
-                        # check if context menu data available
-                        menuBuilder = ToolInstance.contextMenuBuilder()
-                        if menuBuilder:
-                            menuGenerator = ContextMenuGenerator(menuBuilder)
-                            menu = menuGenerator.generate()
-                            action.setMenu(menu)
-                        toolbar.addAction(action)
+        for packageName, registeredToolSet in GET_TOOLS().items():
+            for ToolClass in registeredToolSet:
+                if issubclass(ToolClass, ShelfTool) or issubclass(ToolClass, FormTool):
+                    ToolInstance = ToolClass()
+                    # prevent to be garbage collected
+                    self.registerToolInstance(ToolInstance)
+                    ToolInstance.setAppInstance(self)
+                    action = QAction(self)
+                    action.setIcon(ToolInstance.getIcon())
+                    action.setText(ToolInstance.name())
+                    action.setToolTip(ToolInstance.toolTip())
+                    action.setObjectName(ToolInstance.name())
+                    action.triggered.connect(ToolInstance.do)
+                    # check if context menu data available
+                    menuBuilder = ToolInstance.contextMenuBuilder()
+                    if menuBuilder:
+                        menuGenerator = ContextMenuGenerator(menuBuilder)
+                        menu = menuGenerator.generate()
+                        action.setMenu(menu)
+                    toolbar.addAction(action)
 
-                        # step to ShelfTools/ToolName group and pass settings inside
-                        settings.beginGroup("ShelfTools")
-                        settings.beginGroup(ToolClass.name())
-                        ToolInstance.restoreState(settings)
-                        settings.endGroup()
-                        settings.endGroup()
+                    # step to ShelfTools/ToolName group and pass settings inside
+                    settings.beginGroup("ShelfTools")
+                    settings.beginGroup(ToolClass.name())
+                    ToolInstance.restoreState(settings)
+                    settings.endGroup()
+                    settings.endGroup()
 
-                    if issubclass(ToolClass, DockTool) or issubclass(ToolClass, FormTool):
-                        menus = self.menuBar.findChildren(QMenu)
-                        pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
-                        toolsMenu = getOrCreateMenu(self.menuBar, "Tools")
-                        self.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
-                        packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
-                        toolsMenu.addMenu(packageSubMenu)
-                        showToolAction = packageSubMenu.addAction(ToolClass.name())
-                        icon = ToolClass.getIcon()
-                        if icon:
-                            showToolAction.setIcon(icon)
-                        showToolAction.triggered.connect(
-                            lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeDockToolByName(pkgName,
-                                                                                                                 toolName))
+                if issubclass(ToolClass, DockTool):
+                    menus = self.menuBar.findChildren(QMenu)
+                    pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
+                    toolsMenu = getOrCreateMenu(self.menuBar, "Tools")
+                    self.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
+                    packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
+                    toolsMenu.addMenu(packageSubMenu)
+                    showToolAction = packageSubMenu.addAction(ToolClass.name())
+                    icon = ToolClass.getIcon()
+                    if icon:
+                        showToolAction.setIcon(icon)
+                    showToolAction.triggered.connect(
+                        lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeDockToolByName(pkgName,
+                                                                                                             toolName))
 
-                        settings.beginGroup("DockTools")
-                        childGroups = settings.childGroups()
-                        for dockToolGroupName in childGroups:
-                            # This dock tool data been saved on last shutdown
-                            settings.beginGroup(dockToolGroupName)
-                            if dockToolGroupName in [t.uniqueName() for t in self._tools]:
-                                settings.endGroup()
-                                continue
-                            toolName = dockToolGroupName.split("::")[0]
-                            self.invokeDockToolByName(packageName, toolName, settings)
+                    settings.beginGroup("DockTools")
+                    childGroups = settings.childGroups()
+                    for dockToolGroupName in childGroups:
+                        # This dock tool data been saved on last shutdown
+                        settings.beginGroup(dockToolGroupName)
+                        if dockToolGroupName in [t.uniqueName() for t in self._tools]:
                             settings.endGroup()
+                            continue
+                        toolName = dockToolGroupName.split("::")[0]
+                        self.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
+                    settings.endGroup()
 
             EditorHistory(self).saveState("New file")
 
@@ -1217,6 +1208,7 @@ class MDIMain(QMainWindow):
             action.triggered.connect(self.windowMapper.map)
             self.windowMapper.setMapping(action, window)
 
+
     def createMdiChild(self):
         #instance = self.instance(software="standalone")
         child = pyflowChild(self)
@@ -1225,6 +1217,9 @@ class MDIMain(QMainWindow):
         '''child.copyAvailable.connect(self.cutAct.setEnabled)
         child.copyAvailable.connect(self.copyAct.setEnabled)'''
         return child
+
+    def createPackagebBuilder(self):
+        self.newFileFromUi(PackageBuilder.PackageBuilder(self))
 
     def newFileFromUi(self, MDIClass):
         child = MDIClass.ui

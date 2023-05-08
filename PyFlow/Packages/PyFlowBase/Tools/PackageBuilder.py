@@ -49,4 +49,4 @@ class PackageBuilder(FormTool):
         return str("PackageBuilder")
 
     def do(self):
-        self.pyFlowInstance.newFileFromUi(PB.PackageBuilder(self.pyFlowInstance.parent, self.pyFlowInstance.parent))
+        self.pyFlowInstance.newFileFromUi(PB.PackageBuilder())

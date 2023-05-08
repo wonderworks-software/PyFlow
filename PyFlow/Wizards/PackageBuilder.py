@@ -2303,7 +2303,7 @@ class PackageBuilder(QMdiSubWindow):
 
     @staticmethod
     def run():
-        instance = PackageBuilder()
+        instance = PackageBuilder(None, None)
         #instance.show()
         instance.exec()
 

@@ -20,6 +20,9 @@ import uuid
 import inspect
 import importlib
 
+from PySide6.QtCore import QCoreApplication
+from sqlalchemy.sql.coercions import cls
+
 from PyFlow.PyFlow import Packages
 
 from qtpy import QtGui
@@ -29,7 +32,6 @@ from qtpy.QtWidgets import *
 from qtpy.uic import loadUiType, loadUi
 from qtpy import QtUiTools
 from blinker import Signal
-
 
 path = os.path.dirname(os.path.abspath(__file__))
 packageRoot = Packages.__path__[0]
@@ -41,22 +43,109 @@ RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UI/re
 from qtpy.QtCore import QItemSelectionModel #Because Pyside hijacked from pyqt
 from qtpy.QtCore import QSortFilterProxyModel, QRegularExpression, QModelIndex
 from qtpy.QtGui import QStandardItemModel, QStandardItem
-from PyFlow.PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
-from PyFlow.PyFlow.UI.Tool.Tool import FormTool
+
+class TableComboModel(QComboBox):
+    #Should combine with to customWidgets
+    #currentIndexChanged2 = pyqtSignal([dict])
+
+    def __init__(self, parent, *args, **kwargs):
+        super(TableComboModel, self).__init__(parent)
+        #super(ComboModel, self).currentIndexChanged[dict].connect(self.currentIndexChangedDictionary)
+
+        self.setModel(kwargs['dataModel'])
+        self.setModelColumn(1)
+        self.column = kwargs['column']
+        self.row = kwargs['row']
+        self.id = kwargs['id']
+
+        self.dataout = {}
+        self.dataout['id'] = kwargs['id']
+        self.dataout['column'] = kwargs['column']
+        self.dataout['row'] = kwargs['row']
+        self.dataout['dataModel'] = kwargs['dataModel']
+        self.newItemName = ""
+
+        #for key in kwargs:
+        #    print("another keyword arg: %s: %s" % (key, kwargs[key]))
+
+        #self.currentIndexChanged.connect(self.currentIndexChangedDictionary)
+        self.currentIndexChanged.connect(self.on_currentIndexChanged)
+        self.currentIndexChanged.connect(self.currentIndexChangedDictionary)
+        self.editTextChanged.connect(self.on_newInformation)
+        self.setEditable(True)
+
+    def column(self):
+        return self.x
+
+    def row(self):
+        return self.y
+
+    def rowCount(self, parent=QtCore.QModelIndex()):
+        if parent.isValid():
+            return 0
+        return len(self.dbIds)
+
+    def columnCount(self, parent=QtCore.QModelIndex()):
+        if parent.isValid():
+            return 0
+        return 2
+
+    def setValue(self, index, column=0):
+        for row in range(self.model().rowCount()):
+            if str(self.model().index(row, column).data()) == str(index):
+                #print(self.model().index(row, 0).data(), index)
+                self.setCurrentIndex(row)
+                break
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        #print('ComboModel data')
+        if not index.isValid() or ( role != QtGui.Qt.DisplayRole and role != QtGui.Qt.EditRole ):
+            print('ComboModel return invalid QVariant')
+            return QtCore.QVariant()
+        if index.column() == 0:
+            return QtCore.QVariant(self.dbIds[index.row()])
+        if index.column() == 1:
+            return QtCore.QVariant(self.dbValues[index.row()])
+        print('ComboModel return invalid QVariant')
+        return QtCore.QVariant()
+
+    def currentIndexChangedDictionary(self, index):
+        #print("Combo Index changed2:", index)
+        #self.dataout['index'] = index
+        self.dataout['value'] = self.dataout['dataModel'].index(index, 0).data()
+        #self.currentIndexChanged2.emit(self.dataout)
+
+    def on_newInformation(self, newName):
+        if 1==2:
+            if newName != "":
+                self.newItemName = newName
+            else:
+                #Create a new model that has old and new data
+                cmbTableModel = QStandardItemModel(0, 1, self)
+                cmbTableModel.setItem(0, 1, QStandardItem(self.newItemName))
+
+                for row in range(self.dataout['dataModel'].rowCount()):
+                    cmbTableModel.setItem(row+1, 1, QStandardItem(self.dataout['dataModel'].index(row,1).data()))
+
+                self.setModel(cmbTableModel)
+
+    def on_currentIndexChanged(self, index):
+        pass
+        #print("Combo Index changed:", index) #, self.sender().x(), self.y)
+        #self.currentIndexChanged2.emit(self.dataout)
 
 class PackageBuilder(QMdiSubWindow):
-    def __init__(self, main, parent):
-        QMdiSubWindow.__init__(self)
+    def __init__(self, parent=None):
+        super(PackageBuilder, self).__init__(parent)
 
-        self.ui = QtUiTools.QUiLoader().load(uiFile, self)
+        self.ui = QtUiTools.QUiLoader().load(uiFile)
         self.PackageName = "PackageBuilder"
-        self.actionRegister = None
+        self.parent = parent
 
         self.defaultfolderlist = ["Commands", "FunctionLibraries", "Nodes", "Pins", "PrefsWidgets", "Tools", "UI"]
         packageRoot = Packages.__path__[0]
         self.ui.txtPackageFolderLocation.setText(packageRoot)
 
-        packagelistmodel = QtGui.QStandardItemModel(0, 1)
         rowcount = 0
         self.functiondict = {}
         self.pindict = {}
@@ -72,16 +161,18 @@ class PackageBuilder(QMdiSubWindow):
         self.selectedPinDir = ""
         self.workingFile = ""
 
+        packagelistmodel = QStandardItemModel(0, 1)
         for directories in os.listdir(packageRoot):
             if directories[1] != "_":
-                packagelistmodel.setItem(rowcount, 0, QtGui.QStandardItem(directories))
+                packagelistmodel.setItem(rowcount, 0, QStandardItem(directories))
                 rowcount += 1
 
         self.packagelistModelproxy = QtCore.QSortFilterProxyModel(self)
-        self.packagelistModelproxy.setSourceModel(packagelistmodel)
+        #self.packagelistModelproxy.setSourceModel(packagelistmodel)
 
         self.ui.lstPackages.setModel(self.packagelistModelproxy)
-        self.ui.lstPackages.setModelColumn(1)
+        self.ui.lstPackages.setModel(packagelistmodel)
+        self.ui.lstPackages.setModelColumn(0)
         self.ui.lstPackages.clicked.connect(self.onSelectPackage)
 
         self.ui.cmdOpenPackageFolder.clicked.connect(self.onOpenPackageFolder)
@@ -102,7 +193,6 @@ class PackageBuilder(QMdiSubWindow):
         """Under what software to work
         """
         return ["any"]
-
 
     def getMenuOrder(self):
         menuOrder = ["Tools", "Windows", "Help"]
@@ -153,10 +243,12 @@ class PackageBuilder(QMdiSubWindow):
 
     def onChangeFilterValue(self, text):
         #self.packagelistModelproxy.setFilterKeyColumn(text)
-        search = QtCore.QRegExp(str(text), QtCore.Qt.CaseInsensitive, QtCore.QRegExp.Wildcard)
-        self.packagelistModelproxy.setFilterRegExp(search)
+
+        search = QtCore.QRegularExpression(str(text), QRegularExpression.CaseInsensitiveOption)
+        #self.packagelistModelproxy.setFilterRegExp(search)
 
     def onSelectPackage(self, index):
+        QCoreApplication.processEvents()
         packageRoot = Packages.__path__[0]
         selectedpackage = self.ui.lstPackages.model().index(index.row(), 0).data()
         #selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex(), 0, None).data()
@@ -207,7 +299,6 @@ class PackageBuilder(QMdiSubWindow):
                         except:
                             pass
 
-
     def packageScan(self):
         print(f"Class name: {cls.__name__}")
         print("Methods:")
@@ -234,6 +325,9 @@ class PackageBuilder(QMdiSubWindow):
         for _, function in functions:
             print_function_info(function)'''
 
+    def userFriendlyCurrentFile(self):
+        return "Friendly Name" #self.strippedName(self.curFile)
+
     def onPinScan(self):
         packageRoot = Packages.__path__[0]
         self.pinDict = {}
@@ -246,6 +340,7 @@ class PackageBuilder(QMdiSubWindow):
 
     @QtCore.Slot(QTreeWidgetItem, int)
     def on_tvPackageItems_clicked(self, it, col):
+        QCoreApplication.processEvents()
         parents = []
         current_item = it
         current_parent = current_item.parent()
@@ -344,6 +439,7 @@ class PackageBuilder(QMdiSubWindow):
         if filefullpath.find("\\Pins") != -1:
             self.loadPinProperties(filefullpath)
             print(self.pindict)
+
 
         if filefullpath.find("\\SQL") != -1:
             deft = it.text(col)
@@ -2300,18 +2396,3 @@ class PackageBuilder(QMdiSubWindow):
     def onDone(self):
         # if we are here, everything is correct
         self.accept()
-
-    @staticmethod
-    def run():
-        instance = PackageBuilder()
-        #instance.show()
-        instance.exec()
-
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-
-    w = PackageBuilder()
-    w.show()
-
-    sys.exit(app.exec_())
