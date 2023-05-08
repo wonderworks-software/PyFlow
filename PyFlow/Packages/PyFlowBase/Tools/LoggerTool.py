@@ -284,9 +284,6 @@ class LoggerTool(DockTool):
     @staticmethod
     def name():
         return str("Logger")
-    @staticmethod
-    def name():
-        return str("Logger")
 
     def do(self):
         self.pyFlowInstance.invokeDockToolByName(self.packageName, "Logger")

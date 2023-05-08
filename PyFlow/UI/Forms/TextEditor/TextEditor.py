@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QApplication, QMessageBox, QFileDialog
 from qtpy.QtCore import *
 from qtpy.QtGui import *
 
@@ -8,14 +9,13 @@ import uuid
 
 class MdiChild(QTextEdit):
     sequenceNumber = 1
-
     def __init__(self):
         super(MdiChild, self).__init__()
         self.PackageName = "TextEditor"
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.isUntitled = True
         self.uuid = uuid.uuid4()
-
+        self.supportedSoftwares = ["any"]
     def newFile(self):
         self.isUntitled = True
         self.curFile = "document%d.txt" % MdiChild.sequenceNumber
@@ -41,6 +41,10 @@ class MdiChild(QTextEdit):
         self.document().contentsChanged.connect(self.documentWasModified)
 
         return True
+
+    @staticmethod
+    def supportedSoftwares():
+        return ["any"]
 
     def save(self):
         if self.isUntitled:

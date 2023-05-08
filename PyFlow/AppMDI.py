@@ -36,7 +36,6 @@ from PyFlow.PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.PyFlow.Core.version import *
 from PyFlow.PyFlow.Core.GraphBase import GraphBase
 from PyFlow.PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.PyFlow.ConfigManager import ConfigManager
 from PyFlow.PyFlow.UI.Canvas.UICommon import *
 from PyFlow.PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.PyFlow.UI.Views.NodeBox import NodesBox
@@ -53,6 +52,8 @@ try:
 except:
     pass
 from PyFlow.PyFlow.UI.Forms.PackageBuilder import PackageBuilder
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
+
 from PyFlow.PyFlow import INITIALIZE
 from PyFlow.PyFlow.Input import InputAction, InputActionType
 from PyFlow.PyFlow.Input import InputManager
@@ -890,8 +891,11 @@ class MDIMain(QMainWindow):
         preferencesAction.triggered.connect(self.showPreferencesWindow)
 
         pluginsMenu = self.menuBar.addMenu("Tools")
-        packagePlugin = pluginsMenu.addAction("Create package...")
+        packagePlugin = pluginsMenu.addAction("Package Builder")
         packagePlugin.triggered.connect(self.createPackagebBuilder)
+        packagePlugin2 = pluginsMenu.addAction("Logger")
+        packagePlugin2.triggered.connect(self.createLoggerTool)
+
 
         self.windowMenu = self.menuBar.addMenu("&Window")
         self.updateWindowMenu
@@ -902,7 +906,6 @@ class MDIMain(QMainWindow):
         helpMenu.addAction("Docs").triggered.connect(lambda _=False, url="https://pyflow.readthedocs.io/en/latest/": QtGui.QDesktopServices.openUrl(url))
 
     def populateToolBar(self):
-        settings = ConfigManager().getSettings("APP_STATE")
         toolbar = QToolBar(self)
 
         newFileAction = toolbar.addAction("New file")
@@ -918,14 +921,6 @@ class MDIMain(QMainWindow):
         self.addToolBar(QtCore.Qt.TopToolBarArea, toolbar)
 
         self.toolBarDict[self.guid] = toolbar
-
-        geo = settings.value('Editor/geometry')
-        if geo is not None:
-            self.restoreGeometry(geo)
-        state = settings.value('Editor/state')
-        if state is not None:
-            self.restoreState(state)
-        settings.beginGroup("Tools")
 
         for packageName, registeredToolSet in GET_TOOLS().items():
             for ToolClass in registeredToolSet:
@@ -948,13 +943,6 @@ class MDIMain(QMainWindow):
                         action.setMenu(menu)
                     toolbar.addAction(action)
 
-                    # step to ShelfTools/ToolName group and pass settings inside
-                    settings.beginGroup("ShelfTools")
-                    settings.beginGroup(ToolClass.name())
-                    ToolInstance.restoreState(settings)
-                    settings.endGroup()
-                    settings.endGroup()
-
                 if issubclass(ToolClass, DockTool):
                     menus = self.menuBar.findChildren(QMenu)
                     pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
@@ -969,19 +957,6 @@ class MDIMain(QMainWindow):
                     showToolAction.triggered.connect(
                         lambda pkgName=packageName, toolName=ToolClass.name(): self.invokeDockToolByName(pkgName,
                                                                                                              toolName))
-
-                    settings.beginGroup("DockTools")
-                    childGroups = settings.childGroups()
-                    for dockToolGroupName in childGroups:
-                        # This dock tool data been saved on last shutdown
-                        settings.beginGroup(dockToolGroupName)
-                        if dockToolGroupName in [t.uniqueName() for t in self._tools]:
-                            settings.endGroup()
-                            continue
-                        toolName = dockToolGroupName.split("::")[0]
-                        self.invokeDockToolByName(packageName, toolName, settings)
-                        settings.endGroup()
-                    settings.endGroup()
 
             EditorHistory(self).saveState("New file")
 
@@ -1220,6 +1195,10 @@ class MDIMain(QMainWindow):
 
     def createPackagebBuilder(self):
         self.newFileFromUi(PackageBuilder.PackageBuilder(self))
+
+    def createLoggerTool(self):
+        self.Logger = LoggerTool()
+        self.addDockWidget(self.Logger.defaultDockArea(), self.Logger)
 
     def newFileFromUi(self, MDIClass):
         child = MDIClass.ui

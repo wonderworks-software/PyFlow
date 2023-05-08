@@ -35,7 +35,7 @@ class ConfigManager(object):
         self.registerConfigFile("PREFS", os.path.join(self.CONFIGS_DIR, "prefs.ini"))
         self.registerConfigFile("APP_STATE", os.path.join(self.CONFIGS_DIR, "config.ini"))
 
-        if not os.path.exists(self.INPUT_CONFIG_PATH):
+        if not os.path.exists(self.INPUT_CONFIG_PATH) or True:
             self.createDefaultInput()
             data = InputManager().serialize()
             if not os.path.exists(os.path.dirname(self.INPUT_CONFIG_PATH)):
@@ -46,7 +46,7 @@ class ConfigManager(object):
             with open(self.INPUT_CONFIG_PATH, "r") as f:
                 data = json.load(f)
                 InputManager().loadFromData(data)
-
+        a = 2
     @staticmethod
     def shouldRedirectOutput():
         return ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"
