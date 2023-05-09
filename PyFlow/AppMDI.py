@@ -128,8 +128,8 @@ class pyflowChild(QMdiSubWindow):
         self.currentTempDir = ""
 
         self.preferencesWindow = PreferencesWindow(self)
-        self.populateToolBar()
         self.createActions()
+        self.populateToolBar()
 
         '''self.instanceDict[None] = self
 
@@ -297,7 +297,7 @@ class pyflowChild(QMdiSubWindow):
                                   triggered=QApplication.instance().aboutQt)
 
     def getMenuBar(self):
-        return self.menuBar
+        return self.parent.menuBar
 
     def getToolBarLayout(self):
 
@@ -348,6 +348,7 @@ class pyflowChild(QMdiSubWindow):
         settings = ConfigManager().getSettings("APP_STATE")
         toolbar = QToolBar(self)
 
+        #Parent Window Items
         newFileAction = toolbar.addAction("New file")
         newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
         newFileAction.setToolTip("")
@@ -400,6 +401,7 @@ class pyflowChild(QMdiSubWindow):
                     action.setToolTip(ToolInstance.toolTip())
                     action.setObjectName(ToolInstance.name())
                     action.triggered.connect(ToolInstance.do)
+
                     # check if context menu data available
                     menuBuilder = ToolInstance.contextMenuBuilder()
                     if menuBuilder:
@@ -429,7 +431,7 @@ class pyflowChild(QMdiSubWindow):
                     menus = self.parent.menuBar.findChildren(QMenu)
                     pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
                     toolsMenu = getOrCreateMenu(self.parent.menuBar, "Tools")
-                    self.parent.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
+                    #self.parent.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(action)
@@ -451,7 +453,7 @@ class pyflowChild(QMdiSubWindow):
                     menus = self.parent.menuBar.findChildren(QMenu)
                     pluginsMenuAction = [m for m in menus if m.title() == "Tools"][0].menuAction()
                     toolsMenu = getOrCreateMenu(self.parent.menuBar, "Tools")
-                    self.parent.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
+                    #self.parent.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())
