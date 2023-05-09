@@ -46,7 +46,6 @@ class ConfigManager(object):
             with open(self.INPUT_CONFIG_PATH, "r") as f:
                 data = json.load(f)
                 InputManager().loadFromData(data)
-        a = 2
     @staticmethod
     def shouldRedirectOutput():
         return ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"

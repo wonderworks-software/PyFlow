@@ -33,7 +33,8 @@ class EnumComboBox(QComboBox):
         self.pFilterModel = QtCore.QSortFilterProxyModel(self)
         self.pFilterModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
-        self.setInsertPolicy(self.NoInsert)
+        #TODO Figure out what this does
+        #self.setInsertPolicy(self.NoInsert)
 
         self.completer.setPopup(self.view())
 

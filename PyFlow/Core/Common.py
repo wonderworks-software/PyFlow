@@ -43,6 +43,7 @@ from qtpy.QtGui import QImage, QPixmap, QPainter
 from qtpy.QtWidgets import QGraphicsPixmapItem
 from qtpy.QtCore import Qt, QSize
 from qtpy.QtSvg import QSvgRenderer
+from PySide6.QtSvgWidgets import QGraphicsSvgItem
 
 from PyFlow.PyFlow import findPinClassByType
 from PyFlow.PyFlow.Core.version import Version
@@ -887,25 +888,12 @@ class NodeMeta:
     KEYWORDS = "Keywords"
     CACHE_ENABLED = "CacheEnabled"
 
-class SVGIcon(QGraphicsPixmapItem):
-    def __init__(self, svgFilePath):
-        super(SVGIcon, self).__init__()
 
-        # Create a QImage to render the SVG
-        image = QImage(QSize(200, 200), QImage.Format_ARGB32)
-        image.fill(Qt.transparent)
+class SVGIcon(QGraphicsSvgItem):
+    def __init__(self, renderer=None):
+        super().__init__()
+        self.renderer = renderer or QSvgRenderer()
 
-        # Render the SVG to the QImage
-        renderer = QSvgRenderer(svgFilePath)
-        painter = QPainter(image)
-        renderer.render(painter)
-        painter.end()
-
-        # Create a QPixmap from the QImage
-        pixmap = QPixmap.fromImage(image)
-        #self.setPos(5,5)
-        # Create a QGraphicsPixmapItem with the QPixmap
-        self.setPixmap(pixmap)
-
-    def setParentItem(self, parent):
-        self.setParentItem(parent)
+    def setRenderer(self, renderer):
+        self.renderer = renderer
+        self.setSharedRenderer(self.renderer)

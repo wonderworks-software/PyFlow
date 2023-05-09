@@ -580,14 +580,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def image(self):
         return self._image
 
+
     @image.setter
     def image(self, value):
         self._image = value
         #todo: 'SVGIcon' object has no attribute 'renderer'
-        self.svgIcon.renderer().load(value)
+        renderer = QtSvg.QSvgRenderer(value)
+        self.svgIcon.setRenderer(renderer)
+        self.svgIcon.renderer.load(value)
         elementName = QtCore.QFileInfo(value).baseName()
         self.svgIcon.setElementId(elementName)
-        # self.svgIcon.setPos(self.geometry().topRight())
+        self.svgIcon.setPos(self.geometry().topRight())
 
     @property
     def labelTextColor(self):
