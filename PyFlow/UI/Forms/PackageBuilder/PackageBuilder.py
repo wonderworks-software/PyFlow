@@ -21,6 +21,7 @@ import inspect
 import importlib
 
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtGui import QIcon, QPixmap
 from sqlalchemy.sql.coercions import cls
 
 from PyFlow.PyFlow import Packages
@@ -142,11 +143,13 @@ class PackageBuilder(QMdiSubWindow):
         self.PackageName = "PackageBuilder"
         self.parent = parent
 
-        self.defaultfolderlist = ["Commands", "FunctionLibraries", "Nodes", "Pins", "PrefsWidgets", "Tools", "UI"]
+        self.defaultfolderlist = ["Tools", "FunctionLibraries", "Nodes", "Pins", "PrefsWidgets", "UI"]
         packageRoot = Packages.__path__[0]
         self.ui.txtPackageFolderLocation.setText(packageRoot)
 
         rowcount = 0
+        self.tooldict = {}
+
         self.functiondict = {}
         self.pindict = {}
 
@@ -185,6 +188,13 @@ class PackageBuilder(QMdiSubWindow):
         #self.ui.tblFOutputPins.selectionModel().selectionChanged.connect(self.on_tblFOutputPins_Changed)
         self.ui.tblFOutputPins.clicked.connect(self.on_tblFOutputPins_clicked)
         self.ui.tvPackageItems.itemClicked.connect(self.on_tvPackageItems_clicked)
+
+
+        self.ui.cmdCreatePackage.clicked.connect(self.on_cmdCreatePackage_clicked)
+
+        self.ui.cmdCommandAddSmallIcon.clicked.connect(self.on_cmdCommandAddSmallIcon_clicked)
+        self.ui.cmdCommandAddMediumIcon.clicked.connect(self.on_cmdCommandAddMediumIcon_clicked)
+        self.ui.cmdCommandAddLargeIcon.clicked.connect(self.on_cmdCommandAddLargeIcon_clicked)
 
         self.onPinScan()
 
@@ -254,6 +264,8 @@ class PackageBuilder(QMdiSubWindow):
         #selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex(), 0, None).data()
         packagepath = os.path.join(packageRoot, selectedpackage)
         self.ui.tvPackageItems.clear()
+        self.ui.txtPackageName.setText(selectedpackage)
+
         CommandList = {}
         FunctionList = {}
         PrefsWidgetsList = {}
@@ -355,12 +367,13 @@ class PackageBuilder(QMdiSubWindow):
         selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
         selecteditem = it.text(col) + ".py"
         filefullpath = os.path.join(filefullpath, selectedpackage)
+
         for items in parents:
             filefullpath = os.path.join(filefullpath, items)
 
         filefullpath = os.path.join(filefullpath, selecteditem)
 
-        if filefullpath.find("\\Commands") != -1:
+        if filefullpath.find("\\Tools") != -1:
 
             #todo: check if package level was selected
             deft = it.text(col)
@@ -368,14 +381,16 @@ class PackageBuilder(QMdiSubWindow):
             self.initializeform
             self.initializePinData
             filename = filefullpath.split("\\")[-1]
-            self.ui.txtFunctionFileName.setText(filename)
-            self.ui.txtFunctionName.setText(deft)
+
             self.ui.twPackage.setCurrentIndex(1)
             implementdata = ""
             definitiondata = ""
             codedata = ""
 
-            self.loadCodeData(filefullpath)
+            if os.path.exists(filefullpath):
+                self.ui.txtCommandFileName.setText(filename)
+                self.ui.txtCommandName.setText(deft)
+                self.loadToolData(filefullpath)
 
 
         if filefullpath.find("\\FunctionLibraries") != -1:
@@ -445,6 +460,7 @@ class PackageBuilder(QMdiSubWindow):
             deft = it.text(col)
             self.loadTableProperties(filefullpath)
             self.ui.twPackage.setCurrentIndex(8)
+
 
     def onOpenPackageFolder(self):
 
@@ -526,7 +542,7 @@ class PackageBuilder(QMdiSubWindow):
             pass
 
 
-    def loadCodeData(self, filefullpath):
+    def loadToolData(self, filefullpath):
         codenotes = 0
         importlist = []
         importstart = 0
@@ -535,6 +551,31 @@ class PackageBuilder(QMdiSubWindow):
         staticmethod = []
         definition = []
         codedata = []
+
+        filefullpath2 = Packages.__path__[0] + "\\"
+        filename = self.ui.txtCommandFileName.text()
+        defname = filename[:-3]
+
+        filefullpath2 = os.path.join(filefullpath2, self.ui.txtPackageName.text())
+        filefullpath2 = os.path.join(filefullpath2, "Tools")
+
+        self.initToolDict(defname)
+
+        self.tooldict[defname]["Filename"] = defname
+
+        self.tooldict[defname]["Description"] = ""
+        self.tooldict[defname]["Category"] = ""
+        self.tooldict[defname]["Keywords"] = ""
+
+        self.tooldict[defname]["KeyboardShortCut"] = ""
+        self.tooldict[defname]["ResourceFolder"] = ""
+
+        self.ui.cmdCommandAddSmallIcon.setIcon(QIcon())
+        self.ui.txtCommandSmallIcon.setText("")
+        self.ui.cmdCommandAddMediumIcon.setIcon(QIcon())
+        self.ui.cmdCommandAddMediumIcon.setText("")
+        self.ui.cmdCommandAddLargeIcon.setIcon(QIcon())
+        self.ui.txtCommandLargeIcon.setText("")
 
         filesize = len(open(filefullpath).readlines())
         f = open(filefullpath, "r")
@@ -574,25 +615,95 @@ class PackageBuilder(QMdiSubWindow):
                     line2 = codedata[row]
                     if codedata[row].find("return") != -1:
                         tooltip = codedata[row][15:]
-                        self.ui.txtCommandToolTip.setText(tooltip)
+                        self.ui.txtCommandToolTip.setText(tooltip[1:-2])
+                        self.tooldict[defname]["ToolTip"] = ""
+
+            if codedata[defitem].find("getIcon") != -1:
+                for row in range(defitem, endCodeBlock):
+                    a = codedata[row]
+                    if codedata[row].find("return") != -1:
+                        getIcon = codedata[row][15:]
+                        #Todo: Load Icon Image to Button
+                        parts = getIcon.split("(")
+                        icon_path = parts[1][:-1]
+                        parts = icon_path.split('"')
+                        filename = parts[1]
+                        RESOURCES_DIR = os.path.join(filefullpath2, "res")
+                        self.ui.cmdCommandAddSmallIcon.setIcon(QtGui.QIcon(os.path.join(RESOURCES_DIR, filename)))
+                        self.ui.txtCommandSmallIcon.setText(filename)
+                        self.tooldict[defname]["SmallIcon"] = getIcon
+
+            if codedata[defitem].find("getSmallIcon") != -1:
+                for row in range(defitem, endCodeBlock):
+                    if codedata[row].find("return") != -1:
+                        getSmallIcon = codedata[row][15:]
+                        #self.ui.txtCommandgetIcon.setText(getSmallIcon)
+                        # self.ui.cmdCommandCommandAddSmallIcon.setIcon(QtGui.QIcon(getIcon))
+                        self.tooldict[defname]["SmallIcon"] = getSmallIcon
+
+            if codedata[defitem].find("getMediumIcon") != -1:
+                for row in range(defitem, endCodeBlock):
+                    if codedata[row].find("return") != -1:
+                        getMediumIcon = codedata[row][15:]
+                        #self.ui.txtCommandgetIcon.setText(getMediumIcon)
+                        # self.ui.cmdAddCommandMediumIcon.setIcon(QtGui.QIcon(getIcon))
+                        self.tooldict[defname]["MediumIcon"] = getMediumIcon
+
 
             if codedata[defitem].find("getIcon") != -1:
                 for row in range(defitem, endCodeBlock):
                     if codedata[row].find("return") != -1:
-                        getIcon = codedata[row][15:]
-                        self.ui.txtCommandgetIcon.setText(getIcon)
+                        getLargeIcon = codedata[row][15:]
+                        #self.ui.txtCommandgetIcon.setText(getLargeIcon)
+                        # self.ui.cmdCommandAddLargeIcon.setIcon(QtGui.QIcon(getIcon))
+                        self.tooldict[defname]["LargeIcon"] = getLargeIcon
+
+            if codedata[defitem].find("keywords") != -1:
+                for row in range(defitem, endCodeBlock):
+                    if codedata[row].find("return") != -1:
+                        keywords = codedata[row][15:]
+                        self.ui.txtCommandgetIcon.setText(keywords)
+                        self.tooldict[defname]["keywords"] = keywords
+
+            if codedata[defitem].find("keyboardshortcut") != -1:
+                for row in range(defitem, endCodeBlock):
+                    if codedata[row].find("return") != -1:
+                        keywords = codedata[row][15:]
+                        self.ui.txtKeyBoardShortcut.setText(keywords)
+                        self.tooldict[defname]["keyboardshortcut"] = keywords
 
             if codedata[defitem].find("name") != -1:
                 for row in range(defitem, endCodeBlock):
                     if codedata[row].find("return") != -1:
                         name = codedata[row][15:]
-                        self.ui.txtCommandName.setText(name)
+                        parts = name.split('"')
+                        self.ui.txtCommandName.setText(parts[1])
+                        #Todo: Remove String Data
+                        self.tooldict[defname]["Name"] = name
 
             if codedata[defitem].find("do") != -1:
                 code = ""
                 for codeline in codedata[defitem:endCodeBlock]:
                     code += codeline
                 self.ui.txtCommandCode.setText(code)
+                self.tooldict[defname]["PythonCode"] = ""
+    @QtCore.Slot()
+    def on_cmdCommandAddSmallIcon_clicked(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*.*)")
+        self.ui.cmdCommandAddSmallIcon.setIcon(QtGui.QIcon(file_path))
+        self.ui.txtCommandSmallIcon.setText(os.path.basename(file_path))
+
+    @QtCore.Slot()
+    def on_cmdCommandAddMediumIcon_clicked(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*.*)")
+        self.ui.cmdCommandAddMediumIcon.setIcon(QtGui.QIcon(file_path))
+        self.ui.txtCommandMediumIcon.setText(os.path.basename(file_path))
+
+    @QtCore.Slot()
+    def on_cmdCommandAddLargeIcon_clicked(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*.*)")
+        self.ui.cmdCommandAddLargeIcon.setIcon(QtGui.QIcon(file_path))
+        self.ui.txtCommandLargeIcon.setText(os.path.basename(file_path))
 
     def parseFunctionFile(self, defname):
             #https://nedbatchelder.com/text/python-parsers.html
@@ -1449,6 +1560,62 @@ class PackageBuilder(QMdiSubWindow):
         except:
             pass
 
+    def initToolDict(self, defname):
+        tooldict = {}
+        tooldict["Author"] = ""
+        tooldict["CopyrightYear"] = ""
+        tooldict["RevisionHistory"] = ""
+        tooldict["Filename"] = ""
+        tooldict["Name"] = ""
+        tooldict["Description"] = ""
+        tooldict["Category"] = ""
+        tooldict["Keywords"] = ""
+        tooldict["ToolTip"] = ""
+        tooldict["KeyboardShortCut"] = ""
+        tooldict["SmallIcon"] = ""
+        tooldict["MediumIcon"] = ""
+        tooldict["LargeIcon"] = ""
+        tooldict["ResourceFolder"] = ""
+        tooldict["PythonCode"] = ""
+        tooldict["PyflowFile"] = ""
+
+        self.tooldict[defname] = tooldict
+    @QtCore.Slot()
+    def on_cmdSaveCommand_clicked(self):
+        filename = self.ui.txtCommandFileName.text()
+        # Write File
+        fname = filename
+        filefullpath = Packages.__path__[0] + "\\"
+        selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
+        filefullpath = os.path.join(filefullpath, selectedpackage)
+        filefullpath = os.path.join(filefullpath, "Tools")
+        filefullpath = os.path.join(filefullpath, fname)
+
+        Filename = filename.split(".")[0]
+        classline = "class %s(ShelfTool):\n" % (Filename)
+        classline += "#doc string\n\n"
+        classline += "    def __init__(self):\n"
+        classline += "        super(%s, self).__init__()\n" % (Filename)
+
+        with open(filefullpath, 'w') as f:
+            self.addCopyright(f)
+            # TODO add the prestuff
+            # Revision History
+
+            f.write("from nine import str\n")
+            f.write("from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool\n")
+            f.write("from PyFlow.PyFlow.Core.Common import Direction\n")
+            f.write("from qtpy import QtGui\n")
+            f.write("from PyFlow.PyFlow.Packages.%s.Tools import RESOURCES_DIR\n\n" % (selectedpackage))
+
+            f.write(classline)
+            for variable, code in self.tooldict.items():
+                if code != {}:
+                    if variable != "do":
+                        f.write("    @staticmethod\n")
+                    f.write("    " + "def " + variable + "():\n")
+                    f.write("       " + "return " + code["Code"] + ":\n")
+
     def writeFunction(self):
 
         defname = self.ui.txtFunctionName.text()
@@ -2151,7 +2318,67 @@ class PackageBuilder(QMdiSubWindow):
                     code += codeline
                 self.ui.txtCommandCode.setText(code)
 
-    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
+    def on_cmdCreatePackage_clicked(self):
+        packageRoot = Packages.__path__[0]
+        packagename = self.ui.txtPackageName.text()
+        if packagename == "":
+            return
+        packageFolderPath = os.path.join(packageRoot, packagename)
+        filepath = self.createfolder(packageFolderPath)
+        self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageResource.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Resource"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageCommands.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Commands"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageFunctions.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Functions"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageWidgets.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Widgets"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageUI.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "UI"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackagePins.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Pins"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageTools.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Tools"))
+            self.createfolder(os.path.join(filepath, "res"))
+
+            with open(filepath, "__init__.py", "w") as f:
+                self.addCopyright(f)
+                f.write("import os\n")
+                f.write("RESOURCES_DIR = os.path.dirname(os.path.realpath(__file__)) + \"/res/\"\n")
+
+        if self.ui.chkPackageExporters.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Exporters"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+        if self.ui.chkPackageFactories.isChecked():
+            filepath = self.createfolder(os.path.join(packageFolderPath, "Factories"))
+            self.createfile(os.path.join(filepath, "__init__.py"))
+
+    def createfolder(self, folder_name):
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+        return folder_name
+
+    def createfile(self, file_name):
+        if not os.path.exists(file_name):
+            open(file_name, 'a').close()
+
+    @QtCore.Slot()
     def on_cmdUpdateInit_clicked(self):
         packageRoot = Packages.__path__[0]
         selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
@@ -2219,7 +2446,11 @@ class PackageBuilder(QMdiSubWindow):
             for line in initDict[item]:
                 print("    ", line)
 
-    def addIntro(self,f):
+    def addCopyright(self, f):
+        f.write("## Copyright " + self.ui.txtCopyrightAuthor.text() + " " + self.ui.dteCopyrightYear.value())
+        f.write(self.ui.txtCopyright.text())
+
+    def addIntro(self, f):
         selectedpackage = self.ui.lstPackages.model().index(self.ui.lstPackages.currentIndex().row(), 0).data()
 
         f.write("\'\'\'%s\n" % (selectedpackage))

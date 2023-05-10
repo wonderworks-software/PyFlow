@@ -15,12 +15,11 @@
 
 from nine import str
 from PyFlow.PyFlow.UI.Tool.Tool import ShelfTool
-from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.PyFlow.Core.Common import Direction
-
 from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog
 
+from PyFlow.PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 
 class AlignLeftTool(ShelfTool):
     """docstring for AlignLeftTool."""
