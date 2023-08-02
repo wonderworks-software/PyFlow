@@ -23,6 +23,7 @@ from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib import MathLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbstractLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
+from PyFlow.Packages.PyFlowBase.FunctionLibraries.StringLib import StringLib
 
 # Class based nodes
 from PyFlow.Packages.PyFlowBase.Nodes.branch import branch
@@ -41,7 +42,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.forEachLoop import forEachLoop
 from PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
 from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
 from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
@@ -109,6 +110,7 @@ _FOO_LIBS = {
     MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
     PathLib.__name__: PathLib(PACKAGE_NAME),
+    StringLib.__name__: StringLib(PACKAGE_NAME),
 }
 
 
@@ -126,7 +128,7 @@ _NODES = {
     forLoopWithBreak.__name__: forLoopWithBreak,
     retriggerableDelay.__name__: retriggerableDelay,
     sequence.__name__: sequence,
-    switchOnString.__name__: switchOnString,
+    switch.__name__: switch,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     whileLoopBegin.__name__: whileLoopBegin,

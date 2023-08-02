@@ -10,3 +10,5 @@ docs/build/
 docs/source/_build/
 docs/build_docs_env.bat
 __pycache__/
+/build/
+/PyFlow.egg-info/

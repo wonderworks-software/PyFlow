@@ -1,4 +1,4 @@
-aenum; python_version < '3.4'
+aenum
 PySide2
 Qt.py
 blinker
