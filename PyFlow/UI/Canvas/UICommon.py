@@ -170,6 +170,10 @@ class NodeDefaults(object):
         return Colors.NodeNameRectGreen
 
     @property
+    def COMPUTING_NODE_HEAD_COLOR(self):
+        return Colors.Red
+
+    @property
     def CALLABLE_NODE_HEAD_COLOR(self):
         return Colors.NodeNameRectBlue
 

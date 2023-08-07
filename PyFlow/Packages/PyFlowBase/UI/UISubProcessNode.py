@@ -32,8 +32,8 @@ class UISubProcess(UINodeBase):
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.onAddInPin)
         self.computeFlagLabel = QLabel("  idle  ")
-        self._rawNode.computing.connect(self.setComputing)
-        self._rawNode.computed.connect(self.setComputed)
+        self._rawNode.computing.connect(self.onComputing)
+        self._rawNode.computed.connect(self.onComputed)
         self.addWidget(self.computeFlagLabel)
 
     def postCreate(self, jsonTemplate=None):
@@ -55,10 +55,12 @@ class UISubProcess(UINodeBase):
             pass
 
     
-    def setComputing(self,*args, **kwargs):
+    def onComputing(self,*args, **kwargs):
         self.computeFlagLabel.setText("  working  ")
+        # self.setComputing(*args, **kwargs)
         
-    def setComputed(self,*args, **kwargs):
+    def onComputed(self,*args, **kwargs):
         self.computeFlagLabel.setText("  idle  ")
+        # self.setClean(*args, **kwargs)
         
             

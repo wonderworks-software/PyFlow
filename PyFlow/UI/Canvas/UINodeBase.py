@@ -883,13 +883,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 self.update()
 
     def updateNodeHeaderColor(self):
-        if self.headColorOverride is None:
-            if self.isCallable():
-                self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
-            else:
-                self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+        if self.computing:
+            self.headColor = NodeDefaults().COMPUTING_NODE_HEAD_COLOR
         else:
-            self.headColor = self.headColorOverride
+            if self.headColorOverride is None:
+                if self.isCallable():
+                    self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
+                else:
+                    self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+            else:
+                self.headColor = self.headColorOverride
 
     def postCreate(self, jsonTemplate=None):
         self.updateNodeHeaderColor()
@@ -1096,15 +1099,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def setDirty(self,*args, **kwargs):
         self.computing = False
         self.dirty = True
+        self.updateNodeHeaderColor()
         self.update()
 
     def setComputing(self,*args, **kwargs):
         self.computing = True
+        self.updateNodeHeaderColor()
         self.update()
 
     def setClean(self,*args, **kwargs):
         self.computing = False
         self.dirty = False
+        self.updateNodeHeaderColor()
         self.update()
 
     def paint(self, painter, option, widget):
