@@ -17,6 +17,7 @@ from blinker import Signal
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
+import json
 
 
 class graphInputs(NodeBase):
@@ -77,6 +78,11 @@ class graphInputs(NodeBase):
                 if outPinJson['name'] not in existingPins:
                     dynOut = self.addOutPin(outPinJson['name'], outPinJson["dataType"])
                     dynOut.uid = uuid.UUID(outPinJson['uuid'])
+                    try:
+                        val = json.loads(outPinJson['value'], cls=dynOut.jsonDecoderClass())
+                        dynOut.setData(val)
+                    except:
+                        dynOut.setData(dynOut.defaultValue())
 
 
 class graphOutputs(NodeBase):

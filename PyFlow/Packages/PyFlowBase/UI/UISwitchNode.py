@@ -33,6 +33,7 @@ class UISwitch(UINodeBase):
         inExecPin.bLabelHidden = True
 
     def onAddOutPin(self):
-        rawPin = self._rawNode.addOutPin()
+        name = self._rawNode.getUniqPinName("0")
+        rawPin = self._rawNode.addOutPin(name)
         uiPin = self._createUIPinWrapper(rawPin)
         return uiPin

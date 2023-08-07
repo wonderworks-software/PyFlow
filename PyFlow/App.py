@@ -16,50 +16,48 @@
 """Application class here
 """
 
-import os
-import sys
-import subprocess
 import json
+import os
 import pkgutil
-import uuid
-import shutil
-from string import ascii_letters
 import random
+import shutil
+import subprocess
+import sys
+import uuid
+from string import ascii_letters
 
-from Qt import QtGui
-from Qt import QtCore
+from Qt import QtCore, QtGui
 from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import currentProcessorTime
-from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.Core.PathsRegistry import PathsRegistry
-from PyFlow.Core.version import *
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Core.Common import SingletonDecorator, currentProcessorTime
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Core.PathsRegistry import PathsRegistry
+from PyFlow.Core.version import *
 from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
-from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
-from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Tool import GET_TOOLS
-from PyFlow.UI.Tool import REGISTER_TOOL
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
+from PyFlow.UI.EditorHistory import EditorHistory
+from PyFlow.UI.Tool import GET_TOOLS, REGISTER_TOOL
+from PyFlow.UI.Tool.Tool import DockTool, ShelfTool
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+
 try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
     pass
-from PyFlow.Wizards.PackageWizard import PackageWizard
-from PyFlow import INITIALIZE
-from PyFlow.Input import InputAction, InputActionType
-from PyFlow.Input import InputManager
-from PyFlow.ConfigManager import ConfigManager
+import asyncio
 
 import PyFlow.UI.resources
+from PyFlow import INITIALIZE
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Input import InputAction, InputActionType, InputManager
+from PyFlow.Wizards.PackageWizard import PackageWizard
 
 EDITOR_TARGET_FPS = 60
 
@@ -181,7 +179,7 @@ class PyFlow(QMainWindow):
         fileMenu = self.menuBar.addMenu("File")
         newFileAction = fileMenu.addAction("New file")
         newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
-        newFileAction.triggered.connect(self.newFile)
+        newFileAction.triggered.connect(self._clickNewFile)
 
         loadAction = fileMenu.addAction("Load")
         loadAction.setIcon(QtGui.QIcon(":/folder_open_icon.png"))
@@ -402,6 +400,9 @@ class PyFlow(QMainWindow):
             self.updateLabel()
             return True
 
+    def _clickNewFile(self):
+        self.newFile(True)
+        
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
@@ -422,6 +423,8 @@ class PyFlow(QMainWindow):
         self.tick_timer.timeout.disconnect()
 
     def mainLoop(self):
+        asyncio.get_event_loop().run_until_complete(self._tick_asyncio())
+        
         deltaTime = currentProcessorTime() - self._lastClock
         ds = (deltaTime * 1000.0)
         if ds > 0:
@@ -436,6 +439,9 @@ class PyFlow(QMainWindow):
         self.canvasWidget.Tick(deltaTime)
 
         self._lastClock = currentProcessorTime()
+        
+    async def _tick_asyncio(self):
+        await asyncio.sleep(0.00001)
 
     def createPopupMenu(self):
         pass

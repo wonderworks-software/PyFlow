@@ -91,6 +91,16 @@ class StringLib(FunctionLibraryBase):
     def endsWith(s=('StringPin', ""), suffix=('StringPin', "", { PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported|PinOptions.ChangeTypeOnConnection })):
         return s.endswith(suffix)
     
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('StringPin', ""), 
+                    meta={NodeMeta.CATEGORY: 'String', NodeMeta.KEYWORDS: []})
+    def concat(s1=('AnyPin', ""), s2=('AnyPin', "")):
+        return str(s1) + str(s2)
+    
+    
+    
+    
+    
     
     
     

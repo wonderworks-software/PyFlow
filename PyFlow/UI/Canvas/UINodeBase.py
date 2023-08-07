@@ -969,7 +969,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def addWidget(self, widget):
         if not self.hasCustomLayout:
-            self.nodeLayout.insertItem(1, self.customLayout)
+            self.nodeLayout.insertItem(2, self.customLayout)
             self.hasCustomLayout = True
         ProxyWidget = QGraphicsProxyWidget()
         ProxyWidget.setWidget(widget)

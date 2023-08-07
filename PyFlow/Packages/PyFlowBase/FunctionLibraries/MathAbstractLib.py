@@ -32,6 +32,17 @@ class MathAbstractLib(FunctionLibraryBase):
                 b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})):
         """Is a equal b."""
         return a == b
+    
+    def __init__(self, packageName):
+        super(MathAbstractLib, self).__init__(packageName)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: ["!=", "operator"]})
+    ## Is a equal b
+    def notEqual(a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+                b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})):
+        """Is a equal b."""
+        return a != b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: [">", "operator"]})

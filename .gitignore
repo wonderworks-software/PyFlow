@@ -12,3 +12,5 @@ docs/build_docs_env.bat
 __pycache__/
 /build/
 /PyFlow.egg-info/
+/untitled.pygraph
+*.swp
