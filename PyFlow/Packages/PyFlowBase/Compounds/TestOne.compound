@@ -1,0 +1,493 @@
+{
+    "name": "TestOne",
+    "category": "Test",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "PyFlowBase",
+            "lib": null,
+            "type": "subProcess",
+            "owningGraphName": "TestOne",
+            "name": "subProcess",
+            "uuid": "13219537-56e8-43ae-ab44-ef199acbee25",
+            "inputs": [
+                {
+                    "name": "cmd_end",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_cmd_end",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"127.0.0.1\"",
+                    "uuid": "53562bf9-602a-4ca4-aa8e-df8c5f9057b3",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "makeString1",
+                            "outPinId": 1,
+                            "rhsNodeName": "subProcess",
+                            "inPinId": 3,
+                            "lhsNodeUid": "1aa4bcdd-c231-4bdc-87ee-9d42d7b964da",
+                            "rhsNodeUid": "13219537-56e8-43ae-ab44-ef199acbee25"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "cmd_end",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "59ad9e5f-d746-4826-83d5-f14de202c93d",
+                                "destinationUUID": "53562bf9-602a-4ca4-aa8e-df8c5f9057b3",
+                                "sourceName": "makeString1_out",
+                                "destinationName": "subProcess_cmd_end",
+                                "uuid": "82c4a0f5-896f-42ee-aff5-fe511ed59e34",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "inExec",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_inExec",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "754951d4-552b-4bf1-8129-bb6a16fc35a9",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "inExec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "cmd_opt",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_cmd_opt",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"-n 3\"",
+                    "uuid": "efb28b31-0adc-4c18-83e1-07ebc7184920",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "cmd_opt",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "cmd",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_cmd",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"ping\"",
+                    "uuid": "cd0fb1fc-36b7-4eb8-9fc5-7553295e7cf8",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "makeString",
+                            "outPinId": 1,
+                            "rhsNodeName": "subProcess",
+                            "inPinId": 2,
+                            "lhsNodeUid": "929b8bea-e685-4661-880e-3210c1d9d53a",
+                            "rhsNodeUid": "13219537-56e8-43ae-ab44-ef199acbee25"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "cmd",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "ea2bab1e-6c85-45bd-903a-a3e866a473e8",
+                                "destinationUUID": "cd0fb1fc-36b7-4eb8-9fc5-7553295e7cf8",
+                                "sourceName": "makeString_out",
+                                "destinationName": "subProcess_cmd",
+                                "uuid": "72fe8b1e-95d5-47aa-a2dc-4daa49d1aef0",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "error_num",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_error_num",
+                    "dataType": "IntPin",
+                    "direction": 1,
+                    "value": "0",
+                    "uuid": "d6b308d6-f1cf-43a3-a0ae-2f1c861db071",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_num",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "std_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_std_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"b'\\\\r\\\\n\\\\xd5\\\\xfd\\\\xd4\\\\xda Ping 127.0.0.1 \\\\xbe\\\\xdf\\\\xd3\\\\xd0 32 \\\\xd7\\\\xd6\\\\xbd\\\\xda\\\\xb5\\\\xc4\\\\xca\\\\xfd\\\\xbe\\\\xdd:\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\r\\\\n127.0.0.1 \\\\xb5\\\\xc4 Ping \\\\xcd\\\\xb3\\\\xbc\\\\xc6\\\\xd0\\\\xc5\\\\xcf\\\\xa2:\\\\r\\\\n    \\\\xca\\\\xfd\\\\xbe\\\\xdd\\\\xb0\\\\xfc: \\\\xd2\\\\xd1\\\\xb7\\\\xa2\\\\xcb\\\\xcd = 3\\\\xa3\\\\xac\\\\xd2\\\\xd1\\\\xbd\\\\xd3\\\\xca\\\\xd5 = 3\\\\xa3\\\\xac\\\\xb6\\\\xaa\\\\xca\\\\xa7 = 0 (0% \\\\xb6\\\\xaa\\\\xca\\\\xa7)\\\\xa3\\\\xac\\\\r\\\\n\\\\xcd\\\\xf9\\\\xb7\\\\xb5\\\\xd0\\\\xd0\\\\xb3\\\\xcc\\\\xb5\\\\xc4\\\\xb9\\\\xc0\\\\xbc\\\\xc6\\\\xca\\\\xb1\\\\xbc\\\\xe4(\\\\xd2\\\\xd4\\\\xba\\\\xc1\\\\xc3\\\\xeb\\\\xce\\\\xaa\\\\xb5\\\\xa5\\\\xce\\\\xbb):\\\\r\\\\n    \\\\xd7\\\\xee\\\\xb6\\\\xcc = 0ms\\\\xa3\\\\xac\\\\xd7\\\\xee\\\\xb3\\\\xa4 = 0ms\\\\xa3\\\\xac\\\\xc6\\\\xbd\\\\xbe\\\\xf9 = 0ms\\\\r\\\\n'\"",
+                    "uuid": "2a857973-ec91-4898-99ea-8bc1e3216825",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "std_msg",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "outExec",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_outExec",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "56891442-b2a0-48c0-883e-30390d178558",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "outExec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "all_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_all_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"b'\\\\r\\\\n\\\\xd5\\\\xfd\\\\xd4\\\\xda Ping 127.0.0.1 \\\\xbe\\\\xdf\\\\xd3\\\\xd0 32 \\\\xd7\\\\xd6\\\\xbd\\\\xda\\\\xb5\\\\xc4\\\\xca\\\\xfd\\\\xbe\\\\xdd:\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\xc0\\\\xb4\\\\xd7\\\\xd4 127.0.0.1 \\\\xb5\\\\xc4\\\\xbb\\\\xd8\\\\xb8\\\\xb4: \\\\xd7\\\\xd6\\\\xbd\\\\xda=32 \\\\xca\\\\xb1\\\\xbc\\\\xe4<1ms TTL=128\\\\r\\\\n\\\\r\\\\n127.0.0.1 \\\\xb5\\\\xc4 Ping \\\\xcd\\\\xb3\\\\xbc\\\\xc6\\\\xd0\\\\xc5\\\\xcf\\\\xa2:\\\\r\\\\n    \\\\xca\\\\xfd\\\\xbe\\\\xdd\\\\xb0\\\\xfc: \\\\xd2\\\\xd1\\\\xb7\\\\xa2\\\\xcb\\\\xcd = 3\\\\xa3\\\\xac\\\\xd2\\\\xd1\\\\xbd\\\\xd3\\\\xca\\\\xd5 = 3\\\\xa3\\\\xac\\\\xb6\\\\xaa\\\\xca\\\\xa7 = 0 (0% \\\\xb6\\\\xaa\\\\xca\\\\xa7)\\\\xa3\\\\xac\\\\r\\\\n\\\\xcd\\\\xf9\\\\xb7\\\\xb5\\\\xd0\\\\xd0\\\\xb3\\\\xcc\\\\xb5\\\\xc4\\\\xb9\\\\xc0\\\\xbc\\\\xc6\\\\xca\\\\xb1\\\\xbc\\\\xe4(\\\\xd2\\\\xd4\\\\xba\\\\xc1\\\\xc3\\\\xeb\\\\xce\\\\xaa\\\\xb5\\\\xa5\\\\xce\\\\xbb):\\\\r\\\\n    \\\\xd7\\\\xee\\\\xb6\\\\xcc = 0ms\\\\xa3\\\\xac\\\\xd7\\\\xee\\\\xb3\\\\xa4 = 0ms\\\\xa3\\\\xac\\\\xc6\\\\xbd\\\\xbe\\\\xf9 = 0ms\\\\r\\\\n'\\nNone\"",
+                    "uuid": "b0abaac2-92ac-43cc-8df6-7f74050e6667",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "all_msg",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "error_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "subProcess_error_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"None\"",
+                    "uuid": "1034f244-7fca-497a-88d9-738cd5eca8da",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_msg",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "subProcess"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">subProcess</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -99.0,
+            "y": -269.0
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "DefaultLib",
+            "type": "makeString",
+            "owningGraphName": "TestOne",
+            "name": "makeString",
+            "uuid": "929b8bea-e685-4661-880e-3210c1d9d53a",
+            "inputs": [
+                {
+                    "name": "s",
+                    "package": "PyFlowBase",
+                    "fullName": "makeString_s",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"ping\"",
+                    "uuid": "4cf5a112-96bf-4441-a365-ef945acd9bcd",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "s",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "makeString_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"ping\"",
+                    "uuid": "ea2bab1e-6c85-45bd-903a-a3e866a473e8",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "makeString",
+                            "outPinId": 1,
+                            "rhsNodeName": "subProcess",
+                            "inPinId": 2,
+                            "lhsNodeUid": "929b8bea-e685-4661-880e-3210c1d9d53a",
+                            "rhsNodeUid": "13219537-56e8-43ae-ab44-ef199acbee25"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "ea2bab1e-6c85-45bd-903a-a3e866a473e8",
+                                "destinationUUID": "cd0fb1fc-36b7-4eb8-9fc5-7553295e7cf8",
+                                "sourceName": "makeString_out",
+                                "destinationName": "subProcess_cmd",
+                                "uuid": "72fe8b1e-95d5-47aa-a2dc-4daa49d1aef0",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "makeString"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">makeString</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -269.55550555156265,
+            "y": -234.29149566420597
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "DefaultLib",
+            "type": "makeString",
+            "owningGraphName": "TestOne",
+            "name": "makeString1",
+            "uuid": "1aa4bcdd-c231-4bdc-87ee-9d42d7b964da",
+            "inputs": [
+                {
+                    "name": "s",
+                    "package": "PyFlowBase",
+                    "fullName": "makeString1_s",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"127.0.0.1\"",
+                    "uuid": "2dfe4d1a-ff14-4976-8ba1-1867861a8ad8",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "s",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "makeString1_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"127.0.0.1\"",
+                    "uuid": "59ad9e5f-d746-4826-83d5-f14de202c93d",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "makeString1",
+                            "outPinId": 1,
+                            "rhsNodeName": "subProcess",
+                            "inPinId": 3,
+                            "lhsNodeUid": "1aa4bcdd-c231-4bdc-87ee-9d42d7b964da",
+                            "rhsNodeUid": "13219537-56e8-43ae-ab44-ef199acbee25"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "59ad9e5f-d746-4826-83d5-f14de202c93d",
+                                "destinationUUID": "53562bf9-602a-4ca4-aa8e-df8c5f9057b3",
+                                "sourceName": "makeString1_out",
+                                "destinationName": "subProcess_cmd_end",
+                                "uuid": "82c4a0f5-896f-42ee-aff5-fe511ed59e34",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "makeString1"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">makeString1</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -266.1593127212396,
+            "y": -152.81070951187905
+        }
+    ],
+    "depth": 2,
+    "isRoot": false,
+    "parentGraphName": "root"
+}
