@@ -39,6 +39,7 @@ class subProcess(NodeBase):
         self.std_msg = self.createOutputPin('std_msg', 'StringPin')
         self.error_msg = self.createOutputPin('error_msg', 'StringPin')
         self.all_msg = self.createOutputPin('all_msg', 'StringPin')
+        self.is_running = self.createOutputPin('is_running', 'BoolPin', False)
         self.headerColor = FLOW_CONTROL_COLOR
         self.proc = None
         self.proc_task:asyncio.Task = None
@@ -87,7 +88,7 @@ class subProcess(NodeBase):
 
     @staticmethod
     def category():
-        return 'Process'
+        return 'Cmd'
 
     @staticmethod
     def keywords():
@@ -131,6 +132,7 @@ class subProcess(NodeBase):
             self.proc_task_uuid = uuid.uuid4()
             self.proc_task_args = args
             self.proc_task_kwargs = kwargs
+            self.is_running.setData(True)
             self.proc_task = asyncio.get_event_loop().create_task(self._run_cmd(self.proc_task_uuid, cmd, self.cwd.getData()))
         
     async def _run_cmd(self, _uuid, cmd, cwd):
@@ -176,4 +178,5 @@ class subProcess(NodeBase):
                     self.proc.terminate()
                 self.proc = None
             self.computed.send()
+            self.is_running.setData(False)
             self.outExecPin.call(*self.proc_task_args, **self.proc_task_kwargs)
