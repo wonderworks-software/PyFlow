@@ -153,6 +153,7 @@ class subProcess(NodeBase):
         return uuid, ret_code, stdout, stderr
     
     def Tick(self, delta):
+        super(subProcess, self).Tick(delta)
         if self.proc_task and self.proc_task.done():
             proc_task:asyncio.Task = self.proc_task
             self.proc_task = None
