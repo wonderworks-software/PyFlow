@@ -13,6 +13,8 @@
 ## limitations under the License.
 
 
+from PyFlow.Packages.PyFlowBase.Nodes.storeArgs import storeArgs
+from PyFlow.Packages.PyFlowBase.Nodes.combineArgs import combineArgs
 from PyFlow.Packages.PyFlowBase.Nodes.subProcess import subProcess
 from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
@@ -42,6 +44,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 from PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
 
+from PyFlow.Packages.PyFlowBase.UI.UIStoreArgsNode import UIStoreArgs
+from PyFlow.Packages.PyFlowBase.UI.UICombineArgsNode import UICombineArgs
 from PyFlow.Packages.PyFlowBase.UI.UISubProcessNode import UISubProcess
 from PyFlow.Packages.PyFlowBase.UI.UISwitchNode import UISwitch
 from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
@@ -75,6 +79,10 @@ def createUINode(raw_instance):
         return UISetVarNode(raw_instance)
     if isinstance(raw_instance, subProcess):
         return UISubProcess(raw_instance)
+    if isinstance(raw_instance, storeArgs):
+        return UIStoreArgs(raw_instance)
+    if isinstance(raw_instance, combineArgs):
+        return UICombineArgs(raw_instance)
     if isinstance(raw_instance, switch):
         return UISwitch(raw_instance)
     if isinstance(raw_instance, sequence):

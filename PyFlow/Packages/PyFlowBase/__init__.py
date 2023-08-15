@@ -45,6 +45,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDel
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
 from PyFlow.Packages.PyFlowBase.Nodes.subProcess import subProcess
+from PyFlow.Packages.PyFlowBase.Nodes.combineArgs import combineArgs
+from PyFlow.Packages.PyFlowBase.Nodes.storeArgs import storeArgs
 from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
 from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
@@ -133,6 +135,8 @@ _NODES = {
     sequence.__name__: sequence,
     switch.__name__: switch,
     subProcess.__name__: subProcess,
+    combineArgs.__name__: combineArgs,
+    storeArgs.__name__: storeArgs,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     whileLoopBegin.__name__: whileLoopBegin,

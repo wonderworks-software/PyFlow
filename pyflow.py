@@ -30,7 +30,7 @@ def main():
         instance.show()
         
         parser = argparse.ArgumentParser(description="PyFlow CLI")
-        parser.add_argument("-f", "--filePath", type=str, default="untitled.pygraph")
+        parser.add_argument("-f", "--filePath", type=str, default="Untitled.pygraph")
         parsedArguments, unknown = parser.parse_known_args(sys.argv[1:])
         filePath = parsedArguments.filePath
         if not filePath.endswith(".pygraph"):
