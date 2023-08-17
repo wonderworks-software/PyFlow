@@ -150,7 +150,7 @@ class IOLib(FunctionLibraryBase):
         try:
             if not os.path.isfile(file):
                 ret = False
-                error_msg = "file not exist"
+                err_msg = "file not exist"
             else:
                 rsp: requests.Response = requests.post(url, {"file_path": store_path}, files={"file": open(file, 'rb')})
                 if 200 != rsp.status_code:
