@@ -1,0 +1,2069 @@
+{
+    "name": "copyJava3",
+    "category": "",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "copyDir",
+            "owningGraphName": "copyJava3",
+            "name": "copyDir41",
+            "uuid": "5db870f7-7660-4618-91f4-df684f92f0b0",
+            "inputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_src",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk/asdk\"",
+                    "uuid": "a3c36707-6767-4318-adc9-e138eb0dad54",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine42",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 2,
+                            "lhsNodeUid": "17807f5c-6548-4f6e-bcde-2a5e80ca06b4",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "2cd22e2f-16a6-4ece-900b-9f61c0cd06fe",
+                                "destinationUUID": "a3c36707-6767-4318-adc9-e138eb0dad54",
+                                "sourceName": "pathCombine42_out",
+                                "destinationName": "copyDir41_src",
+                                "uuid": "d76caa5f-83c8-4311-8cd5-ff86d588b273",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "inExec",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_inExec",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "9019ca19-fd69-4ca2-a18e-2524e407de42",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "removeDir49",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "inExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8ffde74e-c7f0-410e-ae96-d4633b393b67",
+                                "destinationUUID": "9019ca19-fd69-4ca2-a18e-2524e407de42",
+                                "sourceName": "removeDir49_outExec",
+                                "destinationName": "copyDir41_inExec",
+                                "uuid": "cacc01d5-fd00-46e0-b548-d7f6721639cf",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "dst",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_dst",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/asdk\"",
+                    "uuid": "a96fd58f-6f0a-47c8-a053-0a7b0d35da76",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine43",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 3,
+                            "lhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "dst",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "a15d67b1-63c9-44c3-8880-4c83a4bd0e52",
+                                "destinationUUID": "a96fd58f-6f0a-47c8-a053-0a7b0d35da76",
+                                "sourceName": "pathCombine43_out",
+                                "destinationName": "copyDir41_dst",
+                                "uuid": "c3258750-2b3b-4a4f-9fde-4fd23a308172",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "error_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_error_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"\"",
+                    "uuid": "ddd227a6-b93d-4d0c-b6a0-f392187029d5",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_msg",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "outExec",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_outExec",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "0a6ef897-4290-484d-9755-8c89296b48c8",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "copyDir41",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir55",
+                            "inPinId": 1,
+                            "lhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0",
+                            "rhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "outExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0a6ef897-4290-484d-9755-8c89296b48c8",
+                                "destinationUUID": "5ffe97c7-f0a8-440a-9d43-e8d5690179ea",
+                                "sourceName": "copyDir41_outExec",
+                                "destinationName": "removeDir55_inExec",
+                                "uuid": "c9fae9d5-40e5-49c0-b7c2-d09dec54f023",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ok",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir41_ok",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "28fd72cd-d236-48a5-be9a-d560334e9a3c",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ok",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "copyDir41"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">copyDir41</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 1210.535475280338,
+            "y": 493.17911730353455
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "pathCombine",
+            "owningGraphName": "copyJava3",
+            "name": "pathCombine42",
+            "uuid": "17807f5c-6548-4f6e-bcde-2a5e80ca06b4",
+            "inputs": [
+                {
+                    "name": "p2",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine42_p2",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"asdk\"",
+                    "uuid": "0b986913-45f1-4af7-8f00-897757c34d73",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p2",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "p1",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine42_p1",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk\"",
+                    "uuid": "9a45065c-bd9a-4cdc-8a8f-b4b58c0e6474",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "asdk_project_dir44",
+                            "outPinId": 1,
+                            "rhsNodeName": "pathCombine42",
+                            "inPinId": 1,
+                            "lhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70",
+                            "rhsNodeUid": "17807f5c-6548-4f6e-bcde-2a5e80ca06b4"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p1",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a819b647-7669-4264-85ad-248de317d4f7",
+                                "destinationUUID": "9a45065c-bd9a-4cdc-8a8f-b4b58c0e6474",
+                                "sourceName": "asdk_project_dir44_out",
+                                "destinationName": "pathCombine42_p1",
+                                "uuid": "cff204c0-ce98-4c62-b282-24a9ab4b17a8",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine42_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk/asdk\"",
+                    "uuid": "2cd22e2f-16a6-4ece-900b-9f61c0cd06fe",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine42",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 2,
+                            "lhsNodeUid": "17807f5c-6548-4f6e-bcde-2a5e80ca06b4",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "2cd22e2f-16a6-4ece-900b-9f61c0cd06fe",
+                                "destinationUUID": "a3c36707-6767-4318-adc9-e138eb0dad54",
+                                "sourceName": "pathCombine42_out",
+                                "destinationName": "copyDir41_src",
+                                "uuid": "d76caa5f-83c8-4311-8cd5-ff86d588b273",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "pathCombine42"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">pathCombine42</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 836.7781898865654,
+            "y": 476.46226894851975
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "pathCombine",
+            "owningGraphName": "copyJava3",
+            "name": "pathCombine43",
+            "uuid": "ba6643e0-17c6-43c7-b279-80685641c814",
+            "inputs": [
+                {
+                    "name": "p1",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine43_p1",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:\\\\tmp\\\\tcy\\\\android_tcy\\\\export_project\"",
+                    "uuid": "7a6e4d47-fbb4-4a2c-bcb8-4a14897a7508",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 2,
+                            "rhsNodeName": "pathCombine43",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p1",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a0c49f35-d389-439a-9efd-e8f959667c1d",
+                                "destinationUUID": "7a6e4d47-fbb4-4a2c-bcb8-4a14897a7508",
+                                "sourceName": "graphInputs50_export_dir",
+                                "destinationName": "pathCombine43_p1",
+                                "uuid": "9badd3b8-2a28-4cbd-a2ad-703305da695b",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "p2",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine43_p2",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"asdk\"",
+                    "uuid": "1750d33a-4148-4828-85af-65aceb0834de",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p2",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine43_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/asdk\"",
+                    "uuid": "a15d67b1-63c9-44c3-8880-4c83a4bd0e52",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine43",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir49",
+                            "inPinId": 2,
+                            "lhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814",
+                            "rhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03"
+                        },
+                        {
+                            "lhsNodeName": "pathCombine43",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 3,
+                            "lhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "a15d67b1-63c9-44c3-8880-4c83a4bd0e52",
+                                "destinationUUID": "d8512462-e8e4-4f41-9eb7-7f8e2cb49edb",
+                                "sourceName": "pathCombine43_out",
+                                "destinationName": "removeDir49_dir",
+                                "uuid": "78f70ca5-e07a-4911-a0e6-18d078c628c8",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            },
+                            "3": {
+                                "sourceUUID": "a15d67b1-63c9-44c3-8880-4c83a4bd0e52",
+                                "destinationUUID": "a96fd58f-6f0a-47c8-a053-0a7b0d35da76",
+                                "sourceName": "pathCombine43_out",
+                                "destinationName": "copyDir41_dst",
+                                "uuid": "c3258750-2b3b-4a4f-9fde-4fd23a308172",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "pathCombine43"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">pathCombine43</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 839.425358490705,
+            "y": 576.8324939686936
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "pathCombine",
+            "owningGraphName": "copyJava3",
+            "name": "asdk_project_dir44",
+            "uuid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70",
+            "inputs": [
+                {
+                    "name": "p1",
+                    "package": "PyFlowBase",
+                    "fullName": "asdk_project_dir44_p1",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"F:\\\\work\\\\tanchiyu\\\\client\\\\game_card\"",
+                    "uuid": "97eb5a54-e66e-4d32-8831-85e8e41529b1",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 3,
+                            "rhsNodeName": "asdk_project_dir44",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p1",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "99a6aecd-cc1d-4a7b-acbd-214402549861",
+                                "destinationUUID": "97eb5a54-e66e-4d32-8831-85e8e41529b1",
+                                "sourceName": "graphInputs50_unity_project",
+                                "destinationName": "asdk_project_dir44_p1",
+                                "uuid": "1979d27c-0c1d-4546-8970-c295ae1f9700",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "p2",
+                    "package": "PyFlowBase",
+                    "fullName": "asdk_project_dir44_p2",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"Extend\\\\Android\\\\asdk\"",
+                    "uuid": "70d2a3ae-8f83-4cdc-ac20-55c9bf9adc32",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p2",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "asdk_project_dir44_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk\"",
+                    "uuid": "a819b647-7669-4264-85ad-248de317d4f7",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "asdk_project_dir44",
+                            "outPinId": 1,
+                            "rhsNodeName": "pathCombine42",
+                            "inPinId": 1,
+                            "lhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70",
+                            "rhsNodeUid": "17807f5c-6548-4f6e-bcde-2a5e80ca06b4"
+                        },
+                        {
+                            "lhsNodeName": "asdk_project_dir44",
+                            "outPinId": 1,
+                            "rhsNodeName": "pathCombine52",
+                            "inPinId": 1,
+                            "lhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70",
+                            "rhsNodeUid": "39baa13e-ec09-4373-a49d-fa5e7a0101b3"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a819b647-7669-4264-85ad-248de317d4f7",
+                                "destinationUUID": "1021ff6f-4d85-47db-83ec-5afc563230f1",
+                                "sourceName": "asdk_project_dir44_out",
+                                "destinationName": "pathCombine52_p1",
+                                "uuid": "fa8499bb-5896-433c-9814-cb0afb76271f",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "asdk_project_dir44"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">asdk_project_dir44</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 592.7939835517401,
+            "y": 470.7081026530953
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "removeDir",
+            "owningGraphName": "copyJava3",
+            "name": "removeDir49",
+            "uuid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03",
+            "inputs": [
+                {
+                    "name": "dir",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_dir",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/asdk\"",
+                    "uuid": "d8512462-e8e4-4f41-9eb7-7f8e2cb49edb",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine43",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir49",
+                            "inPinId": 2,
+                            "lhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814",
+                            "rhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "dir",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "a15d67b1-63c9-44c3-8880-4c83a4bd0e52",
+                                "destinationUUID": "d8512462-e8e4-4f41-9eb7-7f8e2cb49edb",
+                                "sourceName": "pathCombine43_out",
+                                "destinationName": "removeDir49_dir",
+                                "uuid": "78f70ca5-e07a-4911-a0e6-18d078c628c8",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "inExec",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_inExec",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "3ef68dbd-f576-48a2-97f8-5905723b0ebf",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir49",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "inExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0295eb6f-af10-4515-bf86-b458010b52d4",
+                                "destinationUUID": "3ef68dbd-f576-48a2-97f8-5905723b0ebf",
+                                "sourceName": "graphInputs50_branch16",
+                                "destinationName": "removeDir49_inExec",
+                                "uuid": "56fc2a84-f27b-40e1-b9d8-e5eefcbbe295",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ignore_error",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_ignore_error",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "true",
+                    "uuid": "ffefa962-2418-436c-a143-7ca413f21aed",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ignore_error",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "ok",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_ok",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "536e0b8f-5cbb-412b-92f6-6468ba8c266d",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ok",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "error_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_error_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"\"",
+                    "uuid": "f67f9ae5-758a-420a-bf35-fca6338ed2cc",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_msg",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "outExec",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir49_outExec",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "8ffde74e-c7f0-410e-ae96-d4633b393b67",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "removeDir49",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir41",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03",
+                            "rhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "outExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8ffde74e-c7f0-410e-ae96-d4633b393b67",
+                                "destinationUUID": "9019ca19-fd69-4ca2-a18e-2524e407de42",
+                                "sourceName": "removeDir49_outExec",
+                                "destinationName": "copyDir41_inExec",
+                                "uuid": "cacc01d5-fd00-46e0-b548-d7f6721639cf",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "removeDir49"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">removeDir49</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 1014.083838645707,
+            "y": 498.10581610058125
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": null,
+            "type": "graphInputs",
+            "owningGraphName": "copyJava3",
+            "name": "graphInputs50",
+            "uuid": "2501260c-856e-4c75-97ae-5603801cafef",
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "export_dir",
+                    "package": "PyFlowBase",
+                    "fullName": "graphInputs50_export_dir",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"G:\\\\tmp\\\\tcy\\\\android_tcy\\\\export_project\"",
+                    "uuid": "a0c49f35-d389-439a-9efd-e8f959667c1d",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 2,
+                            "rhsNodeName": "pathCombine53",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a"
+                        },
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 2,
+                            "rhsNodeName": "pathCombine43",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "ba6643e0-17c6-43c7-b279-80685641c814"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        32,
+                        64,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "export_dir",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a0c49f35-d389-439a-9efd-e8f959667c1d",
+                                "destinationUUID": "7a6e4d47-fbb4-4a2c-bcb8-4a14897a7508",
+                                "sourceName": "graphInputs50_export_dir",
+                                "destinationName": "pathCombine43_p1",
+                                "uuid": "9badd3b8-2a28-4cbd-a2ad-703305da695b",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "branch16",
+                    "package": "PyFlowBase",
+                    "fullName": "graphInputs50_branch16",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "0295eb6f-af10-4515-bf86-b458010b52d4",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir49",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "2f2270d2-814d-4d20-9f98-3aca5a6b7c03"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        32,
+                        64,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "branch16",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0295eb6f-af10-4515-bf86-b458010b52d4",
+                                "destinationUUID": "3ef68dbd-f576-48a2-97f8-5905723b0ebf",
+                                "sourceName": "graphInputs50_branch16",
+                                "destinationName": "removeDir49_inExec",
+                                "uuid": "56fc2a84-f27b-40e1-b9d8-e5eefcbbe295",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "unity_project",
+                    "package": "PyFlowBase",
+                    "fullName": "graphInputs50_unity_project",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"F:\\\\work\\\\tanchiyu\\\\client\\\\game_card\"",
+                    "uuid": "99a6aecd-cc1d-4a7b-acbd-214402549861",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 3,
+                            "rhsNodeName": "asdk_project_dir44",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [
+                        32,
+                        64,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "unity_project",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "99a6aecd-cc1d-4a7b-acbd-214402549861",
+                                "destinationUUID": "97eb5a54-e66e-4d32-8831-85e8e41529b1",
+                                "sourceName": "graphInputs50_unity_project",
+                                "destinationName": "asdk_project_dir44_p1",
+                                "uuid": "1979d27c-0c1d-4546-8970-c295ae1f9700",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "graphInputs50"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">graphInputs50</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 475.1195722291885,
+            "y": 595.1761661169321
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": null,
+            "type": "graphOutputs",
+            "owningGraphName": "copyJava3",
+            "name": "graphOutputs51",
+            "uuid": "16a5ab59-343b-437f-8c48-76b41ae2f0aa",
+            "inputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "graphOutputs51_out",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "3f8e123d-afce-4299-a3b8-a4ce6be5f16a",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "copyDir54",
+                            "outPinId": 1,
+                            "rhsNodeName": "graphOutputs51",
+                            "inPinId": 1,
+                            "lhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29",
+                            "rhsNodeUid": "16a5ab59-343b-437f-8c48-76b41ae2f0aa"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        32,
+                        64,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "f393cf64-e4c7-4d22-ae4d-bd77a3beb25e",
+                                "destinationUUID": "3f8e123d-afce-4299-a3b8-a4ce6be5f16a",
+                                "sourceName": "copyDir54_outExec",
+                                "destinationName": "graphOutputs51_out",
+                                "uuid": "5d40fa80-7107-4aa6-9484-650c28157474",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [],
+            "meta": {
+                "var": {},
+                "label": "graphOutputs51"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">graphOutputs51</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 1404.1630965303243,
+            "y": 496.03463441146005
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "pathCombine",
+            "owningGraphName": "copyJava3",
+            "name": "pathCombine52",
+            "uuid": "39baa13e-ec09-4373-a49d-fa5e7a0101b3",
+            "inputs": [
+                {
+                    "name": "p1",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine52_p1",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk\"",
+                    "uuid": "1021ff6f-4d85-47db-83ec-5afc563230f1",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "asdk_project_dir44",
+                            "outPinId": 1,
+                            "rhsNodeName": "pathCombine52",
+                            "inPinId": 1,
+                            "lhsNodeUid": "6c169122-ffac-4c44-b34b-d9ffb84cbe70",
+                            "rhsNodeUid": "39baa13e-ec09-4373-a49d-fa5e7a0101b3"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p1",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a819b647-7669-4264-85ad-248de317d4f7",
+                                "destinationUUID": "1021ff6f-4d85-47db-83ec-5afc563230f1",
+                                "sourceName": "asdk_project_dir44_out",
+                                "destinationName": "pathCombine52_p1",
+                                "uuid": "fa8499bb-5896-433c-9814-cb0afb76271f",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "p2",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine52_p2",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"unityLibrary\\\\src\\\\main\\\\java\\\\com\\\\unity3d\"",
+                    "uuid": "4f47e557-8a1e-4f84-8f49-306fdb9dc030",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p2",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine52_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk/unityLibrary/src/main/java/com/unity3d\"",
+                    "uuid": "94053c14-7871-4fbd-b7eb-6ca5fa590845",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine52",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 2,
+                            "lhsNodeUid": "39baa13e-ec09-4373-a49d-fa5e7a0101b3",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "94053c14-7871-4fbd-b7eb-6ca5fa590845",
+                                "destinationUUID": "41774e99-ef4b-4e18-b778-0c50998f8440",
+                                "sourceName": "pathCombine52_out",
+                                "destinationName": "copyDir54_src",
+                                "uuid": "da6b5b0a-26d6-433d-ba1f-fa6ed36f125b",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "pathCombine52"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">pathCombine52</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 838.1620709653481,
+            "y": 673.0953399422767
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "pathCombine",
+            "owningGraphName": "copyJava3",
+            "name": "pathCombine53",
+            "uuid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a",
+            "inputs": [
+                {
+                    "name": "p1",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine53_p1",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:\\\\tmp\\\\tcy\\\\android_tcy\\\\export_project\"",
+                    "uuid": "32adf338-611d-46a6-8c6b-050f1674db5e",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "graphInputs50",
+                            "outPinId": 2,
+                            "rhsNodeName": "pathCombine53",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2501260c-856e-4c75-97ae-5603801cafef",
+                            "rhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p1",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a0c49f35-d389-439a-9efd-e8f959667c1d",
+                                "destinationUUID": "32adf338-611d-46a6-8c6b-050f1674db5e",
+                                "sourceName": "graphInputs50_export_dir",
+                                "destinationName": "pathCombine53_p1",
+                                "uuid": "c89066e5-ad92-41dc-8da1-cd40102a71a6",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "p2",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine53_p2",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"unityLibrary\\\\src\\\\main\\\\java\\\\com\\\\unity3d\"",
+                    "uuid": "2f1c7a84-82d5-43d8-8910-c5a9056eeea5",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "p2",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "out",
+                    "package": "PyFlowBase",
+                    "fullName": "pathCombine53_out",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/unityLibrary/src/main/java/com/unity3d\"",
+                    "uuid": "81fead25-235f-4bca-a680-bc09ef17db2b",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine53",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir55",
+                            "inPinId": 2,
+                            "lhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a",
+                            "rhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42"
+                        },
+                        {
+                            "lhsNodeName": "pathCombine53",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 3,
+                            "lhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "out",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "81fead25-235f-4bca-a680-bc09ef17db2b",
+                                "destinationUUID": "7faabaab-70c2-4fff-95c6-b93836a12c67",
+                                "sourceName": "pathCombine53_out",
+                                "destinationName": "removeDir55_dir",
+                                "uuid": "342e0c12-3f87-4376-801d-697293c6a48e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            },
+                            "3": {
+                                "sourceUUID": "81fead25-235f-4bca-a680-bc09ef17db2b",
+                                "destinationUUID": "310d7310-a4ed-4330-a0fa-9ff89e32d564",
+                                "sourceName": "pathCombine53_out",
+                                "destinationName": "copyDir54_dst",
+                                "uuid": "b2ffd91d-5efc-4082-8ba1-425f3c2e5fa2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "pathCombine53"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">pathCombine53</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 839.512136844021,
+            "y": 748.6057359889262
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "copyDir",
+            "owningGraphName": "copyJava3",
+            "name": "copyDir54",
+            "uuid": "89c0c889-231f-42d1-ac1b-519b05385d29",
+            "inputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_src",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"F:/work/tanchiyu/client/game_card/Extend/Android/asdk/unityLibrary/src/main/java/com/unity3d\"",
+                    "uuid": "41774e99-ef4b-4e18-b778-0c50998f8440",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine52",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 2,
+                            "lhsNodeUid": "39baa13e-ec09-4373-a49d-fa5e7a0101b3",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "94053c14-7871-4fbd-b7eb-6ca5fa590845",
+                                "destinationUUID": "41774e99-ef4b-4e18-b778-0c50998f8440",
+                                "sourceName": "pathCombine52_out",
+                                "destinationName": "copyDir54_src",
+                                "uuid": "da6b5b0a-26d6-433d-ba1f-fa6ed36f125b",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "inExec",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_inExec",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "2f0ed9e2-2480-41ab-87c2-fa0fcbe48ae1",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "removeDir55",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 1,
+                            "lhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "inExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0af35a6f-9f30-4701-892e-09d3fabe2fb9",
+                                "destinationUUID": "2f0ed9e2-2480-41ab-87c2-fa0fcbe48ae1",
+                                "sourceName": "removeDir55_outExec",
+                                "destinationName": "copyDir54_inExec",
+                                "uuid": "df38faab-49ee-44d0-92d7-ed08b60a19d2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "dst",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_dst",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/unityLibrary/src/main/java/com/unity3d\"",
+                    "uuid": "310d7310-a4ed-4330-a0fa-9ff89e32d564",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine53",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 3,
+                            "lhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "dst",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "81fead25-235f-4bca-a680-bc09ef17db2b",
+                                "destinationUUID": "310d7310-a4ed-4330-a0fa-9ff89e32d564",
+                                "sourceName": "pathCombine53_out",
+                                "destinationName": "copyDir54_dst",
+                                "uuid": "b2ffd91d-5efc-4082-8ba1-425f3c2e5fa2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "outExec",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_outExec",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "f393cf64-e4c7-4d22-ae4d-bd77a3beb25e",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "copyDir54",
+                            "outPinId": 1,
+                            "rhsNodeName": "graphOutputs51",
+                            "inPinId": 1,
+                            "lhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29",
+                            "rhsNodeUid": "16a5ab59-343b-437f-8c48-76b41ae2f0aa"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "outExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "f393cf64-e4c7-4d22-ae4d-bd77a3beb25e",
+                                "destinationUUID": "3f8e123d-afce-4299-a3b8-a4ce6be5f16a",
+                                "sourceName": "copyDir54_outExec",
+                                "destinationName": "graphOutputs51_out",
+                                "uuid": "5d40fa80-7107-4aa6-9484-650c28157474",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ok",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_ok",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "4d6dcb38-c89e-4aa0-b8d8-67b249c3c6a4",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ok",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "error_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "copyDir54_error_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"\"",
+                    "uuid": "57abf3ef-7a3f-40d8-88f0-f0e1c552e65b",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_msg",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "copyDir54"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">copyDir54</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 1223.7017014748712,
+            "y": 718.7896603484937
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": "IOLib",
+            "type": "removeDir",
+            "owningGraphName": "copyJava3",
+            "name": "removeDir55",
+            "uuid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42",
+            "inputs": [
+                {
+                    "name": "dir",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_dir",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"G:/tmp/tcy/android_tcy/export_project/unityLibrary/src/main/java/com/unity3d\"",
+                    "uuid": "7faabaab-70c2-4fff-95c6-b93836a12c67",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "pathCombine53",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir55",
+                            "inPinId": 2,
+                            "lhsNodeUid": "5ff32776-4cec-4dd2-9d83-06ebe6e1cb4a",
+                            "rhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "dir",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "81fead25-235f-4bca-a680-bc09ef17db2b",
+                                "destinationUUID": "7faabaab-70c2-4fff-95c6-b93836a12c67",
+                                "sourceName": "pathCombine53_out",
+                                "destinationName": "removeDir55_dir",
+                                "uuid": "342e0c12-3f87-4376-801d-697293c6a48e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "inExec",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_inExec",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "5ffe97c7-f0a8-440a-9d43-e8d5690179ea",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "copyDir41",
+                            "outPinId": 1,
+                            "rhsNodeName": "removeDir55",
+                            "inPinId": 1,
+                            "lhsNodeUid": "5db870f7-7660-4618-91f4-df684f92f0b0",
+                            "rhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "inExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0a6ef897-4290-484d-9755-8c89296b48c8",
+                                "destinationUUID": "5ffe97c7-f0a8-440a-9d43-e8d5690179ea",
+                                "sourceName": "copyDir41_outExec",
+                                "destinationName": "removeDir55_inExec",
+                                "uuid": "c9fae9d5-40e5-49c0-b7c2-d09dec54f023",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ignore_error",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_ignore_error",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "false",
+                    "uuid": "f978b851-2d0f-4147-b48a-51612e4dbf2a",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ignore_error",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "ok",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_ok",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "9d89e96e-346e-4b6e-b45d-0fe997123800",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ok",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "error_msg",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_error_msg",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"\"",
+                    "uuid": "61ba903a-ec10-498e-8d63-987e60733f09",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "error_msg",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "outExec",
+                    "package": "PyFlowBase",
+                    "fullName": "removeDir55_outExec",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "0af35a6f-9f30-4701-892e-09d3fabe2fb9",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "removeDir55",
+                            "outPinId": 1,
+                            "rhsNodeName": "copyDir54",
+                            "inPinId": 1,
+                            "lhsNodeUid": "abc9bb40-1411-4bae-9d2b-c58c874ecb42",
+                            "rhsNodeUid": "89c0c889-231f-42d1-ac1b-519b05385d29"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "outExec",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "0af35a6f-9f30-4701-892e-09d3fabe2fb9",
+                                "destinationUUID": "2f0ed9e2-2480-41ab-87c2-fa0fcbe48ae1",
+                                "sourceName": "removeDir55_outExec",
+                                "destinationName": "copyDir54_inExec",
+                                "uuid": "df38faab-49ee-44d0-92d7-ed08b60a19d2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "removeDir55"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">removeDir55</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 1006.3240758401242,
+            "y": 712.9105529932026
+        }
+    ],
+    "depth": 2,
+    "isRoot": false,
+    "parentGraphName": "root"
+}
