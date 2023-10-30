@@ -112,21 +112,26 @@ from PyFlow.Core.Common import *
 empty = {}
 
 
-def IMPLEMENT_NODE(func=None, returns=empty, meta={NodeMeta.CATEGORY: 'Default', NodeMeta.KEYWORDS: []}, nodeType=NodeTypes.Pure):
+def IMPLEMENT_NODE(
+    func=None,
+    returns=empty,
+    meta={NodeMeta.CATEGORY: "Default", NodeMeta.KEYWORDS: []},
+    nodeType=NodeTypes.Pure,
+):
     def wrapper(func):
-        func.__annotations__ = getattr(func, '__annotations__', {})
-        func.__annotations__['nodeType'] = nodeType
+        func.__annotations__ = getattr(func, "__annotations__", {})
+        func.__annotations__["nodeType"] = nodeType
 
         if not meta == empty:
-            func.__annotations__['meta'] = meta
+            func.__annotations__["meta"] = meta
 
         if not returns == empty:
-            func.__annotations__['return'] = returns
+            func.__annotations__["return"] = returns
 
         defaults = func.__defaults__
         if defaults:
             spec = getargspec(func)
-            for (i, name) in enumerate(spec.args[-len(defaults):]):
+            for (i, name) in enumerate(spec.args[-len(defaults) :]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
                 func.__annotations__[name] = defaults[i]

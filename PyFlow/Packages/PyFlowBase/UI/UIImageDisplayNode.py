@@ -38,6 +38,5 @@ class UIImageDisplayNode(UINodeBase):
         super(UIImageDisplayNode, self).paint(painter, option, widget)
 
     def updateSize(self):
-        scaledPixmap = self.pixmap.scaledToWidth(
-            self.customLayout.geometry().width())
+        scaledPixmap = self.pixmap.scaledToWidth(self.customLayout.geometry().width())
         self.Imagelabel.setPixmap(scaledPixmap)

@@ -23,32 +23,34 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_ORANGE
 class loopEnd(NodeBase):
     def __init__(self, name):
         super(loopEnd, self).__init__(name)
-        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.loopBeginNode = self.createInputPin('Paired block', 'StringPin')
+        self.inExec = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
+        self.loopBeginNode = self.createInputPin("Paired block", "StringPin")
         self.loopBeginNode.setInputWidgetVariant("ObjectPathWIdget")
-        self.completed = self.createOutputPin('Completed', 'ExecPin')
+        self.completed = self.createOutputPin("Completed", "ExecPin")
         self.headerColor = FLOW_CONTROL_ORANGE
         self.setExperimental()
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('StringPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("StringPin")
         helper.addInputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
-        return ['iter', 'end']
+        return ["iter", "end"]
 
     @staticmethod
     def description():
-        return 'For loop end block'
+        return "For loop end block"
 
     def compute(self, *args, **kwargs):
         node = PathsRegistry().getEntity(self.loopBeginNode.getData())

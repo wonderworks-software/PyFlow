@@ -27,16 +27,26 @@ class InputActionType(Enum):
 
 
 class InputAction(object):
-    def __init__(self, name="defaultName", actionType=InputActionType.Keyboard, group="default", mouse=QtCore.Qt.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
+    def __init__(
+        self,
+        name="defaultName",
+        actionType=InputActionType.Keyboard,
+        group="default",
+        mouse=QtCore.Qt.NoButton,
+        key=None,
+        modifiers=QtCore.Qt.NoModifier,
+    ):
         self.__actionType = actionType
         self._name = name
         self._group = group
         self.__data = {"mouse": mouse, "key": key, "modifiers": modifiers}
 
     def __str__(self):
-        return "{0} {1} {2}".format(QtGui.QKeySequence(self.getModifiers()).toString(),
-                                    self.getMouseButton().name.decode('utf=8'),
-                                    QtGui.QKeySequence(self.getKey()).toString())
+        return "{0} {1} {2}".format(
+            QtGui.QKeySequence(self.getModifiers()).toString(),
+            self.getMouseButton().name.decode("utf=8"),
+            QtGui.QKeySequence(self.getKey()).toString(),
+        )
 
     @property
     def group(self):
@@ -54,9 +64,7 @@ class InputAction(object):
         ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
         smod == omod
-        return all([sm == om,
-                    sk == ok,
-                    smod == omod])
+        return all([sm == om, sk == ok, smod == omod])
 
     def __ne__(self, other):
         sm = self.__data["mouse"]
@@ -65,9 +73,7 @@ class InputAction(object):
         om = other.getData()["mouse"]
         ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
-        return not all([sm == om,
-                        sk == ok,
-                        smod == omod])
+        return not all([sm == om, sk == ok, smod == omod])
 
     def getName(self):
         return self._name
@@ -76,14 +82,14 @@ class InputAction(object):
         return self.__data
 
     def setMouseButton(self, btn):
-        assert(isinstance(btn, QtCore.Qt.MouseButton))
+        assert isinstance(btn, QtCore.Qt.MouseButton)
         self.__data["mouse"] = btn
 
     def getMouseButton(self):
         return self.__data["mouse"]
 
     def setKey(self, key=[]):
-        assert(isinstance(key, QtCore.Qt.Key))
+        assert isinstance(key, QtCore.Qt.Key)
         self.__data["key"] = key
 
     def getKey(self):
@@ -138,8 +144,12 @@ class InputAction(object):
             self._group = jsonData["group"]
             self.__data["mouse"] = QtCore.Qt.MouseButton(jsonData["mouse"])
             keyJson = jsonData["key"]
-            self.__data["key"] = QtCore.Qt.Key(keyJson) if isinstance(keyJson, int) else None
-            self.__data["modifiers"] = self._listOfModifiersToEnum([QtCore.Qt.KeyboardModifier(i) for i in jsonData["modifiers"]])
+            self.__data["key"] = (
+                QtCore.Qt.Key(keyJson) if isinstance(keyJson, int) else None
+            )
+            self.__data["modifiers"] = self._listOfModifiersToEnum(
+                [QtCore.Qt.KeyboardModifier(i) for i in jsonData["modifiers"]]
+            )
             self.__actionType = InputActionType(jsonData["actionType"])
             return self
         except:

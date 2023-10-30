@@ -22,10 +22,12 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class whileLoop(NodeBase):
     def __init__(self, name):
         super(whileLoop, self).__init__(name)
-        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.begin)
-        self.bCondition = self.createInputPin('Condition', 'BoolPin')
-        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.completed = self.createOutputPin('Completed', 'ExecPin')
+        self.inExec = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.begin
+        )
+        self.bCondition = self.createInputPin("Condition", "BoolPin")
+        self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
+        self.completed = self.createOutputPin("Completed", "ExecPin")
         self.bProcess = False
         self._dirty = False
         self.headerColor = FLOW_CONTROL_COLOR
@@ -36,15 +38,15 @@ class whileLoop(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('BoolPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("BoolPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
@@ -70,4 +72,4 @@ class whileLoop(NodeBase):
 
     @staticmethod
     def description():
-        return 'The WhileLoop node will output a result so long as a specific condition is true. During each iteration of the loop, it checks to see the current status of its input boolean value. As soon as it reads false, the loop breaks.\nAs with While loops in programming languages, extra care must be taken to prevent infinite loops from occurring.'
+        return "The WhileLoop node will output a result so long as a specific condition is true. During each iteration of the loop, it checks to see the current status of its input boolean value. As soon as it reads false, the loop breaks.\nAs with While loops in programming languages, extra care must be taken to prevent infinite loops from occurring."

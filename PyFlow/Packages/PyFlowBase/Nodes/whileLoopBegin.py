@@ -24,36 +24,36 @@ class whileLoopBegin(NodeBase):
     def __init__(self, name):
         super(whileLoopBegin, self).__init__(name)
         self.lastCondition = False
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.condition = self.createInputPin('Condition', 'BoolPin')
-        self.loopEndNode = self.createInputPin('Paired block', 'StringPin')
+        self.inExec = self.createInputPin("inExec", "ExecPin", None, self.compute)
+        self.condition = self.createInputPin("Condition", "BoolPin")
+        self.loopEndNode = self.createInputPin("Paired block", "StringPin")
         self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
 
-        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
+        self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
         self.headerColor = FLOW_CONTROL_ORANGE
         self.setExperimental()
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('BoolPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("BoolPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
-        return ['iter']
+        return ["iter"]
 
     @staticmethod
     def description():
-        return 'While loop begin block'
+        return "While loop begin block"
 
     def onNext(self, *args, **kwargs):
         currentCondition = self.condition.getData()

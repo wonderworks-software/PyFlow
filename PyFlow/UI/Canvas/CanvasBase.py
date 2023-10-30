@@ -36,7 +36,9 @@ class CanvasBase(QGraphicsView):
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
 
-        self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
+        self.centerOn(
+            QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2)
+        )
 
     def createScene(self):
         scene = QGraphicsScene(self)
@@ -158,14 +160,20 @@ class CanvasBase(QGraphicsView):
         return self.transform().m22()
 
     def getLodValueFromScale(self, numLods=5, scale=1.0):
-        lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
+        lod = lerp(
+            numLods,
+            1,
+            GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale),
+        )
         return int(round(lod))
 
     def getLodValueFromCurrentScale(self, numLods=5):
         return self.getLodValueFromScale(numLods, self.currentViewScale())
 
     def getCanvasLodValueFromCurrentScale(self):
-        return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
+        return self.getLodValueFromScale(
+            editableStyleSheet().LOD_Number[0], self.currentViewScale()
+        )
 
     def drawBackground(self, painter, rect):
         super(CanvasBase, self).drawBackground(painter, rect)
@@ -176,7 +184,9 @@ class CanvasBase(QGraphicsView):
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        left = int(rect.left()) - (
+            int(rect.left()) % editableStyleSheet().GridSizeFine[0]
+        )
         top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
         if editableStyleSheet().DrawGrid[0] >= 1:
@@ -200,8 +210,12 @@ class CanvasBase(QGraphicsView):
                 painter.drawLines(gridLines)
 
             # Draw thick grid
-            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
-            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
+            left = int(rect.left()) - (
+                int(rect.left()) % editableStyleSheet().GridSizeHuge[0]
+            )
+            top = int(rect.top()) - (
+                int(rect.top()) % editableStyleSheet().GridSizeHuge[0]
+            )
 
             # Draw vertical thick lines
             gridLines = []
@@ -234,7 +248,11 @@ class CanvasBase(QGraphicsView):
                 y += editableStyleSheet().GridSizeHuge[0]
                 inty = int(y)
                 if y > top + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.setPen(
+                        QtGui.QPen(
+                            editableStyleSheet().CanvasGridColorDarker.lighter(300)
+                        )
+                    )
                     painter.drawText(rect.left(), y - 1.0, str(inty))
 
             x = float(left)
@@ -242,5 +260,11 @@ class CanvasBase(QGraphicsView):
                 x += editableStyleSheet().GridSizeHuge[0]
                 intx = int(x)
                 if x > left + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
-                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(intx))
+                    painter.setPen(
+                        QtGui.QPen(
+                            editableStyleSheet().CanvasGridColorDarker.lighter(300)
+                        )
+                    )
+                    painter.drawText(
+                        x, rect.top() + painter.font().pointSize(), str(intx)
+                    )

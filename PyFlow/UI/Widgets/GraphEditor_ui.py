@@ -10,6 +10,7 @@
 
 from Qt import QtCompat, QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -17,9 +18,15 @@ class Ui_MainWindow(object):
         MainWindow.resize(863, 543)
         MainWindow.setDocumentMode(True)
         MainWindow.setDockNestingEnabled(True)
-        MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowNestedDocks|QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
+        MainWindow.setDockOptions(
+            QtWidgets.QMainWindow.AllowNestedDocks
+            | QtWidgets.QMainWindow.AllowTabbedDocks
+            | QtWidgets.QMainWindow.AnimatedDocks
+        )
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.centralwidget.setLocale(
+            QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates)
+        )
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout_3.setContentsMargins(1, 1, 1, 1)
@@ -31,10 +38,14 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
         self.gridLayout.setObjectName("gridLayout")
         self.widgetCurrentGraphPath = QtWidgets.QWidget(self.SceneWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widgetCurrentGraphPath.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.widgetCurrentGraphPath.sizePolicy().hasHeightForWidth()
+        )
         self.widgetCurrentGraphPath.setSizePolicy(sizePolicy)
         self.widgetCurrentGraphPath.setObjectName("widgetCurrentGraphPath")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.widgetCurrentGraphPath)
@@ -51,10 +62,14 @@ class Ui_MainWindow(object):
         self.SceneLayout.setObjectName("SceneLayout")
         self.gridLayout.addLayout(self.SceneLayout, 4, 0, 1, 1)
         self.CompoundPropertiesWidget = QtWidgets.QWidget(self.SceneWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.CompoundPropertiesWidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.CompoundPropertiesWidget.sizePolicy().hasHeightForWidth()
+        )
         self.CompoundPropertiesWidget.setSizePolicy(sizePolicy)
         self.CompoundPropertiesWidget.setObjectName("CompoundPropertiesWidget")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.CompoundPropertiesWidget)
@@ -95,5 +110,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtCompat.translate("MainWindow", "PyFlow", None, -1))
         self.label_2.setText(QtCompat.translate("MainWindow", "Name:", None, -1))
         self.label.setText(QtCompat.translate("MainWindow", "Category:", None, -1))
-        self.toolBar.setWindowTitle(QtCompat.translate("MainWindow", "toolBar", None, -1))
-
+        self.toolBar.setWindowTitle(
+            QtCompat.translate("MainWindow", "toolBar", None, -1)
+        )

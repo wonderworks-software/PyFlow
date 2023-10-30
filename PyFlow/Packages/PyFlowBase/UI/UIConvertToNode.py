@@ -28,7 +28,8 @@ class UIConvertToNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
         self.headColor = self.headColorOverride = QtGui.QColor(
-            *findPinClassByType("AnyPin").color())
+            *findPinClassByType("AnyPin").color()
+        )
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -49,7 +50,8 @@ class UIConvertToNode(UINodeBase):
 
     def changeType(self, dataType):
         self.headColor = self.headColorOverride = QtGui.QColor(
-            *findPinClassByType(dataType).color())
+            *findPinClassByType(dataType).color()
+        )
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -65,8 +67,7 @@ class UIConvertToNode(UINodeBase):
         for i in self._rawNode.pinTypes:
             selector.addItem(i)
         if self.output.dataType in self._rawNode.pinTypes:
-            selector.setCurrentIndex(
-                self._rawNode.pinTypes.index(self.output.dataType))
+            selector.setCurrentIndex(self._rawNode.pinTypes.index(self.output.dataType))
 
         selector.activated.connect(self._rawNode.updateType)
         inputsCategory.insertWidget(preIndex, "DataType", selector, group=group)

@@ -23,9 +23,11 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class switchOnString(NodeBase):
     def __init__(self, name):
         super(switchOnString, self).__init__(name)
-        self.inExecPin = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.inString = self.createInputPin('string', 'StringPin')
-        self.defaultPin = self.createOutputPin('default', 'ExecPin')
+        self.inExecPin = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
+        self.inString = self.createInputPin("string", "StringPin")
+        self.defaultPin = self.createOutputPin("default", "ExecPin")
         self.headerColor = FLOW_CONTROL_COLOR
 
     def addOutPin(self):
@@ -33,7 +35,7 @@ class switchOnString(NodeBase):
         return self.addNamedOutPin(name)
 
     def addNamedOutPin(self, name):
-        p = self.createOutputPin(name, 'ExecPin')
+        p = self.createOutputPin(name, "ExecPin")
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)
         return p
@@ -41,16 +43,16 @@ class switchOnString(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('StringPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("StringPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
@@ -58,7 +60,7 @@ class switchOnString(NodeBase):
 
     @staticmethod
     def description():
-        return 'Execute output depending on input string'
+        return "Execute output depending on input string"
 
     def compute(self, *args, **kwargs):
         string = self.inString.getData()
@@ -75,6 +77,6 @@ class switchOnString(NodeBase):
         if jsonTemplate is not None:
             sortedOutputs = sorted(jsonTemplate["outputs"], key=lambda x: x["pinIndex"])
             for outPinJson in sortedOutputs:
-                if outPinJson['name'] not in existingPins:
-                    dynOut = self.addNamedOutPin(outPinJson['name'])
-                    dynOut.uid = uuid.UUID(outPinJson['uuid'])
+                if outPinJson["name"] not in existingPins:
+                    dynOut = self.addNamedOutPin(outPinJson["name"])
+                    dynOut.uid = uuid.UUID(outPinJson["uuid"])

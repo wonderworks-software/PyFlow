@@ -13,10 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import (
-    QtGui,
-    QtCore
-)
+from Qt import QtGui, QtCore
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *

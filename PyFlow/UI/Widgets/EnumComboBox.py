@@ -85,6 +85,7 @@ class EnumComboBox(QComboBox):
 if __name__ == "__main__":
     import sys
     from Qt.QtWidgets import QApplication
+
     a = QApplication(sys.argv)
 
     def clb(string):

@@ -29,13 +29,12 @@ from PyFlow.UI.Widgets.QtSliders import *
 from PyFlow.UI.Widgets.FileDialog import FileDialog
 
 
-
 class ExecInputWidget(InputWidgetSingle):
     """docstring for ExecInputWidget"""
 
     def __init__(self, parent=None, **kwds):
         super(ExecInputWidget, self).__init__(parent=parent, **kwds)
-        self.pb = QPushButton('execute', self)
+        self.pb = QPushButton("execute", self)
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
 
@@ -87,7 +86,9 @@ class FloatInputWidget(InputWidgetSingle):
             if PinSpecifires.DRAGGER_STEPS in kwds["pinAnnotations"]:
                 steps = kwds["pinAnnotations"][PinSpecifires.DRAGGER_STEPS]
 
-        self.sb = pyf_Slider(self, "float", style=0, sliderRange=valueRange, draggerSteps=steps)
+        self.sb = pyf_Slider(
+            self, "float", style=0, sliderRange=valueRange, draggerSteps=steps
+        )
         self.setWidget(self.sb)
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
@@ -167,6 +168,7 @@ class StringInputWidget(InputWidgetSingle):
 
 class EnumInputWidget(InputWidgetSingle):
     """docstring for EnumInputWidget."""
+
     def __init__(self, parent=None, **kwds):
         super(EnumInputWidget, self).__init__(parent=parent, **kwds)
         values = []
@@ -190,6 +192,7 @@ class EnumInputWidget(InputWidgetSingle):
 
 class ObjectPathWIdget(InputWidgetSingle):
     """docstring for ObjectPathWIdget."""
+
     def __init__(self, parent=None, **kwds):
         super(ObjectPathWIdget, self).__init__(parent=parent, **kwds)
         values = []
@@ -227,7 +230,7 @@ class PathInputWidget(InputWidgetSingle):
 
     def getPath(self):
         dlg = FileDialog(self.mode)
-        if dlg.exec_() == QFileDialog.Accepted and len(dlg.selectedFiles())>0:
+        if dlg.exec_() == QFileDialog.Accepted and len(dlg.selectedFiles()) > 0:
             self.le.setText(dlg.selectedFiles()[0])
 
     def blockWidgetSignals(self, bLocked):
@@ -236,6 +239,7 @@ class PathInputWidget(InputWidgetSingle):
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 
+
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
 
@@ -243,8 +247,7 @@ class BoolInputWidget(InputWidgetSingle):
         super(BoolInputWidget, self).__init__(parent=parent, **kwds)
         self.cb = QCheckBox(self)
         self.setWidget(self.cb)
-        self.cb.stateChanged.connect(
-            lambda val: self.dataSetCallback(bool(val)))
+        self.cb.stateChanged.connect(lambda val: self.dataSetCallback(bool(val)))
 
     def blockWidgetSignals(self, bLocked):
         self.cb.blockSignals(bLocked)
@@ -276,10 +279,12 @@ class NoneInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
-    '''
+def getInputWidget(
+    dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds
+):
+    """
     factory method
-    '''
+    """
 
     # try to find factory in other packages first
     for pkgName, pkg in GET_PACKAGES().items():
@@ -288,39 +293,83 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
             continue
 
         try:
-            widget = pkg.PinsInputWidgetFactory()(dataType, dataSetter, defaultValue, widgetVariant=widgetVariant, **kwds)
+            widget = pkg.PinsInputWidgetFactory()(
+                dataType, dataSetter, defaultValue, widgetVariant=widgetVariant, **kwds
+            )
             if widget is not None:
                 return widget
         except Exception as e:
-            print("Failed to override input widget.{0} Package - {1}".format(dataType,pkgName), e)
+            print(
+                "Failed to override input widget.{0} Package - {1}".format(
+                    dataType, pkgName
+                ),
+                e,
+            )
             continue
 
-    if dataType == 'FloatPin':
+    if dataType == "FloatPin":
         if kwds is not None and "pinAnnotations" in kwds:
-            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
-                return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'IntPin':
+            if (
+                kwds["pinAnnotations"] is not None
+                and "ValueRange" in kwds["pinAnnotations"]
+            ):
+                return FloatInputWidget(
+                    dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+                )
+        return FloatInputWidgetSimple(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "IntPin":
         if kwds is not None and "pinAnnotations" in kwds:
-            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
-                return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'StringPin':
+            if (
+                kwds["pinAnnotations"] is not None
+                and "ValueRange" in kwds["pinAnnotations"]
+            ):
+                return IntInputWidget(
+                    dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+                )
+        return IntInputWidgetSimple(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "StringPin":
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return StringInputWidget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
         elif widgetVariant == "PathWidget":
-            return PathInputWidget(mode="all", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return PathInputWidget(
+                mode="all",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "FilePathWidget":
-            return PathInputWidget(mode="file", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return PathInputWidget(
+                mode="file",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "FolderPathWidget":
-            return PathInputWidget(mode="directory", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)            
+            return PathInputWidget(
+                mode="directory",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "EnumWidget":
-            return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return EnumInputWidget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
         elif widgetVariant == "ObjectPathWIdget":
-            return ObjectPathWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'BoolPin':
-        return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'ExecPin':
+            return ObjectPathWIdget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
+    if dataType == "BoolPin":
+        return BoolInputWidget(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "ExecPin":
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)
-    if dataType == 'AnyPin':
+    if dataType == "AnyPin":
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)

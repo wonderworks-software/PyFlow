@@ -62,7 +62,7 @@ class UIGetVarNode(UINodeBase):
 
     def serialize(self):
         template = UINodeBase.serialize(self)
-        template['meta']['var'] = self.var.serialize()
+        template["meta"]["var"] = self.var.serialize()
         return template
 
     def onVarSelected(self, varName):
@@ -82,9 +82,13 @@ class UIGetVarNode(UINodeBase):
             for i in linkedTo:
                 if i.isAny():
                     i.setDefault()
-                self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
+                self.canvasRef().connectPinsInternal(
+                    self._rawNode.out.getWrapper()(), i.getWrapper()()
+                )
             self.updateHeaderText()
-        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self.canvasRef().pyFlowInstance.onRequestFillProperties(
+            self.createPropertiesWidget
+        )
         self._rawNode.checkForErrors()
         self.update()
 

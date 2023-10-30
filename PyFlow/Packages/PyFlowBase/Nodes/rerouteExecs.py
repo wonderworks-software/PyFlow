@@ -21,8 +21,8 @@ from PyFlow.Core.Common import *
 class rerouteExecs(NodeBase):
     def __init__(self, name):
         super(rerouteExecs, self).__init__(name)
-        self.input = self.createInputPin("in", 'ExecPin')
-        self.output = self.createOutputPin("out", 'ExecPin')
+        self.input = self.createInputPin("in", "ExecPin")
+        self.output = self.createOutputPin("out", "ExecPin")
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 
@@ -33,15 +33,15 @@ class rerouteExecs(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'Common'
+        return "Common"
 
     def compute(self, *args, **kwargs):
         pass

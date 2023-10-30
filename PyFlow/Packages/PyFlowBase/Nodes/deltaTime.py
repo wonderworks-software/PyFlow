@@ -23,18 +23,18 @@ class deltaTime(NodeBase):
         super(deltaTime, self).__init__(name)
         self.bCachedEnabled = False
         self._deltaTime = 0.0
-        self._out0 = self.createOutputPin('out0', 'FloatPin')
+        self._out0 = self.createOutputPin("out0", "FloatPin")
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addOutputDataType('FloatPin')
+        helper.addOutputDataType("FloatPin")
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'Utils'
+        return "Utils"
 
     @staticmethod
     def keywords():
@@ -42,7 +42,7 @@ class deltaTime(NodeBase):
 
     @staticmethod
     def description():
-        return 'Editor delta time.'
+        return "Editor delta time."
 
     def Tick(self, deltaTime):
         self._deltaTime = deltaTime

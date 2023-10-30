@@ -5,6 +5,7 @@ from PyFlow.Core.GraphManager import GraphManagerSingleton
 @SingletonDecorator
 class PathsRegistry(object):
     """Holds paths to nodes and pins. Can rebuild paths and return entities by paths."""
+
     def __init__(self):
         self._data = {}
 

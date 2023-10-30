@@ -26,6 +26,7 @@ import time
 import inspect
 import struct
 import weakref
+
 try:
     from queue import Queue
 except:
@@ -34,6 +35,7 @@ import uuid
 import sys
 
 from nine import IS_PYTHON2, str
+
 if IS_PYTHON2:
     from aenum import IntEnum, Flag, auto, Enum
 else:
@@ -43,7 +45,7 @@ from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
 
 
-maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
+maxint = 2 ** (struct.Struct("i").size * 8 - 1) - 1
 
 
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
@@ -51,10 +53,10 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-DEFAULT_IN_EXEC_NAME = str('inExec')
-DEFAULT_OUT_EXEC_NAME = str('outExec')
-DEFAULT_WIDGET_VARIANT = str('DefaultWidget')
-REF = str('Reference')
+DEFAULT_IN_EXEC_NAME = str("inExec")
+DEFAULT_OUT_EXEC_NAME = str("outExec")
+DEFAULT_WIDGET_VARIANT = str("DefaultWidget")
+REF = str("Reference")
 
 
 def lerp(start, end, alpha):
@@ -67,7 +69,7 @@ def lerp(start, end, alpha):
     :param alpha: alpha how far to interpolate
     :returns: The result of the linear interpolation
     """
-    return (start + alpha * (end - start))
+    return start + alpha * (end - start)
 
 
 def GetRangePct(MinValue, MaxValue, Value):
@@ -80,6 +82,7 @@ def GetRangePct(MinValue, MaxValue, Value):
     """
     return (Value - MinValue) / (MaxValue - MinValue)
 
+
 def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
     (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
@@ -88,10 +91,12 @@ def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
     return lerp(OutRangeA, OutRangeB, ClampedPct)
 
+
 def mapRangeUnclamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
     (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
     return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
+
 
 def sign(x):
     """Returns sign of x. -1 if x is negative, 1 if positive and zero if 0.
@@ -140,6 +145,7 @@ def roundup(x, to):
 _currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
 python32 = Version(3, 2, 0)
 if _currentVersion <= python32:
+
     def clearList(list):
         """Clears python list
 
@@ -149,7 +155,10 @@ if _currentVersion <= python32:
         :rtype: list
         """
         del list[:]
+
+
 else:
+
     def clearList(list):
         """Clears python list
 
@@ -159,6 +168,7 @@ else:
         :rtype: list
         """
         list.clear()
+
 
 def findGoodId(ids):
     """
@@ -212,9 +222,9 @@ def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
 
     result = "def {0}({1}):\n".format(functionName, kwargsString)
 
-    for scriptLine in scriptString.split('\n'):
+    for scriptLine in scriptString.split("\n"):
         result += "\t{}".format(scriptLine)
-        result += '\n'
+        result += "\n"
     return result
 
 
@@ -290,7 +300,7 @@ def pinAffects(lhs, rhs):
     :param rhs: Second Pin to connect
     :type rhs: :py:class:`PyFlow.Core.PinBase.PinBase`
     """
-    assert(lhs is not rhs), "pin can not affect itself"
+    assert lhs is not rhs, "pin can not affect itself"
     lhs.affects.add(rhs)
     rhs.affected_by.add(lhs)
 
@@ -334,9 +344,18 @@ def canConnectPins(src, dst):
 
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
-            if not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
+            if not (
+                src.canChangeStructure(dst._currStructure, [])
+                or dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+            ):
                 return False
-        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfCheck=False):
+        elif (
+            not src.supportDictElement(
+                [], src.optionEnabled(PinOptions.DictElementSupported)
+            )
+            and dst.optionEnabled(PinOptions.SupportsOnlyArrays)
+            and not dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+        ):
             return False
         else:
             DictElement = src.getDictElementNode([])
@@ -351,22 +370,36 @@ def canConnectPins(src, dst):
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanChangeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(
+            src._currStructure, [], selfCheck=False
+        )
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (
+            srcCanChangeStruct or dstCanChangeStruct
+        ):
             return False
 
     if src.isDict() and not dst.isDict():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanChangeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(
+            src._currStructure, [], selfCheck=False
+        )
+        if not dst.optionEnabled(PinOptions.DictSupported) and not (
+            srcCanChangeStruct or dstCanChangeStruct
+        ):
             return False
 
     if dst.hasConnections():
-        if not dst.optionEnabled(PinOptions.AllowMultipleConnections) and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+        if (
+            not dst.optionEnabled(PinOptions.AllowMultipleConnections)
+            and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection
+        ):
             return False
 
     if src.hasConnections():
-        if not src.optionEnabled(PinOptions.AllowMultipleConnections) and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+        if (
+            not src.optionEnabled(PinOptions.AllowMultipleConnections)
+            and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection
+        ):
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
@@ -386,25 +419,72 @@ def canConnectPins(src, dst):
         return False
 
     if src.IsValuePin() and dst.IsValuePin():
-        if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
-            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConnection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
-            b = dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
-            c = not dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+        if src.dataType in dst.allowedDataTypes(
+            [], dst._supportedDataTypes
+        ) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
+            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConnection(
+                [], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            )
+            b = dst.canChangeTypeOnConnection(
+                [], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            ) and not dst.optionEnabled(PinOptions.AllowAny)
+            c = not dst.canChangeTypeOnConnection(
+                [], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            ) and not dst.optionEnabled(PinOptions.AllowAny)
             if all([a, b or c]):
                 return False
-            if not src.isDict() and dst.supportOnlyDictElement([], dst.isDict()) and not (dst.checkFree([], selfCheck=False) and dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
-                if not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.supportOnlyDictElement([], dst.isDict()):
+            if (
+                not src.isDict()
+                and dst.supportOnlyDictElement([], dst.isDict())
+                and not (
+                    dst.checkFree([], selfCheck=False)
+                    and dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+                )
+            ):
+                if not src.supportDictElement(
+                    [], src.optionEnabled(PinOptions.DictElementSupported)
+                ) and dst.supportOnlyDictElement([], dst.isDict()):
                     return False
             return True
         else:
             if src.dataType not in dst.supportedDataTypes():
                 return False
 
-            if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
-                   dst.checkFree([], selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
+            if all(
+                [
+                    src.dataType
+                    in list(
+                        dst.allowedDataTypes(
+                            [],
+                            dst._defaultSupportedDataTypes,
+                            selfCheck=dst.optionEnabled(
+                                PinOptions.AllowMultipleConnections
+                            ),
+                            defaults=True,
+                        )
+                    )
+                    + ["AnyPin"],
+                    dst.checkFree(
+                        [],
+                        selfCheck=dst.optionEnabled(
+                            PinOptions.AllowMultipleConnections
+                        ),
+                    ),
+                ]
+            ):
                 return True
-            if all([dst.dataType in list(src.allowedDataTypes([], src._defaultSupportedDataTypes, defaults=True)) + ["AnyPin"],
-                   src.checkFree([])]):
+            if all(
+                [
+                    dst.dataType
+                    in list(
+                        src.allowedDataTypes(
+                            [], src._defaultSupportedDataTypes, defaults=True
+                        )
+                    )
+                    + ["AnyPin"],
+                    src.checkFree([]),
+                ]
+            ):
                 return True
         return False
 
@@ -412,6 +492,7 @@ def canConnectPins(src, dst):
         return False
 
     return True
+
 
 def connectPins(src, dst):
     """**Connects two pins**
@@ -497,6 +578,7 @@ def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinI
     rhsPin = rhsNode.orderedInputs[rhsInPinIndex]
 
     return connectPins(lhsPin, rhsPin)
+
 
 def traverseConstrainedPins(startFrom, callback):
     """Iterate over constrained and connected pins
@@ -585,7 +667,7 @@ def extractDigitsFromEndOfString(string):
     :returns: Numbers in the final of the string
     :rtype: int
     """
-    result = re.search('(\d+)$', string)
+    result = re.search("(\d+)$", string)
     if result is not None:
         return int(result.group(0))
 
@@ -600,7 +682,7 @@ def removeDigitsFromEndOfString(string):
     :returns: Modified string
     :rtype: string
     """
-    return re.sub(r'\d+$', '', string)
+    return re.sub(r"\d+$", "", string)
 
 
 def getUniqNameFromList(existingNames, name):
@@ -643,6 +725,7 @@ def clearSignal(signal):
 class SingletonDecorator:
     """Decorator to make class unique, so each time called same object returned
     """
+
     allInstances = []
 
     @staticmethod
@@ -671,6 +754,7 @@ class DictElement(tuple):
 
     This subclass of python's :class:`tuple` is to represent dict elements to construct typed dicts
     """
+
     def __new__(self, a=None, b=None):
         if a is None and b is None:
             new = ()
@@ -707,7 +791,7 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType='AnyPin', inp={}):
+    def __init__(self, keyType, valueType="AnyPin", inp={}):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
@@ -728,7 +812,8 @@ class PFDict(dict):
             super(PFDict, self).__setitem__(key, item)
         else:
             raise Exception(
-                "Valid key should be a {0}".format(self.getClassFromType(self.keyType)))
+                "Valid key should be a {0}".format(self.getClassFromType(self.keyType))
+            )
 
     def getClassFromType(self, pinType):
         """
@@ -762,17 +847,29 @@ class PinOptions(Flag):
 
     ArraySupported = auto()  #: Pin can hold array data structure
     DictSupported = auto()  #: Pin can hold dict data structure
-    SupportsOnlyArrays = auto()  #: Pin will only support other pins with array data structure
+    SupportsOnlyArrays = (
+        auto()
+    )  #: Pin will only support other pins with array data structure
 
-    AllowMultipleConnections = auto()  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
+    AllowMultipleConnections = (
+        auto()
+    )  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
 
-    ChangeTypeOnConnection = auto()  #: Used by :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its data type on new connection.
+    ChangeTypeOnConnection = (
+        auto()
+    )  #: Used by :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its data type on new connection.
     RenamingEnabled = auto()  #: Determines if pin can be renamed
-    Dynamic = auto()  #: Specifies if pin was created dynamically (during program runtime)
+    Dynamic = (
+        auto()
+    )  #: Specifies if pin was created dynamically (during program runtime)
     AlwaysPushDirty = auto()  #: Pin will always be seen as dirty (computation needed)
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
-    AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
-    DictElementSupported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
+    AllowAny = (
+        auto()
+    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    DictElementSupported = (
+        auto()
+    )  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
 
 
 class StructureType(IntEnum):
@@ -780,9 +877,13 @@ class StructureType(IntEnum):
     """
 
     Single = 0  #: Single data structure
-    Array = 1  #: Python list structure, represented as arrays -> typed and lists -> non typed
+    Array = (
+        1
+    )  #: Python list structure, represented as arrays -> typed and lists -> non typed
     Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
-    Multi = 3  #: This means it can became any of the previous ones on connection/user action
+    Multi = (
+        3
+    )  #: This means it can became any of the previous ones on connection/user action
 
 
 def findStructFromValue(value):
@@ -878,6 +979,7 @@ class NodeMeta:
     :var KEYWORDS: To specify list of additional keywords, used in node box search field
     :var CACHE_ENABLED: To specify if node is cached or not
     """
+
     CATEGORY = "Category"
     KEYWORDS = "Keywords"
     CACHE_ENABLED = "CacheEnabled"

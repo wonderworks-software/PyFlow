@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.Core.Common import *
 from PyFlow.UI import RESOURCES_DIR
@@ -51,7 +50,7 @@ class UISetVarNode(UINodeBase):
 
     def serialize(self):
         template = UINodeBase.serialize(self)
-        template['meta']['var'] = self.var.serialize()
+        template["meta"]["var"] = self.var.serialize()
         return template
 
     def onVarSelected(self, varName):
@@ -70,11 +69,13 @@ class UISetVarNode(UINodeBase):
             self._rawNode.updateStructure()
             for i in outLinkedTo:
                 self.canvasRef().connectPinsInternal(
-                    self._rawNode.out.getWrapper()(), i.getWrapper()())
+                    self._rawNode.out.getWrapper()(), i.getWrapper()()
+                )
 
             for o in inLinkedTo:
                 self.canvasRef().connectPinsInternal(
-                    o.getWrapper()(), self._rawNode.inp.getWrapper()())
+                    o.getWrapper()(), self._rawNode.inp.getWrapper()()
+                )
 
             self.updateHeaderText()
 
@@ -105,4 +106,4 @@ class UISetVarNode(UINodeBase):
 
     @staticmethod
     def category():
-        return 'Variables'
+        return "Variables"

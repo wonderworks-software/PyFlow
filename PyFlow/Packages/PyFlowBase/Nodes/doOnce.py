@@ -22,10 +22,10 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class doOnce(NodeBase):
     def __init__(self, name):
         super(doOnce, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.reset = self.createInputPin('Reset', 'ExecPin', None, self.OnReset)
-        self.bStartClosed = self.createInputPin('Start closed', 'BoolPin')
-        self.completed = self.createOutputPin('Completed', 'ExecPin')
+        self.inExec = self.createInputPin("inExec", "ExecPin", None, self.compute)
+        self.reset = self.createInputPin("Reset", "ExecPin", None, self.OnReset)
+        self.bStartClosed = self.createInputPin("Start closed", "BoolPin")
+        self.completed = self.createOutputPin("Completed", "ExecPin")
         self.bClosed = False
         self.headerColor = FLOW_CONTROL_COLOR
 
@@ -36,16 +36,16 @@ class doOnce(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('BoolPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("BoolPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
@@ -53,7 +53,7 @@ class doOnce(NodeBase):
 
     @staticmethod
     def description():
-        return 'Will fire off an execution pin just once. But can reset.'
+        return "Will fire off an execution pin just once. But can reset."
 
     def compute(self, *args, **kwargs):
         bStartClosed = self.bStartClosed.getData()

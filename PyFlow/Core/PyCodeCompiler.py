@@ -15,12 +15,14 @@
 
 from PyFlow.Core.Interfaces import ICodeCompiler
 
+
 class Py3FunctionCompiler(ICodeCompiler):
     """Compiles string to python function
     """
+
     def __init__(self, fooName=None, *args, **kwargs):
         super(Py3FunctionCompiler, self).__init__(*args, **kwargs)
-        assert(isinstance(fooName, str))
+        assert isinstance(fooName, str)
         self._fooName = fooName
 
     def compile(self, code):
@@ -32,9 +34,9 @@ class Py3FunctionCompiler(ICodeCompiler):
         :rtype: :class:`function`
         """
         foo = "def {}(self):".format(self._fooName)
-        lines = [i for i in code.split('\n') if len(i) > 0]
+        lines = [i for i in code.split("\n") if len(i) > 0]
         for line in lines:
-            foo += '\n\t{}'.format(line)
+            foo += "\n\t{}".format(line)
         if len(lines) == 0:
             foo += "\n\tpass"
         codeObject = compile(foo, "PyFlowCodeCompiler", "exec")
@@ -45,6 +47,7 @@ class Py3FunctionCompiler(ICodeCompiler):
 
 class Py3CodeCompiler(ICodeCompiler):
     """Generic python code compiler"""
+
     def __init__(self):
         super(Py3CodeCompiler, self).__init__()
 

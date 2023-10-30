@@ -24,6 +24,7 @@ from Qt.QtWidgets import QFileDialog
 
 class ScreenshotTool(ShelfTool):
     """docstring for ScreenshotTool."""
+
     def __init__(self):
         super(ScreenshotTool, self).__init__()
         self.format = "PNG"
@@ -64,7 +65,7 @@ class ScreenshotTool(ShelfTool):
     def do(self):
         name_filter = "Image (*.{0})".format(self.format.lower())
         fName = QFileDialog.getSaveFileName(filter=name_filter)
-        if not fName[0] == '':
+        if not fName[0] == "":
             print("save screen to {0}".format(fName[0]))
             img = self.pyFlowInstance.getCanvas().grab()
             img.save(fName[0], format=self.format, quality=100)

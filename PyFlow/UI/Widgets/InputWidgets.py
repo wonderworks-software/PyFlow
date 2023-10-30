@@ -37,16 +37,15 @@ class IInputWidget(object):
         return "DefaultWidget"
 
     def getWidget(self):
-        raise NotImplementedError(
-            "getWidget of IInputWidget is not implemented")
+        raise NotImplementedError("getWidget of IInputWidget is not implemented")
 
     def setWidget(self, widget):
-        raise NotImplementedError(
-            "setWidget of IInputWidget is not implemented")
+        raise NotImplementedError("setWidget of IInputWidget is not implemented")
 
     def blockWidgetSignals(self, bLock=False):
         raise NotImplementedError(
-            "blockWidgetSignals of IInputWidget is not implemented")
+            "blockWidgetSignals of IInputWidget is not implemented"
+        )
 
 
 class InputWidgetRaw(QWidget, IInputWidget):
@@ -74,18 +73,18 @@ class InputWidgetRaw(QWidget, IInputWidget):
         self._widget = widget
 
     def getWidget(self):
-        assert(self._widget is not None)
+        assert self._widget is not None
         return self._widget
 
     def onResetValue(self):
         self.setWidgetValue(self._defaultValue)
 
     def setWidgetValue(self, value):
-        '''to widget'''
+        """to widget"""
         pass
 
     def widgetValueUpdated(self, value):
-        '''from widget'''
+        """from widget"""
         pass
 
     def contextMenuEvent(self, event):
@@ -99,8 +98,12 @@ class InputWidgetSingle(InputWidgetRaw):
     """
 
     def __init__(self, parent=None, dataSetCallback=None, defaultValue=None, **kwds):
-        super(InputWidgetSingle, self).__init__(parent=parent, dataSetCallback=dataSetCallback,
-                                                defaultValue=defaultValue, **kwds)
+        super(InputWidgetSingle, self).__init__(
+            parent=parent,
+            dataSetCallback=dataSetCallback,
+            defaultValue=defaultValue,
+            **kwds,
+        )
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -121,10 +124,18 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
         UI_INPUT_WIDGET_PINS_FACTORIES[packageName] = factory
 
 
-def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
+def createInputWidget(
+    dataType,
+    dataSetter,
+    defaultValue=None,
+    widgetVariant=DEFAULT_WIDGET_VARIANT,
+    **kwds,
+):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
-        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant, **kwds)
+        pinInputWidget = factory(
+            dataType, dataSetter, defaultValue, widgetVariant, **kwds
+        )
         if pinInputWidget is not None:
             return pinInputWidget
     return pinInputWidget

@@ -129,6 +129,7 @@ class ToolBase(object):
 class ShelfTool(ToolBase):
     """Base class for shelf tools
     """
+
     def __init__(self):
         super(ShelfTool, self).__init__()
 
@@ -146,12 +147,18 @@ class ShelfTool(ToolBase):
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """Base class for dock tools
     """
+
     def __init__(self):
         ToolBase.__init__(self)
         QtWidgets.QDockWidget.__init__(self)
         self.setToolTip(self.toolTip())
         self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
-        self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
+        self.setAllowedAreas(
+            QtCore.Qt.BottomDockWidgetArea
+            | QtCore.Qt.LeftDockWidgetArea
+            | QtCore.Qt.RightDockWidgetArea
+            | QtCore.Qt.TopDockWidgetArea
+        )
         self.setObjectName(self.uniqueName())
         self.setTitleBarWidget(DockTitleBar(self))
         self.setFloating(False)
@@ -213,7 +220,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.buttonSize = QtCore.QSize(14, 14)
 
         self.dockButton = QtWidgets.QToolButton(self)
-        self.dockButton.setIcon(QtGui.QIcon(':/split_window.png'))
+        self.dockButton.setIcon(QtGui.QIcon(":/split_window.png"))
         self.dockButton.setMaximumSize(self.buttonSize)
         self.dockButton.setAutoRaise(True)
         self.dockButton.clicked.connect(self.toggleFloating)
@@ -221,7 +228,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.closeButton = QtWidgets.QToolButton(self)
         self.closeButton.setMaximumSize(self.buttonSize)
         self.closeButton.setAutoRaise(True)
-        self.closeButton.setIcon(QtGui.QIcon(':/close_window.png'))
+        self.closeButton.setIcon(QtGui.QIcon(":/close_window.png"))
         self.closeButton.clicked.connect(self.closeParent)
 
         self.buttonsLay.addSpacing(2)
@@ -257,11 +264,13 @@ class DockTitleBar(QtWidgets.QWidget):
     def onFeaturesChanged(self, features):
         if not features & QtWidgets.QDockWidget.DockWidgetVerticalTitleBar:
             self.closeButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetClosable)
+                features & QtWidgets.QDockWidget.DockWidgetClosable
+            )
             self.dockButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetFloatable)
+                features & QtWidgets.QDockWidget.DockWidgetFloatable
+            )
         else:
-            raise ValueError('vertical title bar not supported')
+            raise ValueError("vertical title bar not supported")
 
     def setTitle(self, title):
         self.titleLabel.setText(title)
@@ -271,13 +280,18 @@ class DockTitleBar(QtWidgets.QWidget):
         if not state:
             self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
         else:
-            self.box.setStyleSheet("""QGroupBox{
+            self.box.setStyleSheet(
+                """QGroupBox{
                                 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 %s,
                                 stop: 0.6 %s,
-                                stop: 1.0 %s);}""" % ("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
-                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
-                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
+                                stop: 1.0 %s);}"""
+                % (
+                    "rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
+                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                )
+            )
 
     def update(self, *args, **kwargs):
         self.ChangeFloatingStyle(self.parent().isFloating())

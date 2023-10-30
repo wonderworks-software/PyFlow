@@ -22,39 +22,39 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class forLoop(NodeBase):
     def __init__(self, name):
         super(forLoop, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.firstIndex = self.createInputPin('Start', 'IntPin')
-        self.lastIndex = self.createInputPin('Stop', 'IntPin')
-        self.step = self.createInputPin('Step', 'IntPin')
+        self.inExec = self.createInputPin("inExec", "ExecPin", None, self.compute)
+        self.firstIndex = self.createInputPin("Start", "IntPin")
+        self.lastIndex = self.createInputPin("Stop", "IntPin")
+        self.step = self.createInputPin("Step", "IntPin")
         self.step.setData(1)
 
-        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.index = self.createOutputPin('Index', 'IntPin')
-        self.completed = self.createOutputPin('Completed', 'ExecPin')
+        self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
+        self.index = self.createOutputPin("Index", "IntPin")
+        self.completed = self.createOutputPin("Completed", "ExecPin")
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('IntPin')
-        helper.addOutputDataType('ExecPin')
-        helper.addOutputDataType('IntPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("IntPin")
+        helper.addOutputDataType("ExecPin")
+        helper.addOutputDataType("IntPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
-        return ['iter']
+        return ["iter"]
 
     @staticmethod
     def description():
-        return 'For loop'
+        return "For loop"
 
     def compute(self, *args, **kwargs):
         indexFrom = self.firstIndex.getData()
