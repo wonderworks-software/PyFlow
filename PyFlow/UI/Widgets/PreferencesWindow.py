@@ -13,8 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
-
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 

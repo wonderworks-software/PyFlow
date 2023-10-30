@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 import logging
 from Qt import QtCore
 from Qt import QtGui
@@ -697,7 +696,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             p.setData(data)
 
     def getPinSG(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        pin = self._rawNode.getPinSG(str(name), pinsGroup)
+        pin = self._rawNode.getPinSG(name, pinsGroup)
         if pin is not None:
             if pin.getWrapper() is not None:
                 return pin.getWrapper()()
@@ -731,7 +730,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if ConfigManager().shouldRedirectOutput():
             errorLink = (
                 """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""
-                % (self._rawNode.name, str(error))
+                % (self._rawNode.name, error)
             )
             logging.error(errorLink)
         else:
@@ -1419,7 +1418,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         le_name.setReadOnly(True)
         baseCategory.addWidget("Name", le_name)
 
-        leUid = QLineEdit(str(self._rawNode.graph().name))
+        leUid = QLineEdit(self._rawNode.graph().name)
         leUid.setReadOnly(True)
         baseCategory.addWidget("Owning graph", leUid)
 

@@ -13,14 +13,13 @@
 ## limitations under the License.
 
 
-from nine import str
 from blinker import Signal
 
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.Common import *
 from PyFlow.Core import version
 
-ROOT_GRAPH_NAME = str("root")
+ROOT_GRAPH_NAME = "root"
 
 
 class GraphManager(object):
@@ -299,6 +298,8 @@ class GraphManager(object):
         :type classNameFilters: list(str)
         :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
         """
+        if classNameFilters is None:
+            classNameFilters = []
         allNodes = []
         for graph in self.getAllGraphs():
             if len(classNameFilters) == 0:

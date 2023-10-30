@@ -18,7 +18,6 @@ import uuid
 from copy import copy
 import weakref
 import json
-from nine import str
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
@@ -179,7 +178,7 @@ class PinBase(IPin):
 
     @group.setter
     def group(self, value):
-        self._group = str(value)
+        self._group = value
 
     def enableOptions(self, *options):
         """Enables flags on pin instance
@@ -540,7 +539,7 @@ class PinBase(IPin):
         :param err: Error message
         :type err: str
         """
-        self._lastError = str(err)
+        self._lastError = err
         self.errorOccured.send(self._lastError)
 
     def validateArray(self, array, func):

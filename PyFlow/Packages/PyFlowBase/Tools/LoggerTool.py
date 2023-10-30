@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QAction, QTextBrowser
@@ -108,7 +107,7 @@ class SignalHandler(QtCore.QObject):
         if not self.signalsBlocked():
             if msg != "\n":
                 self.text = msg
-                logger.info(str(msg))
+                logger.info(msg)
 
     def flush(self):
         print("flusing from handler")
@@ -233,7 +232,7 @@ class LoggerTool(DockTool):
                             file = file.replace("\\", "//")
                             errorLink = (
                                 """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""
-                                % (str(file + "::%s" % line), l)
+                                % (file + "::%s" % line, l)
                             )
                             self.logView.append(errorLink)
                     else:
@@ -271,7 +270,7 @@ class LoggerTool(DockTool):
             subprocess.Popen(editCmd)
         else:
             man = self.pyFlowInstance.graphManager
-            node = man.get().findNode(str(url.url()))
+            node = man.get().findNode(url.url())
             if node:
                 self.pyFlowInstance.getCanvas().clearSelection()
                 node.getWrapper().setSelected(True)
@@ -305,4 +304,4 @@ class LoggerTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Logger")
+        return "Logger"

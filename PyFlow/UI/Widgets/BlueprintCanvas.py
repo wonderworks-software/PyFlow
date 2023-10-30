@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 import random
 from copy import deepcopy
 import json
@@ -1644,7 +1643,7 @@ class BlueprintCanvas(CanvasBase):
         elif event.mimeData().hasFormat("text/plain"):
             scenePos = self.mapToScene(event.pos())
             event.accept()
-            mime = str(event.mimeData().text())
+            mime = event.mimeData().text()
             jsonData = json.loads(mime)
 
             if VARIABLE_TAG in jsonData:

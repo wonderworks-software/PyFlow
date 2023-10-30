@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from Qt import QtCore
 from Qt import QtGui
 
@@ -53,4 +52,4 @@ class NodeBoxTool(DockTool):
 
     @staticmethod
     def name():
-        return str("NodeBox")
+        return "NodeBox"

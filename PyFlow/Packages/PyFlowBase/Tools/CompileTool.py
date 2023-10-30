@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
@@ -41,7 +40,7 @@ class CompileTool(ShelfTool):
 
     @staticmethod
     def name():
-        return str("CompileTool")
+        return "CompileTool"
 
     def do(self):
         for node in self.pyFlowInstance.graphManager.get().getAllNodes():

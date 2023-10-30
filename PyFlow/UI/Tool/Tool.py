@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 import uuid
 from Qt import QtWidgets
 from Qt import QtGui, QtCore
