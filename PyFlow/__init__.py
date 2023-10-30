@@ -21,7 +21,7 @@ __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 import importlib
 import pkgutil
-import collections.abc as collections
+import collections.abc
 from copy import copy
 import os
 import json
@@ -88,7 +88,7 @@ def getHashableDataTypes():
         for pin in getAllPinClasses():
             t = pin.internalDataStructure()
             if t is not type(None) and t is not None:
-                if isinstance(pin.pinDataTypeHint()[1], collections.Hashable):
+                if isinstance(pin.pinDataTypeHint()[1], collections.abc.Hashable):
                     __HASHABLE_TYPES.append(pin.__name__)
     return copy(__HASHABLE_TYPES)
 
