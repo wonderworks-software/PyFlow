@@ -153,7 +153,7 @@ class NodeDefaults(object):
     def __init__(self):
         self.__contentMargins = 5
         self.__layoutsSpacing = 5
-        self.__cornersRoundFactor = 6
+        self.__cornersRoundFactor = 3
         self.__svgIconKey = "svgIcon"
         self.__layer = 1000000
 

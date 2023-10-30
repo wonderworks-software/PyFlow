@@ -352,7 +352,7 @@ class PinPainter(object):
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
-            yCenter = textHeight - textHeight / 3
+            yCenter = textHeight - textHeight / 4.5
             painter.setPen(QtGui.QPen(
                 pin.labelColor, 0.5, QtCore.Qt.SolidLine))
             painter.drawText(x, yCenter, pin.displayName())
@@ -396,7 +396,7 @@ class PinPainter(object):
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
-            yCenter = textHeight - textHeight / 3
+            yCenter = textHeight - textHeight / 5
             painter.setPen(QtGui.QPen(
                 pin.labelColor, 0.5, QtCore.Qt.SolidLine))
             painter.drawText(x, yCenter, pin.displayName())
@@ -466,7 +466,7 @@ class PinPainter(object):
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
-            yCenter = textHeight - textHeight / 3
+            yCenter = textHeight - textHeight / 5
             painter.setPen(PinPainter._valuePinNamePen)
             painter.drawText(x, yCenter, pin.name)
 
@@ -506,7 +506,7 @@ class PinPainter(object):
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
-            yCenter = textHeight - textHeight / 3
+            yCenter = textHeight - textHeight / 5
             painter.setPen(PinPainter._valuePinNamePen)
             painter.drawText(x, yCenter, pin.name)
 
