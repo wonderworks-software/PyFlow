@@ -18,12 +18,7 @@ import inspect
 import json
 import os
 
-from nine import IS_PYTHON2
-
-if IS_PYTHON2:
-    from aenum import IntEnum
-else:
-    from enum import IntEnum
+from enum import IntEnum
 
 from Qt import QtGui, QtWidgets, QtCore
 

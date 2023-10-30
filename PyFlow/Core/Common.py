@@ -27,19 +27,11 @@ import inspect
 import struct
 import weakref
 
-try:
-    from queue import Queue
-except:
-    from Queue import Queue
+from queue import Queue
 import uuid
 import sys
 
-from nine import IS_PYTHON2, str
-
-if IS_PYTHON2:
-    from aenum import IntEnum, Flag, auto, Enum
-else:
-    from enum import IntEnum, Flag, auto, Enum
+from enum import IntEnum, Flag, auto, Enum
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
@@ -107,10 +99,7 @@ def sign(x):
 
 
 def currentProcessorTime():
-    if IS_PYTHON2:
-        return time.clock()
-    else:
-        return time.process_time()
+    return time.process_time()
 
 
 def clamp(n, vmin, vmax):

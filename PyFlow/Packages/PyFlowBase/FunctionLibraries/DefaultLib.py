@@ -20,7 +20,6 @@ from PyFlow.Core import FunctionLibraryBase, IMPLEMENT_NODE
 from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
-from nine import IS_PYTHON2
 
 
 PIN_ALLOWS_ANYTHING = {
