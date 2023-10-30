@@ -106,8 +106,9 @@ class SignalHandler(QtCore.QObject):
                 self.text = msg
                 logger.info(msg)
 
-    def flush(self):
-        print("flusing from handler")
+    @staticmethod
+    def flush():
+        print("flushing from handler")
 
 
 class QtHandler(logging.Handler):

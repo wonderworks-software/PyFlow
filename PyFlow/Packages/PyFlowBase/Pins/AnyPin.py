@@ -282,7 +282,8 @@ class AnyPin(PinBase):
             self.prevDataType = None
         self.owningNode().checkForErrors()
 
-    def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
+    @staticmethod
+    def updateOnConnectionCallback(pin, dataType, init=False, other=None):
         """Method Called in traverse function :py:func:`PyFlow.Core.Common.traverseConstrainedPins`
 
         This Function is called for all the connected Pins to the initial Pin calling it.

@@ -322,7 +322,8 @@ class GraphManager(object):
             result.extend(list(graph.getVars().values()))
         return result
 
-    def getUniqGraphPinName(self, graph, name):
+    @staticmethod
+    def getUniqGraphPinName(graph, name):
         """Returns unique pin name for graph
 
         Used by compound node and graphInputs graphOutputs nodes.

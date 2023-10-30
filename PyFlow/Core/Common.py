@@ -801,7 +801,8 @@ class PFDict(dict):
                 "Valid key should be a {0}".format(self.getClassFromType(self.keyType))
             )
 
-    def getClassFromType(self, pinType):
+    @staticmethod
+    def getClassFromType(pinType):
         """
         Gets the internal data structure for a defined pin type
 

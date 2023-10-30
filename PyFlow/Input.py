@@ -119,7 +119,8 @@ class InputAction(object):
             result.append(QtCore.Qt.GroupSwitchModifier)
         return result
 
-    def _listOfModifiersToEnum(self, modifiersList):
+    @staticmethod
+    def _listOfModifiersToEnum(modifiersList):
         result = QtCore.Qt.NoModifier
         for mod in modifiersList:
             result = result | mod

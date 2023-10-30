@@ -157,7 +157,8 @@ class splineRamp(object):
             + self.interpolateBezier(coorArr, i + 1, j - 1, t) * t
         )
 
-    def interpolateLinear(self, start, end, ratio):
+    @staticmethod
+    def interpolateLinear(start, end, ratio):
         return ratio * start + (1 - ratio) * end
 
 
