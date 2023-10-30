@@ -24,7 +24,10 @@ from PyFlow.Input import InputAction, InputManager, InputActionType
 
 @SingletonDecorator
 class ConfigManager(object):
-    """Responsible for registering configuration files, reading/writing values to registered config files by aliases, providing QSettings from registered aliases."""
+    """
+    Responsible for registering configuration files, reading/writing values to registered config files by
+    aliases, providing QSettings from registered aliases.
+    """
 
     CONFIGS_STORAGE = {}
 
