@@ -50,7 +50,7 @@ class UIPinBase(QGraphicsWidget):
         :param owningNode: Owning node
         :type owningNode: :class:`PyFlow.UI.Canvas.NodeBase`
         :param raw_pin: PinBase reference
-        :type raw_pin: :class:`PyFlow.Core.PinBase`
+        :type raw_pin: :class:`PyFlow.Core.PinBase.PinBase`
         """
 
         super(UIPinBase, self).__init__()

@@ -62,7 +62,7 @@ def validateGraphDataPackages(graphData, missedPackages=None):
     :param graphData: Serialized graph
     :type graphData: dict
     :param missedPackages: Package names that missed
-    :type missedPackages: str
+    :type missedPackages: set
     :rtype: bool
     """
     if missedPackages is None:

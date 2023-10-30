@@ -284,8 +284,8 @@ class PinBase(IPin):
     def initAsDict(self, bIsDict):
         """Sets this pins to be a dict always
 
-        :param bIsArray: Define as dict
-        :type bIsArray: bool
+        :param bIsDict: Define as dict
+        :type bIsDict: bool
         """
         self._alwaysDict = bool(bIsDict)
         if bool(bIsDict):
@@ -318,8 +318,8 @@ class PinBase(IPin):
     def setAsDict(self, bIsDict):
         """Sets this pins to be a dict
 
-        :param bIsArray: Define as Array
-        :type bIsArray: bool
+        :param bIsDict: Define as Array
+        :type bIsDict: bool
         """
         bIsDict = bool(bIsDict)
         if self._isDict == bIsDict:
@@ -702,7 +702,7 @@ class PinBase(IPin):
         """Recursive function to determine if pin can change its structure
 
         :param newStruct: New structure we want to apply
-        :type newStruct: string
+        :type newStruct: :class:`~PyFlow.Core.Common.StructureType`
         :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param selfCheck: Define if check pin itself for connected pins, defaults to True

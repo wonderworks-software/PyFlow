@@ -30,8 +30,8 @@ from PyFlow.Core.GraphManager import GraphManagerSingleton
 def getGraphArguments(data, parser):
     """Adds arguments to parser using graph input nodes
 
-    :param data: Serialized graph
-    :type data: json
+    :param data: Parsed json graph
+    :type data: dict
     :param parser: ArgumentParser class instance
     :type parser: ArgumentParser
     """
