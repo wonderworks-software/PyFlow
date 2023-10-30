@@ -106,7 +106,6 @@ class InputWidgetSingle(InputWidgetRaw):
         )
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._index = 0
         self._widget = None
         self.senderPin = None

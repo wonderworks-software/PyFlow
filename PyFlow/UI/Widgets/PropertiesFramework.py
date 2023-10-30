@@ -465,15 +465,12 @@ class PropertiesWidget(QtWidgets.QWidget):
                         #    folders[key][w.getLabel()] = group.groupLayout.itemAt(e).widget()
 
         for fold in folders:
-            folder = tree.addFolder(fold)
-            # for widg in folders[fold]:
-            #    child = tree.addNormal(widg,folder)
+            tree.addFolder(fold)
 
         d = QtWidgets.QDialog()
         d.setLayout(QtWidgets.QHBoxLayout())
         d.layout().addWidget(tree)
         d.exec_()
-        newOrder = tree.model_to_dict()
 
 
 if __name__ == "__main__":

@@ -1736,12 +1736,11 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             )
         )
         items = self.sortedItems()
-        val = self.mapToScene(QtCore.QPoint(-1.5, -1.5))
         if len(items):
             painter.setBrush(QtGui.QColor(100, 100, 100))
             painter.drawPolygon(self.displayPoints, QtCore.Qt.WindingFill)
-        else:
-            b = editableStyleSheet().InputFieldColor
+        # else:
+        #     b = editableStyleSheet().InputFieldColor
 
 
 class pyf_RampColor(pyf_RampSpline):

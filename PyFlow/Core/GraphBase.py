@@ -207,7 +207,6 @@ class GraphBase(ISerializable):
         # restore nodes
         for nodeJson in jsonData["nodes"]:
             # check if variable getter or setter and pass variable
-            nodeArgs = ()
             nodeKwargs = {}
             if nodeJson["type"] in ("getVar", "setVar"):
                 nodeKwargs["var"] = self._vars[uuid.UUID(nodeJson["varUid"])]

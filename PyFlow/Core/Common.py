@@ -181,7 +181,6 @@ def findGoodId(ids):
         diff = ID - lastID
         if diff > 1:
             return lastID + 1
-            break
         lastID = ID
     else:
         return ID + 1

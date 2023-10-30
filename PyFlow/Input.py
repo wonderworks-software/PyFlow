@@ -63,7 +63,6 @@ class InputAction(object):
         om = other.getData()["mouse"]
         ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
-        smod == omod
         return all([sm == om, sk == ok, smod == omod])
 
     def __ne__(self, other):

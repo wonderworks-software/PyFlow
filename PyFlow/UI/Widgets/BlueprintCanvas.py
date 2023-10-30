@@ -57,7 +57,6 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate["type"]
-    nodeName = jsonTemplate["name"]
     packageName = jsonTemplate["package"]
     if "lib" in jsonTemplate:
         libName = jsonTemplate["lib"]
@@ -645,7 +644,6 @@ class BlueprintCanvas(CanvasBase):
 
     def pasteNodes(self, move=True, data=None):
         if not data:
-            nodes = None
             try:
                 nodes = json.loads(QApplication.clipboard().text())
             except json.JSONDecodeError as err:
@@ -660,7 +658,6 @@ class BlueprintCanvas(CanvasBase):
             nodes[0]["x"], nodes[0]["y"]
         )
         self.clearSelection()
-        newNodes = {}
 
         nodesData = deepcopy(nodes)
         createdNodes = {}
@@ -920,7 +917,6 @@ class BlueprintCanvas(CanvasBase):
         self.pressedPin = self.findPinNearPosition(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
-        expandComments = False
         currentInputAction = InputAction(
             "temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers
         )
@@ -1001,10 +997,6 @@ class BlueprintCanvas(CanvasBase):
                     ):
                         self._selectionRect.destroy()
                         self._selectionRect = None
-                LeftPaning = (
-                    event.button() == QtCore.Qt.LeftButton
-                    and modifiers == QtCore.Qt.AltModifier
-                )
                 if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
@@ -1365,7 +1357,6 @@ class BlueprintCanvas(CanvasBase):
             if self.pressed_item.objectName() == "MouseLocked":
                 super(BlueprintCanvas, self).mouseMoveEvent(event)
             else:
-                newPos = self.mapToScene(event.pos())
                 scaledDelta = mouseDelta / self.currentViewScale()
 
                 selectedNodes = self.selectedNodes()
@@ -1410,7 +1401,6 @@ class BlueprintCanvas(CanvasBase):
         elif self.manipulationMode == CanvasManipulationMode.PAN:
             self.pan(mouseDelta)
         elif self.manipulationMode == CanvasManipulationMode.ZOOM:
-            zoomFactor = 1.0
             if mouseDelta.x() > 0:
                 zoomFactor = 1.0 + mouseDelta.x() / 100.0
             else:
@@ -1420,7 +1410,6 @@ class BlueprintCanvas(CanvasBase):
             delta = self.mousePos - self.mousePressPose
             if delta.manhattanLength() > 15:
                 self.manipulationMode = CanvasManipulationMode.MOVE
-                selectedNodes = self.selectedNodes()
                 copiedNodes = self.copyNodes(toClipBoard=False)
                 self.pasteNodes(move=False, data=copiedNodes)
                 scaledDelta = delta / self.currentViewScale()
@@ -1772,7 +1761,7 @@ class BlueprintCanvas(CanvasBase):
                 nodeType = jsonData["type"]
                 libName = jsonData["lib"]
                 name = nodeType
-                dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
+                # dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
                 # if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                 #######################################################
                 # Drop from nodebox by R. Scharf-Wildenhain, 2022-07-22

@@ -265,7 +265,6 @@ class GraphManager(object):
         graphs = self.getGraphsDict()
         if name in graphs:
             if name != self.activeGraph().name:
-                oldGraph = self.activeGraph()
                 newGraph = graphs[name]
                 self._activeGraph = newGraph
                 self.graphChanged.send(self.activeGraph())
@@ -279,7 +278,6 @@ class GraphManager(object):
         for newGraph in self.getAllGraphs():
             if newGraph.name == graph.name:
                 if newGraph.name != self.activeGraph().name:
-                    oldGraph = self.activeGraph()
                     self._activeGraph = newGraph
                     self.graphChanged.send(self.activeGraph())
                     break

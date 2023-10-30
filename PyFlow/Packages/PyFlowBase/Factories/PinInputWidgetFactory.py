@@ -193,9 +193,8 @@ class EnumInputWidget(InputWidgetSingle):
 class ObjectPathWIdget(InputWidgetSingle):
     """docstring for ObjectPathWIdget."""
 
-    def __init__(self, parent=None, **kwds):
-        super(ObjectPathWIdget, self).__init__(parent=parent, **kwds)
-        values = []
+    def __init__(self, parent=None, **kwargs):
+        super(ObjectPathWidget, self).__init__(parent=parent, **kwargs)
         self.enumBox = EnumComboBox(PathsRegistry().getAllPaths())
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)

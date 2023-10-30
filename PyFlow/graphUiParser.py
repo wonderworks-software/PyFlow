@@ -63,7 +63,7 @@ def run(filePath):
                     uiNode.postCreate(uiNodeJsonTemplate)
                     cat = CollapsibleFormWidget(headName=inp.name)
                     prop.layout().addWidget(cat)
-                    cat = uiNode.createOutputWidgets(cat)
+                    uiNode.createOutputWidgets(cat)
 
                 nodes = grph.getNodesList()
                 if len(nodes) > 0:

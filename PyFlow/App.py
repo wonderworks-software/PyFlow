@@ -199,7 +199,6 @@ class PyFlow(QMainWindow):
         IOMenu = fileMenu.addMenu("Custom IO")
         for packageName, package in GET_PACKAGES().items():
             # exporters
-            exporters = None
             try:
                 exporters = package.GetExporters()
             except:
@@ -627,7 +626,6 @@ class PyFlow(QMainWindow):
         instance.startMainLoop()
 
         # populate tools
-        canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
 
         # populate menus

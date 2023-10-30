@@ -363,7 +363,6 @@ class AnyPin(PinBase):
                         if c not in checked:
                             con.append(c)
             else:
-                free = True
                 checked.append(self)
             canChange = self.canChangeTypeOnConnection(
                 [], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []

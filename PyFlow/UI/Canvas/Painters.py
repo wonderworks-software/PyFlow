@@ -345,8 +345,6 @@ class PinPainter(object):
 
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
 
-        w = frame.width() / 2
-        h = frame.height() / 2
         halfPinSize = pin.pinSize / 2
 
         if lod < SWITCH_LOD and not pin.bLabelHidden:

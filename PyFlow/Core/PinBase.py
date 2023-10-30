@@ -764,7 +764,6 @@ class PinBase(IPin):
                         if c not in checked:
                             con.append(c)
             else:
-                free = True
                 checked.append(self)
             free = True
             if selfCheck:
@@ -820,7 +819,6 @@ class PinBase(IPin):
             return free
 
     def updateConstrainedPins(self, traversed, newStruct, init=False, connecting=False):
-        nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
         else:

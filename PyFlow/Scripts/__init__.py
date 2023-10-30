@@ -86,7 +86,6 @@ def main():
                 print(e)
 
     if parsedArguments.mode == "run":
-        data = None
         if not os.path.exists(filePath):
             print("No such file. {}".format(filePath))
             return

@@ -880,7 +880,7 @@ class NodeBase(INode):
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inputExec = raw_inst.createInputPin(
+            raw_inst.createInputPin(
                 DEFAULT_IN_EXEC_NAME, "ExecPin", None, raw_inst.compute
             )
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, "ExecPin")

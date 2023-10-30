@@ -109,7 +109,6 @@ class PythonScriptExporter(IDataExporter):
 
     @staticmethod
     def doImport(pyFlowInstance):
-        name_filter = "Graph files (*.json)"
         openFilename, filterString = QFileDialog.getOpenFileName(
             filter=PythonScriptExporter.name_filter
         )

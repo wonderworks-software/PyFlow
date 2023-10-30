@@ -102,7 +102,6 @@ class EditorHistory(object):
     def push(self, edState):
 
         if self.currentIndex < self.count() - 1:
-            nextState = None
             while True:
                 index = self.count() - 1
                 nextState = self.stack[index]
