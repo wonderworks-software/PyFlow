@@ -14,7 +14,6 @@
 
 
 from copy import copy
-import uuid
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase

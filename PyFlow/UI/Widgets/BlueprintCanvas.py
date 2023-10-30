@@ -13,18 +13,11 @@
 ## limitations under the License.
 
 
-import random
 from copy import deepcopy
 import json
 import uuid
-import weakref
 from collections import Counter
 from functools import partial
-
-try:
-    from inspect import getfullargspec as getargspec
-except:
-    from inspect import getargspec
 
 from Qt import QtCore
 from Qt import QtGui
@@ -32,7 +25,6 @@ from Qt import QtWidgets
 from Qt.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.CanvasBase import CanvasBase
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
@@ -51,8 +43,6 @@ from PyFlow.UI.Views.VariablesWidget import VARIABLE_TAG, VARIABLE_DATA_TAG
 
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
-
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):

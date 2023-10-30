@@ -14,10 +14,8 @@
 
 
 from Qt import QtCore
-from Qt import QtGui
 from Qt.QtWidgets import *
 
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Widgets.PropertiesFramework import *
 

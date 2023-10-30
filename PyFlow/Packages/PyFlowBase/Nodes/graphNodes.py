@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from blinker import Signal
+import uuid
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *

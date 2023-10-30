@@ -14,7 +14,6 @@
 
 
 from PyFlow.Core import PinBase
-from PyFlow.Core.Common import *
 
 
 class IntPin(PinBase):

@@ -23,15 +23,11 @@
 import re
 import math
 import time
-import inspect
 import struct
 import weakref
-
-from queue import Queue
-import uuid
 import sys
 
-from enum import IntEnum, Flag, auto, Enum
+from enum import IntEnum, Flag, auto
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version

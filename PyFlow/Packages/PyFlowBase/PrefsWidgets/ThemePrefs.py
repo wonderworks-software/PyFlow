@@ -16,7 +16,6 @@
 import os
 import inspect
 import json
-from collections import defaultdict
 
 from Qt.QtWidgets import *
 from Qt import QtGui

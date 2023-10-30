@@ -14,7 +14,6 @@
 
 
 from Qt import QtCore
-from Qt import QtGui
 
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox

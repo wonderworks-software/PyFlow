@@ -13,17 +13,15 @@
 ## limitations under the License.
 
 
-from blinker import Signal
+import json
 import uuid
 from copy import copy
-import weakref
-import json
 
-from PyFlow.Core.Interfaces import IPin
+from blinker import Signal
+
 from PyFlow.Core.Common import *
-from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.EvaluationEngine import EvaluationEngine
-from PyFlow import getPinDefaultValueByType
+from PyFlow.Core.Interfaces import IPin
 
 
 class PinBase(IPin):

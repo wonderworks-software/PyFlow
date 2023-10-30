@@ -14,8 +14,6 @@
 
 
 from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
 

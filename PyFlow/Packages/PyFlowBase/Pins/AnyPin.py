@@ -15,12 +15,10 @@
 
 from blinker import Signal
 import json
-from Qt import QtGui
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow import getAllPinClasses
-from PyFlow import CreateRawPin
 from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 

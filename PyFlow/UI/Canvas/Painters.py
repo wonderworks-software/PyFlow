@@ -17,8 +17,6 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
-from PyFlow import getPinFromData
-
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
 

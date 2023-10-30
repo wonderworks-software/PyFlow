@@ -15,8 +15,8 @@
 
 from blinker import Signal
 import json
+import uuid
 
-from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import IItemBase

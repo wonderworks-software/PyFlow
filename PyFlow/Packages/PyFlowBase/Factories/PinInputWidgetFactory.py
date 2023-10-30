@@ -15,13 +15,11 @@
 
 # Input widgets for pins
 
-from copy import copy
 from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *

@@ -15,18 +15,13 @@
 
 import json
 import os
-import weakref
-
-try:
-    from inspect import getfullargspec as getargspec
-except:
-    from inspect import getargspec
+import uuid
+from inspect import getfullargspec
 
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import *
 
-from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
 
 from PyFlow.Core.Common import *
@@ -190,7 +185,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 for name, foo in foos.items():
                     foo = foo
                     libName = foo.__annotations__["lib"]
-                    fooArgNames = getargspec(foo).args
+                    fooArgNames = getfullargspec(foo).args
                     fooInpTypes = set()
                     fooOutTypes = set()
                     fooInpStructs = set()

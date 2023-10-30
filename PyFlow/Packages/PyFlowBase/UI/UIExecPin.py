@@ -15,8 +15,6 @@
 
 from Qt import QtGui, QtCore
 
-from PyFlow.Core import PinBase
-from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 from PyFlow.UI.Canvas.Painters import PinPainter
 

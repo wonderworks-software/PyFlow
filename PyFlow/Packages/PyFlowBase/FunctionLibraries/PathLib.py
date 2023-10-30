@@ -224,7 +224,7 @@ class PathLib(FunctionLibraryBase):
         path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path is an existing regular file. This follows symbolic links, so both islink() and isfile() can be true for the same path."""
-        return osPath.isFile(path)
+        return osPath.isfile(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -426,7 +426,7 @@ class PathLib(FunctionLibraryBase):
         rest=(REF, ("StringPin", "")),
     ):
         """Split the pathname path into a pair (unc, rest) so that unc is the UNC mount point (such as r'\\host\mount'), if present, and rest the rest of the path (such as r'\path\file.ext'). For paths containing drive letters, unc will always be the empty string."""
-        splited = osPath.splitunc(path)
+        splited = osPath.splitdrive(path)
         if len(splited):
             unc(splited[0])
             rest(splited[1])

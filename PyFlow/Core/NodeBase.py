@@ -14,23 +14,14 @@
 
 
 from blinker import Signal
-import weakref
-import functools
 import uuid
-import keyword
-import json
 from collections import OrderedDict
 from copy import copy
 
-try:
-    from inspect import getfullargspec as getargspec
-except:
-    from inspect import getargspec
+from inspect import getfullargspec
 from types import MethodType
-import collections
 import traceback
 from PyFlow import getPinDefaultValueByType
-from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import INode
 from PyFlow import CreateRawPin
@@ -818,7 +809,7 @@ class NodeBase(INode):
         nodeType = foo.__annotations__["nodeType"]
         _packageName = foo.__annotations__["packageName"]
         libName = foo.__annotations__["lib"]
-        fooArgNames = getargspec(foo).args
+        fooArgNames = getfullargspec(foo).args
 
         @staticmethod
         def description():

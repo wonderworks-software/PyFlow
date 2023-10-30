@@ -4,7 +4,6 @@ from Qt import QtGui
 from Qt.QtWidgets import *
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.Common import *
 
 
 class WatchItem(QGraphicsTextItem):

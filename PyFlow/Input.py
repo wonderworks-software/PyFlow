@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from collections import Counter
 from collections import defaultdict
+from enum import Enum
 
 from Qt import QtCore, QtGui
 

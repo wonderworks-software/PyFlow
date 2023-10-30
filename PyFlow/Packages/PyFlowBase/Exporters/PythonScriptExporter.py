@@ -17,10 +17,8 @@ from datetime import datetime
 from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QMessageBox
 
-from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 from PyFlow.UI.UIInterfaces import IDataExporter
-from PyFlow import getRawNodeInstance
 from PyFlow.Core.version import Version
 from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 

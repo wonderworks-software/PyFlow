@@ -13,15 +13,14 @@
 ## limitations under the License.
 
 
-import weakref
+import uuid
+
 from blinker import Signal
 from collections import Counter
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import CreateRawPin
 from PyFlow import getRawNodeInstance
-from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
 from PyFlow.Core.Interfaces import ISerializable

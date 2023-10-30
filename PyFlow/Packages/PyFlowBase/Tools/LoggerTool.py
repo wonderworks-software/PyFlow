@@ -17,14 +17,11 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QAction, QTextBrowser
 from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
-import json
 import os
 import subprocess
 

@@ -14,8 +14,6 @@
 
 
 from copy import copy
-import sys
-import struct
 from Qt import QtGui, QtCore, QtWidgets
 
 from PyFlow.UI.Canvas.UICommon import SessionDescriptor
@@ -1942,7 +1940,6 @@ class testWidg(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
-    import os
     import sys
 
     app = QtWidgets.QApplication(sys.argv)

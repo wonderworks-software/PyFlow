@@ -102,10 +102,7 @@ Examples:
 
 """
 
-try:
-    from inspect import getfullargspec as getargspec
-except:
-    from inspect import getargspec
+from inspect import getfullargspec, getmembers, isfunction
 
 from PyFlow.Core.Common import *
 
@@ -130,8 +127,8 @@ def IMPLEMENT_NODE(
 
         defaults = func.__defaults__
         if defaults:
-            spec = getargspec(func)
-            for (i, name) in enumerate(spec.args[-len(defaults) :]):
+            spec = getfullargspec(func)
+            for i, name in enumerate(spec.args[-len(defaults):]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
                 func.__annotations__[name] = defaults[i]
@@ -143,13 +140,12 @@ def IMPLEMENT_NODE(
 
 
 class FunctionLibraryBase(object):
-    """Base class fo function libraries
-    """
+    """Base class fo function libraries"""
 
     def __init__(self, packageName):
         super(FunctionLibraryBase, self).__init__()
         self.__foos = {}
-        for name, function in inspect.getmembers(self, inspect.isfunction):
+        for name, function in getmembers(self, isfunction):
             function.__annotations__["packageName"] = packageName
             function.__annotations__["lib"] = self.__class__.__name__
             self.__foos[name] = function
