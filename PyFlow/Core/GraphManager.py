@@ -105,7 +105,7 @@ class GraphManager(object):
         :type data: dict
         """
         if "fileVersion" in data:
-            fileVersion = version.Version.fromString(data["fileVersion"])
+            fileVersion = version.Version.fromString(data["fileVersion"])  # TODO: find purpose
         else:
             # handle older version
             pass

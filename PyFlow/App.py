@@ -333,7 +333,7 @@ class PyFlow(QMainWindow):
     def loadFromData(self, data, clearHistory=False):
 
         # check first if all packages we are trying to load are legal
-        missedPackages = set()
+        missedPackages = set()  # TODO: nothing fills this, can never report missing package
         if not validateGraphDataPackages(data, missedPackages):
             msg = "This graph can not be loaded. Following packages not found:\n\n"
             index = 1
