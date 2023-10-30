@@ -15,18 +15,15 @@
 import os
 import json
 import threading
-import time
 
 from Qt.QtWidgets import *
 from Qt import QtGui
-from Qt import QtCore
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-import PyFlow.UI.resources
 
 
 def run(filePath):

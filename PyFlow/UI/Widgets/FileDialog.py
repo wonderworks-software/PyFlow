@@ -1,4 +1,3 @@
-from Qt import QtCore
 from Qt.QtWidgets import *
 
 

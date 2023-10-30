@@ -13,9 +13,7 @@
 ## limitations under the License.
 
 
-import uuid
 from blinker import Signal
-from collections import OrderedDict
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.Common import SingletonDecorator
