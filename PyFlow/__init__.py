@@ -34,7 +34,6 @@ __all__ = [
     "GET_PACKAGE_CHECKED",
     "GET_PACKAGE_PATH",
     "GET_PACKAGES",
-    "GET_PACKAGE_CHECKED",
     "CreateRawPin",
     "getPinDefaultValueByType",
     "findPinClassByType",
@@ -218,7 +217,7 @@ def INITIALIZE(additionalPackageLocations=None, software=""):
                 __PACKAGE_PATHS[modname] = os.path.normpath(mod.__path__[0])
         except Exception as e:
             QMessageBox.critical(
-                None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e))
+                None, "Fatal error", "Error On Module %s :\n%s" % (modname, str(e))
             )
             continue
 

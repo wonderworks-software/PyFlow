@@ -216,9 +216,9 @@ def cycleCheck(src, dst):
     """Check for cycle connected nodes
 
     :param src: hand side pin
-    :type src: :class:`PyFlow.Core.PinBase`
+    :type src: :class:`PyFlow.Core.PinBase.PinBase`
     :param dst: hand side pin
-    :type dst: :class:`PyFlow.Core.PinBase`
+    :type dst: :class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if cycle deleted
     :rtype: bool
     """
@@ -239,9 +239,9 @@ def arePinsConnected(src, dst):
     .. note:: Pins can be passed in any order if **src** pin is :py:class:`PyFlow.Core.Common.PinDirection`, they will be swapped
 
     :param src: left hand side pin
-    :type src: :py:class:`PyFlow.Core.PinBase`
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param dst: right hand side pin
-    :type dst: :py:class:`PyFlow.Core.PinBase`
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if Pins are connected
     :rtype: bool
     """
@@ -932,8 +932,8 @@ class Direction(IntEnum):
     Down = 3  #: Down
 
 
-class PinSpecifires:
-    """Pin specifires constants
+class PinSpecifiers:
+    """Pin specifiers constants
 
     :var SUPPORTED_DATA_TYPES: To specify supported data types list
     :var CONSTRAINT: To specify type constraint key

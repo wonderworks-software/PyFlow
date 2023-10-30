@@ -75,7 +75,7 @@ class ArrayLib(FunctionLibraryBase):
                                                | PinOptions.AllowAny,
             },
         ),
-        elem=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        elem=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         index=("IntPin", 0),
     ):
         """Insert an item at a given position. The first argument is the index of the element before which to insert."""

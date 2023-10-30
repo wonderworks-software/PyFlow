@@ -285,7 +285,7 @@ class DefaultLib(FunctionLibraryBase):
         returns=(
             "IntPin",
             0,
-            {PinSpecifires.DESCRIPTION: "Number of elements of iterable"},
+            {PinSpecifiers.DESCRIPTION: "Number of elements of iterable"},
         ),
         meta={NodeMeta.CATEGORY: "DefaultLib", NodeMeta.KEYWORDS: ["len"]},
     )

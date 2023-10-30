@@ -273,7 +273,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
-        self._rawNode.errorOccured.connect(self.onNodeErrorOccurred)
+        self._rawNode.errorOccurred.connect(self.onNodeErrorOccurred)
         self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
         self._rawNode.setDirty.connect(self.setDirty)
         self._rawNode.computing.connect(self.setComputing)

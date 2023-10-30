@@ -119,7 +119,7 @@ class BlueprintCanvas(CanvasBase):
         )
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self._drawRealtimeLine = False
-        self._sortcuts_enabled = True
+        self._shortcuts_enabled = True
         self.autoPanController = AutoPanController()
 
         self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
@@ -364,7 +364,7 @@ class BlueprintCanvas(CanvasBase):
         self.node_box.hide()
         self.node_box.lineEdit.clear()
 
-    def shoutDown(self, *args, **kwargs):
+    def shutDown(self, *args, **kwargs):
         self.scene().clear()
         self._UIConnections.clear()
         self.hideNodeBox()
@@ -2091,7 +2091,7 @@ class BlueprintCanvasWidget(QWidget):
         self.pyFlowInstance.fileBeenLoaded.connect(self.onFileBeenLoaded)
 
     def shoutDown(self):
-        self.canvas.shoutDown()
+        self.canvas.shutDown()
 
     def Tick(self, delta):
         self.canvas.Tick(delta)

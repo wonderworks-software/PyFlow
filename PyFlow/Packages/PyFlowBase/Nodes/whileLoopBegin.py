@@ -27,7 +27,7 @@ class whileLoopBegin(NodeBase):
         self.inExec = self.createInputPin("inExec", "ExecPin", None, self.compute)
         self.condition = self.createInputPin("Condition", "BoolPin")
         self.loopEndNode = self.createInputPin("Paired block", "StringPin")
-        self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.loopEndNode.setInputWidgetVariant("ObjectPathWidget")
 
         self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
         self.headerColor = FLOW_CONTROL_ORANGE
