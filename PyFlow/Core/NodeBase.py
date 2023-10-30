@@ -476,7 +476,7 @@ class NodeBase(INode):
         pinName,
         dataType,
         defaultValue=None,
-        foo=None,
+        callback=None,
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
@@ -491,8 +491,8 @@ class NodeBase(INode):
         :type dataType: str
         :param defaultValue: Pin default value
         :type defaultValue: object
-        :param foo: Pin callback. used for exec pins
-        :type foo: function
+        :param callback: Pin callback. used for exec pins
+        :type callback: function
         :param structure: Pin structure
         :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
@@ -516,8 +516,8 @@ class NodeBase(INode):
         elif structure == StructureType.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
-        if foo:
-            p.onExecute.connect(foo, weak=False)
+        if callback:
+            p.onExecute.connect(callback, weak=False)
 
         if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)

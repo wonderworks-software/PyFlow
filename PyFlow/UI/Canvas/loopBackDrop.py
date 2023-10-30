@@ -24,7 +24,7 @@ class backDrop(QGraphicsWidget):
         self.rect = QtCore.QRectF()
         self.parent._rawNode.killed.connect(self.parentNodeKilled)
 
-    def parentNodeKilled(self, *args):
+    def parentNodeKilled(self):
         scene = self.scene()
         if scene is not None:
             scene.removeItem(self)

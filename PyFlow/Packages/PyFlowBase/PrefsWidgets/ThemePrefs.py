@@ -224,7 +224,7 @@ class ThemePreferences(CategoryWidgetBase):
         lay.addWidget(pbDeleteTheme)
         self.layout.addLayout(lay)
 
-    def setPreset(self, index):
+    def setPreset(self):
         data = editableStyleSheet().presets[self.selector.currentText()]
         editableStyleSheet().loadFromData(data)
         self.currTheme = self.selector.currentIndex()
@@ -237,7 +237,7 @@ class ThemePreferences(CategoryWidgetBase):
             os.remove(os.path.join(THEMES_PATH, self.selector.currentText() + ".json"))
             self.selector.removeItem(self.selector.currentIndex())
             self.onShow(self.selector.currentText())
-            self.setPreset(0)
+            self.setPreset()
 
     def saveTheme(self):
         self.saveThemeAs(self.selector.currentText())

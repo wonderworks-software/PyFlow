@@ -46,7 +46,7 @@ class AnyPin(PinBase):
 
     """
 
-    def __init__(self, name, owningNode, direction, **kwargs):
+    def __init__(self, name, owningNode, direction):
         """
         :param name: Pin name
         :type name: string
@@ -55,7 +55,7 @@ class AnyPin(PinBase):
         :param direction: PinDirection , can be input or output
         :type direction: :py:class:`PyFlow.Core.Common.PinDirection`
         """
-        super(AnyPin, self).__init__(name, owningNode, direction, **kwargs)
+        super(AnyPin, self).__init__(name, owningNode, direction)
         self.typeChanged = Signal(str)
         self.dataTypeBeenSet = Signal()
         self.setDefaultValue(None)

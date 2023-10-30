@@ -77,9 +77,9 @@ class GraphBase(ISerializable):
     """
 
     def __init__(
-        self, name, manager, parentGraph=None, category="", uid=None, *args, **kwargs
+        self, name, manager, parentGraph=None, category="", uid=None
     ):
-        super(GraphBase, self).__init__(*args, **kwargs)
+        super(GraphBase, self).__init__()
         self.graphManager = manager
         self._isRoot = False
 
@@ -214,7 +214,6 @@ class GraphBase(ISerializable):
                 nodeJson["type"],
                 packageName=nodeJson["package"],
                 libName=nodeJson["lib"],
-                *nodeArgs,
                 **nodeKwargs,
             )
             self.addNode(node, nodeJson)

@@ -168,7 +168,7 @@ class PathLib(FunctionLibraryBase):
         path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the time of last modification of path. The return value is a number giving the number of seconds since the epoch (see the time module). Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getmtime(path, path2)
+        return osPath.getmtime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -182,7 +182,7 @@ class PathLib(FunctionLibraryBase):
         path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the system’s ctime which, on some systems (like Unix) is the time of the last metadata change, and, on others (like Windows), is the creation time for path. The return value is a number giving the number of seconds since the epoch (see the time module). Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getctime(path, path2)
+        return osPath.getctime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -196,7 +196,7 @@ class PathLib(FunctionLibraryBase):
         path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the size, in bytes, of path. Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getctime(path, path2)
+        return osPath.getctime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -341,7 +341,7 @@ class PathLib(FunctionLibraryBase):
         """Return a relative filepath to path either from the current directory or from an optional start directory. This is a path computation: the filesystem is not accessed to confirm the existence or nature of path or start.
         start defaults to os.curdir.
         Availability: Windows, Unix."""
-        return osPath.relpath(path)
+        return osPath.relpath(path, start)
 
     @staticmethod
     @IMPLEMENT_NODE(

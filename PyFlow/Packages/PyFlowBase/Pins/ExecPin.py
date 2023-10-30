@@ -19,8 +19,8 @@ from PyFlow.Core.Common import *
 
 # Execution pin
 class ExecPin(PinBase):
-    def __init__(self, name, parent, direction, **kwargs):
-        super(ExecPin, self).__init__(name, parent, direction, **kwargs)
+    def __init__(self, name, parent, direction):
+        super(ExecPin, self).__init__(name, parent, direction)
         self.dirty = False
         self._isArray = False
         if self.direction == PinDirection.Input:

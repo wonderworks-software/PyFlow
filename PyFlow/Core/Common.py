@@ -674,8 +674,8 @@ def getUniqNameFromList(existingNames, name):
 
     Iterates over **existingNames** and extracts the end digits to find a new unique id
 
-    :param existingNames: List of strings where to search for existing indexes
-    :type existingNames: list
+    :param existingNames: List or set of strings where to search for existing indexes
+    :type existingNames: list[str]|set[str]
     :param name: Name to obtain a unique version from
     :type name: str
     :returns: New name non overlapping with any in existingNames
@@ -739,7 +739,7 @@ class DictElement(tuple):
     This subclass of python's :class:`tuple` is to represent dict elements to construct typed dicts
     """
 
-    def __new__(self, a=None, b=None):
+    def __new__(cls, a=None, b=None):
         if a is None and b is None:
             new = ()
         elif b is None:
@@ -749,7 +749,7 @@ class DictElement(tuple):
                 raise Exception("Invalid Input")
         else:
             new = (a, b)
-        return super(DictElement, self).__new__(self, new)
+        return super(DictElement, cls).__new__(cls, new)
 
 
 class PFDict(dict):
