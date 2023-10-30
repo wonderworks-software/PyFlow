@@ -1778,7 +1778,7 @@ class pyf_RampColor(pyf_RampSpline):
 
         :param u: X position for the item, defaults to 0
         :type u: float, optional
-        :param v: color value for the item, defaults to [0,0,0]
+        :param v: color value for the item, defaults to (0,0,0)
         :type v: [float,float,float], optional
         :param raw_item: Existing :obj:`PyFlow.Core.structs.Tick` to link with, if none, one new created , defaults to None
         :type raw_item: :obj:`PyFlow.Core.structs.Tick`, optional
