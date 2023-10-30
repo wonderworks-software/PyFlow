@@ -775,7 +775,7 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType="AnyPin", inp={}):
+    def __init__(self, keyType, valueType="AnyPin", inp=None):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
@@ -783,6 +783,8 @@ class PFDict(dict):
         :param inp: Construct from another dict, defaults to {}
         :type inp: dict, optional
         """
+        if inp is None:
+            inp = {}
         super(PFDict, self).__init__(inp)
         self.keyType = keyType
         self.valueType = valueType

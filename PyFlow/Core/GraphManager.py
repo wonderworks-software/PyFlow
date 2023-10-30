@@ -289,7 +289,7 @@ class GraphManager(object):
         """
         return [g for g in self._graphs.values()]
 
-    def getAllNodes(self, classNameFilters=[]):
+    def getAllNodes(self, classNameFilters=None):
         """Returns all nodes across all graphs
 
         :param classNameFilters: If class name filters specified, only those node classes will be considered

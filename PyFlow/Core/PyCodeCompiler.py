@@ -51,7 +51,7 @@ class Py3CodeCompiler(ICodeCompiler):
     def __init__(self):
         super(Py3CodeCompiler, self).__init__()
 
-    def compile(self, code, moduleName="PyFlowCodeCompiler", scope={}):
+    def compile(self, code, moduleName="PyFlowCodeCompiler", scope=None):
         """Evaluates supplied string
 
         Used by python node
@@ -63,6 +63,8 @@ class Py3CodeCompiler(ICodeCompiler):
         :param scope: Storage where symbols will be placed
         :type scope: dict
         """
+        if scope is None:
+            scope = {}
         codeObject = compile(code, moduleName, "exec")
         exec(codeObject, scope)
         return scope

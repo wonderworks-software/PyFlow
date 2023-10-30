@@ -288,7 +288,7 @@ class INode(IItemBase):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         raise NotImplementedError("createInputPin method of INode is not implemented")
@@ -301,7 +301,7 @@ class INode(IItemBase):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         raise NotImplementedError("createOutputPin method of INode is not implemented")

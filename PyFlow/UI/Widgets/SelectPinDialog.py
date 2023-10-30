@@ -151,8 +151,10 @@ class _PinsListWidget(QtWidgets.QListWidget):
         super(_PinsListWidget, self).keyPressEvent(event)
 
     def populate(
-        self, pattern="", validPins=[pin.__name__ for pin in getAllPinClasses()]
+        self, pattern="", validPins=None
     ):
+        if validPins is None:
+            validPins = [pin.__name__ for pin in getAllPinClasses()]
         for pinClass in getAllPinClasses():
             className = pinClass.__name__
             if className in validPins:

@@ -147,7 +147,7 @@ class AnyPin(PinBase):
                         self.owningNode().checkForErrors()
                 break
 
-    def updateError(self, traversed=[], updateNeis=False):
+    def updateError(self, traversed=None, updateNeis=False):
         """Check if pin dataType is "AnyPin" and if it is, checks if it can change Type on connection, and if it can, marked as error.
         Is a iterative Function that traverses connected and constrained Pins
 
@@ -156,6 +156,8 @@ class AnyPin(PinBase):
         :param updateNeis: Try to update Constrained Pins parents error display, it can be slow so use carefully, defaults to False
         :type updateNeis: bool, optional
         """
+        if traversed is None:
+            traversed = []
         if not self.checkForErrors:
             return
         nodePins = set([self])
@@ -338,7 +340,7 @@ class AnyPin(PinBase):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
 
-    def checkFree(self, checked=[], selfCheck=True):
+    def checkFree(self, checked=None, selfCheck=True):
         """Recursive Function to find if all connected Pins are of type :py:class:`AnyPin` and canChange On connection,
         so basically it checks if a Pin is free to change its dataType to another one
 
@@ -350,6 +352,8 @@ class AnyPin(PinBase):
         :returns: True if Pin can change current dataType
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if self.constraint is None or self.dataType == self.__class__.__name__:
             return True
         else:
@@ -376,7 +380,7 @@ class AnyPin(PinBase):
             return free
 
     def allowedDataTypes(
-        self, checked=[], dataTypes=[], selfCheck=True, defaults=False
+        self, checked=None, dataTypes=None, selfCheck=True, defaults=False
     ):
         """Recursive Function to intersect allowedDatatypes of all connected pins.
 
@@ -392,6 +396,10 @@ class AnyPin(PinBase):
         :returns: List containing all the intersected dataTypes
         :rtype: list
         """
+        if checked is None:
+            checked = []
+        if dataTypes is None:
+            dataTypes = []
         if (
             not self.optionEnabled(PinOptions.ChangeTypeOnConnection)
             and self.activeDataType == "AnyPin"

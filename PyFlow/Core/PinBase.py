@@ -497,12 +497,10 @@ class PinBase(IPin):
         """
         return self.owningNode().name + "_" + self.name
 
-    def allowedDataTypes(
-        self, checked=[], dataTypes=[], selfCheck=True, defaults=False
-    ):
+    def allowedDataTypes(self, checked=None, dataTypes=None, selfCheck=True, defaults=False):
         return list(self.supportedDataTypes())
 
-    def checkFree(self, checked=[], selfCheck=True):
+    def checkFree(self, checked=None, selfCheck=True):
         return False
 
     def defaultValue(self):
@@ -733,7 +731,7 @@ class PinBase(IPin):
         if free:
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
-    def canChangeStructure(self, newStruct, checked=[], selfCheck=True, init=False):
+    def canChangeStructure(self, newStruct, checked=None, selfCheck=True, init=False):
         """Recursive function to determine if pin can change its structure
 
         :param newStruct: New structure we want to apply
@@ -747,6 +745,8 @@ class PinBase(IPin):
         :returns: True if pin can change structure to newStruct
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
             return False
         if self.structConstraint is None or self.structureType == StructureType.Multi:
@@ -867,9 +867,7 @@ class PinBase(IPin):
         self.onPinDisconnected.send(other)
         push(other)
 
-    def canChangeTypeOnConnection(
-        self, checked=[], can=True, extraPins=[], selfCheck=True
-    ):
+    def canChangeTypeOnConnection(self, checked=None, can=True, extraPins=None, selfCheck=True):
         """Recursive function to determine if pin can change its dataType
 
         :param checked: Already visited pins, defaults to []
@@ -883,6 +881,10 @@ class PinBase(IPin):
         :returns: True if pin can becabe other dataType
         :rtype: bool
         """
+        if checked is None:
+            checked = []
+        if extraPins is None:
+            extraPins = []
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             return False
         con = []
@@ -902,14 +904,17 @@ class PinBase(IPin):
                 can = port.canChangeTypeOnConnection(checked, can, selfCheck=True)
         return can
 
-    def getDictElementNode(self, checked=[], node=None):
-        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this pin recursively
+    def getDictElementNode(self, checked=None, node=None):
+        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this
+        pin recursively
 
         :param checked: Currently visited pins, defaults to []
         :type checked: list, optional
         :param node: founded node, defaults to None
         :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase` or None
         """
+        if checked is None:
+            checked = []
         if self.owningNode().__class__.__name__ == "makeDictElement":
             return self.owningNode()
         con = []
@@ -926,7 +931,7 @@ class PinBase(IPin):
                 node = port.getDictElementNode(checked, node)
         return node
 
-    def getDictNode(self, checked=[], node=None):
+    def getDictNode(self, checked=None, node=None):
         """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDict.makeDict` or
         :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict.makeAnyDict` to this pin recursively
 
@@ -935,6 +940,8 @@ class PinBase(IPin):
         :param node: founded node, defaults to None
         :returns: founded node or None if not found
         """
+        if checked is None:
+            checked = []
         if self.owningNode().__class__.__name__ in ["makeDict", "makeAnyDict"]:
             return self.owningNode()
         con = []
@@ -951,7 +958,7 @@ class PinBase(IPin):
                 node = port.getDictNode(checked, node)
         return node
 
-    def supportDictElement(self, checked=[], can=True, selfCheck=True):
+    def supportDictElement(self, checked=None, can=True, selfCheck=True):
         """Iterative functions that search in all connected pins to see if they support DictElement nodes.
 
         :param checked: Already visited pins, defaults to []
@@ -963,6 +970,8 @@ class PinBase(IPin):
         :returns: True if can connect DictElement nodes to this pin
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if not self.optionEnabled(PinOptions.DictElementSupported):
             return False
         con = []
@@ -985,7 +994,7 @@ class PinBase(IPin):
                 can = port.supportDictElement(checked, can, selfCheck=True)
         return can
 
-    def supportOnlyDictElement(self, checked=[], can=False, selfCheck=True):
+    def supportOnlyDictElement(self, checked=None, can=False, selfCheck=True):
         """Iterative Functions that search in all connected pins to see if they support only DictElement nodes, this
         is done for nodes like makeDict and simmilars.
 
@@ -998,6 +1007,8 @@ class PinBase(IPin):
         :returns: True if can connect only DictElement and Dicts nodes to this Pin
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if self.isDict():
             return True
         con = []
@@ -1020,7 +1031,7 @@ class PinBase(IPin):
                 can = port.supportOnlyDictElement(checked, can, selfCheck=True)
         return can
 
-    def updateConnectedDicts(self, checked=[], keyType=None):
+    def updateConnectedDicts(self, checked=None, keyType=None):
         """Iterate over connected dicts pins and DictElements pins updating key data type
 
         :param checked: Already visited pins, defaults to []
@@ -1028,6 +1039,8 @@ class PinBase(IPin):
         :param keyType: KeyDataType to set, defaults to None
         :type keyType: string, optional
         """
+        if checked is None:
+            checked = []
         if not self.isDict():
             return
         con = []

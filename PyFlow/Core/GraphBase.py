@@ -363,10 +363,12 @@ class GraphBase(ISerializable):
         """
         return self._nodes
 
-    def getNodesList(self, classNameFilters=[]):
+    def getNodesList(self, classNameFilters=None):
         """Returns this graph's nodes list
         :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
         """
+        if classNameFilters is None:
+            classNameFilters = []
         if len(classNameFilters) > 0:
             return [
                 n

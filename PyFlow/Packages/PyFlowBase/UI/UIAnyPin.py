@@ -43,7 +43,9 @@ class UIAnyPin(UIPinBase):
         self.prevDataType = None
         self.setDefault(self._rawPin.defColor())
 
-    def checkFree(self, checked=[], selfCheck=True):
+    def checkFree(self, checked=None, selfCheck=True):
+        if checked is None:
+            checked = []
         return self._rawPin.checkFree(checked, selfCheck)
 
     def disconnect(self, other):

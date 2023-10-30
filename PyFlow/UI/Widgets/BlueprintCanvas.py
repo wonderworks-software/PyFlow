@@ -547,7 +547,9 @@ class BlueprintCanvas(CanvasBase):
         self.pasteNodes(data=copiedJson)
         EditorHistory().saveState("Duplicate nodes", modify=True)
 
-    def makeSerializedNodesUnique(self, nodes, extra=[]):
+    def makeSerializedNodesUnique(self, nodes, extra=None):
+        if extra is None:
+            extra = []
         copiedNodes = deepcopy(nodes)
         # make names unique
         renameData = {}
@@ -1881,7 +1883,9 @@ class BlueprintCanvas(CanvasBase):
         )
         return nodeInstance
 
-    def spawnNode(self, nodeClass, x, y, payload={}):
+    def spawnNode(self, nodeClass, x, y, payload=None):
+        if payload is None:
+            payload = {}
         packageName = None
         for pkgName, pkg in GET_PACKAGES().items():
             if nodeClass in pkg.GetNodeClasses():

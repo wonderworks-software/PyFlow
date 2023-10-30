@@ -480,7 +480,7 @@ class NodeBase(INode):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         """Creates input pin
@@ -552,7 +552,7 @@ class NodeBase(INode):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         """Creates output pin

@@ -87,7 +87,9 @@ class InputAction(object):
     def getMouseButton(self):
         return self.__data["mouse"]
 
-    def setKey(self, key=[]):
+    def setKey(self, key=None):
+        if key is None:
+            key = []
         assert isinstance(key, QtCore.Qt.Key)
         self.__data["key"] = key
 

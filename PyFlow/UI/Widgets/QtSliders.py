@@ -22,8 +22,8 @@ from PyFlow.Core.Common import *
 from PyFlow.Core import structs
 
 
-FLOAT_SLIDER_DRAG_STEPS = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]
-INT_SLIDER_DRAG_STEPS = [100.0, 10.0, 1.0]
+FLOAT_SLIDER_DRAG_STEPS = (100.0, 10.0, 1.0, 0.1, 0.01, 0.001)
+INT_SLIDER_DRAG_STEPS = (100.0, 10.0, 1.0)
 
 
 class inputDragger(QtWidgets.QWidget):
@@ -182,7 +182,7 @@ class slider(QtWidgets.QSlider):
         self,
         parent=None,
         draggerSteps=INT_SLIDER_DRAG_STEPS,
-        sliderRange=[-100, 100],
+        sliderRange=(-100, 100),
         *args,
         **kwargs,
     ):
@@ -838,19 +838,19 @@ class pyf_GradientSlider(DoubleSlider):
     def __init__(
         self,
         parent,
-        color1=[0, 0, 0],
-        color2=[255, 255, 255],
+        color1=(0, 0, 0),
+        color2=(255, 255, 255),
         sliderRange=(0.0, 255.0),
-        draggerSteps=[5.0, 1.0, 0.25],
+        draggerSteps=(5.0, 1.0, 0.25),
         *args,
     ):
         """
         :param parent: Parent QtWidget
         :type parent: QtWidgets.QWidget
-        :param color1:  Start Color in range 0-255 , defaults to [0, 0, 0]
-        :type color1: [int,int,int], optional
-        :param color2: End Color in range 0-255, defaults to [255, 255, 255]
-        :type color2: [int,int,int], optional
+        :param color1:  Start Color in range 0-255 , defaults to (0, 0, 0)
+        :type color1: (int,int,int), optional
+        :param color2: End Color in range 0-255, defaults to (255, 255, 255)
+        :type color2: (int,int,int), optional
         """
         super(pyf_GradientSlider, self).__init__(
             parent=parent, sliderRange=sliderRange, draggerSteps=draggerSteps, *args
@@ -906,12 +906,12 @@ class pyf_ColorSlider(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(list)
 
     def __init__(
-        self, parent=None, startColor=[0, 0, 0], type="float", alpha=False, h=50, *args
+        self, parent=None, startColor=(0, 0, 0), type="float", alpha=False, h=50, *args
     ):
         """
         :param parent: Parent Widget
         :type parent: QtWidgets.QWidget
-        :param startColor: Initialization color, defaults to [0, 0, 0]
+        :param startColor: Initialization color, defaults to (0, 0, 0)
         :type startColor: list(float/int), optional
         :param type: Choose if create a float or int Slider, defaults to "float"
         :type type: str, optional
@@ -1773,7 +1773,7 @@ class pyf_RampColor(pyf_RampSpline):
         """
         return [x.getColor().getRgbF() for x in self.sortedItems()]
 
-    def addItem(self, u=0, v=[0, 0, 0], raw_item=None):
+    def addItem(self, u=0, v=(0, 0, 0), raw_item=None):
         """Adds a new Item to the ramp
 
         :param u: X position for the item, defaults to 0
