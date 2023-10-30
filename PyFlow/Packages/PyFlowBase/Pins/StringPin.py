@@ -30,11 +30,11 @@ class StringPin(PinBase):
 
     def getInputWidgetVariant(self):
         if self.annotationDescriptionDict is not None:
-            if PinSpecifires.VALUE_LIST in self.annotationDescriptionDict:
+            if PinSpecifiers.VALUE_LIST in self.annotationDescriptionDict:
                 return "EnumWidget"
-            if PinSpecifires.INPUT_WIDGET_VARIANT in self.annotationDescriptionDict:
+            if PinSpecifiers.INPUT_WIDGET_VARIANT in self.annotationDescriptionDict:
                 return self.annotationDescriptionDict[
-                    PinSpecifires.INPUT_WIDGET_VARIANT
+                    PinSpecifiers.INPUT_WIDGET_VARIANT
                 ]
         return self._inputWidgetVariant
 
@@ -44,7 +44,7 @@ class StringPin(PinBase):
 
     @staticmethod
     def color():
-        return (255, 8, 127, 255)
+        return 255, 8, 127, 255
 
     @staticmethod
     def pinDataTypeHint():

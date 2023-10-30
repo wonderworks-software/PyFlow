@@ -41,10 +41,10 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-DEFAULT_IN_EXEC_NAME = str("inExec")
-DEFAULT_OUT_EXEC_NAME = str("outExec")
-DEFAULT_WIDGET_VARIANT = str("DefaultWidget")
-REF = str("Reference")
+DEFAULT_IN_EXEC_NAME = "inExec"
+DEFAULT_OUT_EXEC_NAME = "outExec"
+DEFAULT_WIDGET_VARIANT = "DefaultWidget"
+REF = "Reference"
 
 
 def lerp(start, end, alpha):
@@ -275,7 +275,7 @@ def getConnectedPins(pin):
 
 
 def pinAffects(lhs, rhs):
-    """This function for establish dependencies bitween pins
+    """This function for establish dependencies between pins
 
     .. warning:: Used internally, users will hardly need this
 
@@ -342,14 +342,14 @@ def canConnectPins(src, dst):
         ):
             return False
         else:
-            DictElement = src.getDictElementNode([])
+            DictElementNode = src.getDictElementNode([])
             dictNode = dst.getDictNode([])
             nodeFree = False
             if dictNode:
                 nodeFree = dictNode.KeyType.checkFree([])
-            if DictElement:
-                if not DictElement.key.checkFree([]) and not nodeFree:
-                    if dst._data.keyType != DictElement.key.dataType:
+            if DictElementNode:
+                if not DictElementNode.key.checkFree([]) and not nodeFree:
+                    if dst._data.keyType != DictElementNode.key.dataType:
                         return False
 
     if src.isArray() and not dst.isArray():
@@ -481,7 +481,7 @@ def canConnectPins(src, dst):
 def connectPins(src, dst):
     """**Connects two pins**
 
-    This are the rules how pins connect:
+    These are the rules how pins connect:
 
     * Input value pins can have one output connection if :py:class:`PyFlow.Core.Common.PinOptions.AllowMultipleConnections` flag is disabled
     * Output value pins can have any number of connections
@@ -678,7 +678,7 @@ def getUniqNameFromList(existingNames, name):
     :type existingNames: list
     :param name: Name to obtain a unique version from
     :type name: str
-    :returns: New name non overlapin with any in existingNames
+    :returns: New name non overlapping with any in existingNames
     :rtype: str
     """
     if name not in existingNames:
@@ -746,7 +746,7 @@ class DictElement(tuple):
             if isinstance(a, tuple) and len(a) <= 2:
                 new = a
             else:
-                raise Exception("non Valid Input")
+                raise Exception("Invalid Input")
         else:
             new = (a, b)
         return super(DictElement, self).__new__(self, new)
@@ -792,7 +792,7 @@ class PFDict(dict):
     def __setitem__(self, key, item):
         """Re implements Python Dict __setitem__ to only allow Typed Keys.
 
-        Will throw an Exception if non Valid KeyType
+        Will throw an Exception if non-Valid KeyType
         """
         if type(key) == self.getClassFromType(self.keyType):
             super(PFDict, self).__setitem__(key, item)
@@ -839,7 +839,7 @@ class PinOptions(Flag):
 
     AllowMultipleConnections = (
         auto()
-    )  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
+    )  #: This enables pin to allow more than one input connection. See :func:`~PyFlow.Core.Common.connectPins`
 
     ChangeTypeOnConnection = (
         auto()
@@ -852,7 +852,7 @@ class PinOptions(Flag):
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
     AllowAny = (
         auto()
-    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default, a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
     DictElementSupported = (
         auto()
     )  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
@@ -869,7 +869,7 @@ class StructureType(IntEnum):
     Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
     Multi = (
         3
-    )  #: This means it can became any of the previous ones on connection/user action
+    )  #: This means it can become any of the previous ones on connection/user action
 
 
 def findStructFromValue(value):

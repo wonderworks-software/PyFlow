@@ -100,7 +100,7 @@ class CanvasBase(QGraphicsView):
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
         if futureScale <= self._minimum_scale:
-            scale_factor = (self._minimum_scale) / self.factor
+            scale_factor = self._minimum_scale / self.factor
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)

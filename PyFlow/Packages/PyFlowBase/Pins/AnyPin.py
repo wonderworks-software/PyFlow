@@ -29,20 +29,20 @@ class AnyPin(PinBase):
     This Pin Type is an abstraction of Pins, it is a Pin that will act as any other defined Pin.
     This type of Pin allow to create abstract Nodes that can operate in more than one dataType.
 
-    By default AnyPin non Initialized will be marked as error, as PyFlow can't know what is inside.
+    By default, AnyPin non Initialized will be marked as error, as PyFlow can't know what is inside.
     This Error can be avoided by enabling :py:attr:`PyFlow.Core.Common.PinOptions.AllowAny`. That's how NonTyped Lists are made.
 
-    By default :py:attr:`PyFlow.Core.Common.PinOptions.ChangeTypeOnConnection` is enabled, and that means that it will change
+    By default, :py:attr:`PyFlow.Core.Common.PinOptions.ChangeTypeOnConnection` is enabled, and that means that it will change
     its internal dataType to the new dataType provided by connection or user Initialization. If disabled, pin will not allow changes.
 
     Is important to define a bunch of allowedDataTypes on pin creation, this will restrict what pins can be connected and what no,
     so even being a AnyPin, it can be defined to allow for example only ["FloatPin","IntPin"] so only those could be connected.
 
     :param self.singleInit: can be set to True, so once initialized, it will never be able to change dataType
-    :param self.checkForErrors: can be set To False so it will never try to find errors
+    :param self.checkForErrors: can be set To False, so it will never try to find errors
 
     Signals:
-        * **typeChanged** : Fired when dataType has change
+        * **typeChanged** : Fired when dataType has changed
 
     """
 
@@ -96,11 +96,11 @@ class AnyPin(PinBase):
 
     @staticmethod
     def defColor():
-        return (200, 200, 200, 255)
+        return 200, 200, 200, 255
 
     @staticmethod
     def color():
-        return (200, 200, 200, 255)
+        return 200, 200, 200, 255
 
     @staticmethod
     def pinDataTypeHint():
@@ -149,7 +149,7 @@ class AnyPin(PinBase):
 
     def updateError(self, traversed=None, updateNeis=False):
         """Check if pin dataType is "AnyPin" and if it is, checks if it can change Type on connection, and if it can, marked as error.
-        Is a iterative Function that traverses connected and constrained Pins
+        Is an iterative Function that traverses connected and constrained Pins
 
         :param traversed: Current Iterated neighbors, defaults to []
         :type traversed: list, optional
@@ -160,7 +160,7 @@ class AnyPin(PinBase):
             traversed = []
         if not self.checkForErrors:
             return
-        nodePins = set([self])
+        nodePins = {self}
         if self.constraint:
             nodePins = set(self.owningNode().constraints[self.constraint])
         for connectedPin in getConnectedPins(self):
@@ -294,7 +294,7 @@ class AnyPin(PinBase):
         :type dataType: string
         :param init: If initializing AnyPin can have same strength as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
         :type init: bool, optional
-        :param other: other Pin to heredate stuff from him, defaults to None
+        :param other: other Pin to here-date stuff from him, defaults to None
         :type other: :py:class:`PyFlow.Core.PinBase.PinBase`, optional
         """
         free = pin.checkFree([])
@@ -433,7 +433,7 @@ class AnyPin(PinBase):
     def initType(self, dataType, initializing=False):
         """Same as :py:func:`AnyPin.aboutToConnect` but instead of using another Pin using a dataType name
 
-        :param dataType: New DataType we want the pin to became
+        :param dataType: New DataType we want the pin to become
         :type dataType: string
         :param initializing:  If initializing AnyPin can have same strength as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
         :type initializing: bool, optional
@@ -458,7 +458,7 @@ class AnyPin(PinBase):
         return False
 
     def setType(self, dataType):
-        """Here is where :py:class:`AnyPin` heredates all the properties from other defined dataTypes and act like those
+        """Here is where :py:class:`AnyPin` here-dates all the properties from other defined dataTypes and act like those
 
         :param dataType: New DataType
         :type dataType: string

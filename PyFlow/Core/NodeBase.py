@@ -72,7 +72,7 @@ class NodeBase(INode):
         self.setDirty = Signal()
         self.computing = Signal()
         self.computed = Signal()
-        self.errorOccured = Signal(object)
+        self.errorOccurred = Signal(object)
         self.errorCleared = Signal()
 
         self.dirty = True
@@ -149,7 +149,7 @@ class NodeBase(INode):
 
     def setError(self, err):
         self._lastError = str(err)
-        self.errorOccured.send(self._lastError)
+        self.errorOccurred.send(self._lastError)
 
     def checkForErrors(self):
         failedPins = {}
@@ -497,7 +497,7 @@ class NodeBase(INode):
         :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
-        :param structConstraint: Pin struct constraint. Also should be hashable type
+        :param structConstraint: Pin struct constraint. Also, should be hashable type
         :type structConstraint: object
         :param supportedPinDataTypes: List of allowed pin data types to be connected. Used by AnyPin
         :type supportedPinDataTypes: list(str)
@@ -567,7 +567,7 @@ class NodeBase(INode):
         :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
-        :param structConstraint: Pin struct constraint. Also should be hashable type
+        :param structConstraint: Pin struct constraint. Also, should be hashable type
         :type structConstraint: object
         :param supportedPinDataTypes: List of allowed pin data types to be connected. Used by AnyPin
         :type supportedPinDataTypes: list(str)

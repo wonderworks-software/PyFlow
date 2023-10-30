@@ -24,6 +24,7 @@ class NodeBoxTool(DockTool):
 
     def __init__(self):
         super(NodeBoxTool, self).__init__()
+        self.content = None
 
     def onShow(self):
         super(NodeBoxTool, self).onShow()

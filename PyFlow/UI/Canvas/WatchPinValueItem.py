@@ -1,6 +1,3 @@
-from Qt import QtCore
-from Qt import QtGui
-
 from Qt.QtWidgets import *
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet

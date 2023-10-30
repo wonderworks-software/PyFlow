@@ -28,10 +28,10 @@ class MathAbstractLib(FunctionLibraryBase):
         returns=("BoolPin", False),
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: ["=", "operator"]},
     )
-    ## Is a equal b
+    # Is a equal b
     def isEqual(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Is a equal b."""
         return a == b
@@ -42,8 +42,8 @@ class MathAbstractLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: [">", "operator"]},
     )
     def isGreater(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(REF, ("BoolPin", False)),
     ):
         """Operator **>**."""
@@ -55,8 +55,8 @@ class MathAbstractLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: [">", "operator"]},
     )
     def isGreaterOrEqual(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(REF, ("BoolPin", False)),
     ):
         """Operator **>=**."""
@@ -68,8 +68,8 @@ class MathAbstractLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: ["<", "operator"]},
     )
     def isLess(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(REF, ("BoolPin", False)),
     ):
         """Operator **<**."""
@@ -81,82 +81,82 @@ class MathAbstractLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: ["<", "operator"]},
     )
     def isLessOrEqual(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Operator **<=**."""
         return a <= b
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=(("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={
             NodeMeta.CATEGORY: "Math|Basic",
             NodeMeta.KEYWORDS: ["+", "append", "sum", "operator"],
         },
     )
     def add(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Operator **+**."""
         return a + b
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=(("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={
             NodeMeta.CATEGORY: "Math|Basic",
             NodeMeta.KEYWORDS: ["-", "operator", "minus"],
         },
     )
     def subtract(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Operator **-**."""
         return a - b
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={
             NodeMeta.CATEGORY: "Math|Basic",
             NodeMeta.KEYWORDS: ["/", "divide", "operator"],
         },
     )
     def divide(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Operator **/**."""
         return a / b
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=(("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={
             NodeMeta.CATEGORY: "Math|Basic",
             NodeMeta.KEYWORDS: ["*", "multiply", "operator"],
         },
     )
     def multiply(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
-        b=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
+        b=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Operator *****."""
         return a * b
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=(("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={
             NodeMeta.CATEGORY: "Math|Basic",
             NodeMeta.KEYWORDS: ["*", "multiply", "operator"],
         },
     )
     def multiply_by_float(
-        a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}), b=("FloatPin", 1.0)
+        a=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}), b=("FloatPin", 1.0)
     ):
         """Operator *****."""
         return a * b
@@ -171,24 +171,24 @@ class MathAbstractLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         RangeMin=(
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         RangeMax=(
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         InclusiveMin=("BoolPin", False),
@@ -248,8 +248,8 @@ class MathAbstractLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: ["operator"]},
@@ -259,16 +259,16 @@ class MathAbstractLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         b=(
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
     ):
@@ -281,8 +281,8 @@ class MathAbstractLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         meta={NodeMeta.CATEGORY: "Math|Basic", NodeMeta.KEYWORDS: []},
@@ -292,8 +292,8 @@ class MathAbstractLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         )
     ):

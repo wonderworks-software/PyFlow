@@ -32,7 +32,7 @@ class forLoopBegin(NodeBase):
         self.firstIndex = self.createInputPin("Start", "IntPin")
         self.lastIndex = self.createInputPin("Stop", "IntPin")
         self.loopEndNode = self.createInputPin("Paired block", "StringPin")
-        self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.loopEndNode.setInputWidgetVariant("ObjectPathWidget")
 
         self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
         self.index = self.createOutputPin("Index", "IntPin")

@@ -75,7 +75,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.actualize()
 
     def clear(self):
-        """Does not removes any variable. UI only
+        """Does not remove any variable. UI only
         """
         self.listWidget.clear()
 
@@ -95,7 +95,7 @@ class VariablesWidget(QWidget, Ui_Form):
         return uiVariable
 
     def createVariable(
-        self, dataType=str("BoolPin"), accessLevel=AccessLevel.public, uid=None
+        self, dataType="BoolPin", accessLevel=AccessLevel.public, uid=None
     ):
         rawVariable = (
             self.pyFlowInstance.graphManager.get()

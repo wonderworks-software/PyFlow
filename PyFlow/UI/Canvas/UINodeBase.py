@@ -135,7 +135,7 @@ class InputTextField(QGraphicsTextItem):
         self.setFocus()
 
     def focusInEvent(self, event):
-        self.node.canvasRef().disableSortcuts()
+        self.node.canvasRef().disableShortcuts()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setObjectName("MouseLocked")
         self.textBeforeEditing = self.toPlainText()
@@ -143,7 +143,7 @@ class InputTextField(QGraphicsTextItem):
         super(InputTextField, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
-        self.node.canvasRef().enableSortcuts()
+        self.node.canvasRef().enableShortcuts()
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)

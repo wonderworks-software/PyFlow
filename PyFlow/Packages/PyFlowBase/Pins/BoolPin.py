@@ -29,7 +29,7 @@ class BoolPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ("BoolPin", "IntPin")
+        return "BoolPin", "IntPin"
 
     @staticmethod
     def pinDataTypeHint():
@@ -37,7 +37,7 @@ class BoolPin(PinBase):
 
     @staticmethod
     def color():
-        return (255, 0, 0, 255)
+        return 255, 0, 0, 255
 
     @staticmethod
     def internalDataStructure():

@@ -94,7 +94,7 @@ def run(filePath):
                     t.join()
 
                 app.aboutToQuit.connect(quitEvent)
-            # If no GraphInput Nodes Exit propgram
+            # If no GraphInput Nodes Exit program
             else:
                 msg.setInformativeText(filePath)
                 msg.setDetailedText("The file doesn't contain graphInputs nodes")

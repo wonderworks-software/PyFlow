@@ -537,7 +537,6 @@ class PyFlow(QMainWindow):
         return QMessageBox.Discard
 
     def closeEvent(self, event):
-
         shouldSave = self.shouldSave()
         if shouldSave == QMessageBox.Save:
             if not self.save():

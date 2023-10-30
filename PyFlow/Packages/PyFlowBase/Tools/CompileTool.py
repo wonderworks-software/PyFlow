@@ -26,6 +26,7 @@ class CompileTool(ShelfTool):
 
     def __init__(self):
         super(CompileTool, self).__init__()
+        self.format = None
 
     def onSetFormat(self, fmt):
         self.format = fmt

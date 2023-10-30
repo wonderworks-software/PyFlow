@@ -28,13 +28,13 @@ class InputActionType(Enum):
 
 class InputAction(object):
     def __init__(
-        self,
-        name="defaultName",
-        actionType=InputActionType.Keyboard,
-        group="default",
-        mouse=QtCore.Qt.NoButton,
-        key=None,
-        modifiers=QtCore.Qt.NoModifier,
+            self,
+            name="defaultName",
+            actionType=InputActionType.Keyboard,
+            group="default",
+            mouse=QtCore.Qt.NoButton,
+            key=None,
+            modifiers=QtCore.Qt.NoModifier,
     ):
         self.__actionType = actionType
         self._name = name
@@ -126,12 +126,10 @@ class InputAction(object):
         return result
 
     def toJson(self):
-        saveData = {}
-        saveData["name"] = self._name
-        saveData["group"] = self._group
-        saveData["mouse"] = int(self.__data["mouse"])
-        saveData["actionType"] = self.actionType.value
-
+        saveData = {"name": self._name,
+                    "group": self._group,
+                    "mouse": int(self.__data["mouse"]),
+                    "actionType": self.actionType.value}
         key = self.__data["key"]
         saveData["key"] = int(key) if key is not None else None
 

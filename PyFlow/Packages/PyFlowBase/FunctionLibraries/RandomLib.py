@@ -45,8 +45,8 @@ class RandomLib(FunctionLibraryBase):
     )
     # Shuffle the sequence x in place
     def shuffle(
-        seq=("AnyPin", [], {PinSpecifires.CONSTRAINT: "1"}),
-        Result=(REF, ("AnyPin", [], {PinSpecifires.CONSTRAINT: "1"})),
+        seq=("AnyPin", [], {PinSpecifiers.CONSTRAINT: "1"}),
+        Result=(REF, ("AnyPin", [], {PinSpecifiers.CONSTRAINT: "1"})),
     ):
         """Shuffle the sequence x in place."""
         random.shuffle(seq)

@@ -388,17 +388,17 @@ class BlueprintCanvas(CanvasBase):
             e.Tick()
 
     def isShortcutsEnabled(self):
-        return self._sortcuts_enabled
+        return self._shortcuts_enabled
 
-    def disableSortcuts(self):
-        self._sortcuts_enabled = False
+    def disableShortcuts(self):
+        self._shortcuts_enabled = False
 
-    def enableSortcuts(self):
-        self._sortcuts_enabled = True
+    def enableShortcuts(self):
+        self._shortcuts_enabled = True
 
     def onNewFile(self, keepRoot=True):
         self.getApp().undoStack.clear()
-        self.shoutDown()
+        self.shutDown()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split(".")[0]

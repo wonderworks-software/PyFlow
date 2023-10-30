@@ -41,7 +41,7 @@ Arguments
     Value  of this argument is tuple with 2 or 3 elements or None.
     First element is pin data type.
     Second - default value.
-    Third element is :term:`pin specifires`
+    Third element is :term:`pin specifiers`
 
 .. seealso:: :meth:`~PyFlow.Core.NodeBase.NodeBase.createInputPin`
              :meth:`~PyFlow.Core.NodeBase.NodeBase.createOutputPin`
@@ -63,28 +63,28 @@ Examples:
     def makeInt(i=('IntPin', 0)):
         return i
 
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}))
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifiers.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}))
     def clock():
         return time.processor_time()
 
 
 .. glossary::
 
-    pin specifires
+    pin specifiers
         dict that describes different pin options and attributes to be considered on generation
 
         Following key-value pairs allowed:
 
-        >>> (PinSpecifires.SUPPORTED_DATA_TYPES : list)
-        >>> (PinSpecifires.CONSTRAINT: None)
-        >>> (PinSpecifires.STRUCT_CONSTRAINT: None)
-        >>> (PinSpecifires.ENABLED_OPTIONS: None)
-        >>> (PinSpecifires.DISABLED_OPTIONS: None)
-        >>> (PinSpecifires.INPUT_WIDGET_VARIANT: "DefaultWidget")
-        >>> (PinSpecifires.DESCRIPTION: str)
-        >>> (PinSpecifires.VALUE_LIST: [str])
-        >>> (PinSpecifires.VALUE_RANGE: (int|float, int|float))
-        >>> (PinSpecifires.DRAGGER_STEPS: [int|float])
+        >>> (PinSpecifiers.SUPPORTED_DATA_TYPES : list)
+        >>> (PinSpecifiers.CONSTRAINT: None)
+        >>> (PinSpecifiers.STRUCT_CONSTRAINT: None)
+        >>> (PinSpecifiers.ENABLED_OPTIONS: None)
+        >>> (PinSpecifiers.DISABLED_OPTIONS: None)
+        >>> (PinSpecifiers.INPUT_WIDGET_VARIANT: "DefaultWidget")
+        >>> (PinSpecifiers.DESCRIPTION: str)
+        >>> (PinSpecifiers.VALUE_LIST: [str])
+        >>> (PinSpecifiers.VALUE_RANGE: (int|float, int|float))
+        >>> (PinSpecifiers.DRAGGER_STEPS: [int|float])
 
         Value list is specific for string pins. If Specified - enum input widget will be created for this pin.
         If value range is specified, slider will be created in property view instead of value box.

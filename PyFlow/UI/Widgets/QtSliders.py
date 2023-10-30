@@ -683,7 +683,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setMinimum(min)
         self.setMaximum(max)
 
-    def setDisplayMinimun(self, value):
+    def setDisplayMinimum(self, value):
         """Sets the Minimum value for display options, real min value don't touched, if current value is less than this display value,Widget automatically recalculates minDisplay
 
         :param value: New Display MinValue
@@ -829,7 +829,7 @@ class pyf_HueSlider(DoubleSlider):
 
 
 class pyf_GradientSlider(DoubleSlider):
-    """Custom Slider to select a color by Non Editable gradient
+    """Custom Slider to select a color by non-editable gradient
 
     # Extends:
     #     :obj: `DoubleSlider`
@@ -1111,7 +1111,7 @@ class pyf_timeline(QtWidgets.QSlider):
     def __init__(self, parent, *args):
         super(pyf_timeline, self).__init__(parent=parent, *args)
         self.parent = parent
-        self.cachedFrmaes = []
+        self.cachedFrames = []
         self.missingFrames = []
         self.hover = False
         self.hoverPos = None
@@ -1138,7 +1138,7 @@ class pyf_timeline(QtWidgets.QSlider):
         return super(pyf_timeline, self).setRange(min, max)
 
     def setCached(self, cached):
-        self.cachedFrmaes = cached
+        self.cachedFrames = cached
 
     def setMissing(self, missing):
         self.missingFrames = missing
@@ -1177,7 +1177,7 @@ class pyf_timeline(QtWidgets.QSlider):
                 self.minimum(), self.maximum(), r[e], self.width()
             )
             half = h / 2
-            if r[e] in self.cachedFrmaes:
+            if r[e] in self.cachedFrames:
                 qp.setPen(QtGui.QColor(0, 255, 0))
                 qp.setBrush(QtGui.QColor(0, 255, 0))
                 qp.drawRect(pos - (fStep / 2), half + 5, fStep, 1.5)
@@ -1193,7 +1193,7 @@ class pyf_timeline(QtWidgets.QSlider):
                 s = 4
                 text = r[e]
                 fw = metrics.horizontalAdvance(str(text))
-                qp.drawText((pos) - fw / 2, h - fh / 3, str(text))
+                qp.drawText(pos - fw / 2, h - fh / 3, str(text))
             else:
                 s = 1.5
             qp.drawLine(pos, half + s, pos, half - s)
@@ -1205,7 +1205,7 @@ class pyf_timeline(QtWidgets.QSlider):
         if self.value() > self.maximum() - (self.maximum() / 2):
             fw += metrics.horizontalAdvance(str(self.value()))
             fw *= -1
-        qp.drawText((pos) + fw, 0 + fh, str(self.value()))
+        qp.drawText(pos + fw, 0 + fh, str(self.value()))
         if self.hover:
             val = self.style().sliderValueFromPosition(
                 self.minimum(), self.maximum(), self.hoverPos.x(), self.width()
@@ -1223,7 +1223,7 @@ class pyf_timeline(QtWidgets.QSlider):
                 pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
                 qp.setPen(pen2)
                 qp.drawLine(pos, 0, pos, h)
-                qp.drawText((pos) + fw, 0 + fh, str(val))
+                qp.drawText(pos + fw, 0 + fh, str(val))
         qp.setPen(pen)
 
     def mousePressEvent(self, event):
@@ -1452,7 +1452,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     def __getitem__(self, index):
         """
-        :param index: What UiTick to get, orderer by U
+        :param index: What UiTick to get, ordered by U
         :type index: int
         :returns: Ui Tick
         :rtype: :obj:`UiTick`
@@ -1522,7 +1522,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
         :param u: New x position
         :type u: float
-        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, ordered by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):
@@ -1543,7 +1543,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
         :param v: New y position
         :type v: float
-        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, ordered by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):
@@ -1560,7 +1560,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.computeDisplayPoints()
 
     def evaluateAt(self, value):
-        """Computes the result of the interpolation for the guiven U value
+        """Computes the result of the interpolation for the given U value
 
         :param value: x position to evaluate at
         :type value: float
@@ -1799,7 +1799,7 @@ class pyf_RampColor(pyf_RampSpline):
 
         :param color: New color
         :type color: [float,float,float]
-        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, ordered by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):

@@ -41,7 +41,7 @@ class SearchResultsTool(DockTool):
         self.content.setLockCheckBoxVisible(False)
         self.content.setTearOffCopyVisible(False)
 
-        self.content.setObjectName("SearchResultstent")
+        self.content.setObjectName("SearchResults")
         self.scrollArea.setWidget(self.content)
         self.setWindowTitle(self.uniqueName())
         self.setWidget(self.scrollArea)

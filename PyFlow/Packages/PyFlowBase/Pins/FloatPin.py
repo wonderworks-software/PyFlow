@@ -34,11 +34,11 @@ class FloatPin(PinBase):
 
     @staticmethod
     def color():
-        return (96, 169, 23, 255)
+        return 96, 169, 23, 255
 
     @staticmethod
     def supportedDataTypes():
-        return ("FloatPin", "IntPin")
+        return "FloatPin", "IntPin"
 
     @staticmethod
     def internalDataStructure():

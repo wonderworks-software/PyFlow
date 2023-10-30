@@ -41,8 +41,8 @@ class GraphBase(ISerializable):
     :var childGraphs: a set of child graphs
     :vartype childGraphs: :class:`set`
 
-    :var nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
-    :vartype nodes: :class:`dict`
+    :var _nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
+    :vartype _nodes: :class:`dict`
 
     :var uid: Unique identifier
     :vartype uid: :class:`uuid.UUID`

@@ -31,6 +31,8 @@ from PyFlow.Packages import *
 
 __all__ = [
     "INITIALIZE",
+    "GET_PACKAGE_CHECKED",
+    "GET_PACKAGE_PATH",
     "GET_PACKAGES",
     "GET_PACKAGE_CHECKED",
     "CreateRawPin",
@@ -112,14 +114,14 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     from PyFlow.Core.NodeBase import NodeBase
 
     package = GET_PACKAGE_CHECKED(packageName)
-    # try find function first
+    # try to find function first
     if libName is not None:
         for key, lib in package.GetFunctionLibraries().items():
             foos = lib.getFunctions()
             if libName == key and nodeClassName in foos:
                 return NodeBase.initializeFromFunction(foos[nodeClassName])
 
-    # try find node class
+    # try to find node class
     nodes = package.GetNodeClasses()
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName, **kwargs)

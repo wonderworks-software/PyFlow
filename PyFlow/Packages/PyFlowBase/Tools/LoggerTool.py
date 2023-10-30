@@ -118,7 +118,7 @@ class QtHandler(logging.Handler):
     def emit(self, record):
         if record:
             msj = self.format(record)
-            if "flusing from handler" in msj:
+            if "flushing from handler" in msj:
                 self.messageHolder.flushSig.emit()
             elif "bytes Downloaded" in msj:
                 nb = int(float(msj.split("(")[-1][:-2]))
@@ -136,7 +136,7 @@ class QtHandler(logging.Handler):
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
 
-    formater = logging.Formatter(
+    formatter = logging.Formatter(
         "[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S"
     )
 
@@ -169,7 +169,7 @@ class LoggerTool(DockTool):
         logger.setLevel(logging.DEBUG)
         sys.excepthook = LoggerTool.exceptHook
         if self.handler and REDIRECT:
-            self.handler.setFormatter(LoggerTool.formater)
+            self.handler.setFormatter(LoggerTool.formatter)
             logger.addHandler(self.handler)
             self.handler.messageHolder.messageWritten.connect(
                 lambda value: self.logPython(value, 0)

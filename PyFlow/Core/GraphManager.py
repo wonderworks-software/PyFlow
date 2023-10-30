@@ -26,7 +26,7 @@ class GraphManager(object):
     """Data structure that holds graph tree
 
     This class switches active graph. Can insert or remove graphs to tree,
-    can search nodes and variables across all graphs. Also this class responsible
+    can search nodes and variables across all graphs. Also, this class responsible
     for giving unique names.
     """
 
