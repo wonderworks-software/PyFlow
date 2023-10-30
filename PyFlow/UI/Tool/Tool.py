@@ -140,7 +140,7 @@ class ShelfTool(ToolBase):
         return QtGui.QIcon.fromTheme("go-home")
 
     def do(self):
-        print(self.name(), "called!", self.canvas)
+        print(self.name(), "called!", self.canvas)  # TODO: there is no 'canvas' yet
 
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
