@@ -472,7 +472,9 @@ class PyFlow(QMainWindow):
                     return ToolClass()
         return None
 
-    def getRegisteredTools(self, classNameFilters=[]):
+    def getRegisteredTools(self, classNameFilters=None):
+        if classNameFilters is None:
+            classNameFilters = []
         if len(classNameFilters) == 0:
             return self._tools
         else:
