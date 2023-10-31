@@ -13,10 +13,7 @@
 ## limitations under the License.
 
 
-import os
-import json
-import weakref
-from copy import deepcopy
+import uuid
 
 from blinker import Signal
 

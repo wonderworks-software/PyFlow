@@ -40,7 +40,7 @@ from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
 try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
-except:
+except ImportError:
     pass
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
