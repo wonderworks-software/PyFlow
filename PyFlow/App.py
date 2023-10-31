@@ -65,9 +65,9 @@ import PyFlow.UI.resources
 EDITOR_TARGET_FPS = 60
 
 
-def generateRandomString(numSymbolds=5):
+def generateRandomString(numbSymbols=5):
     result = ""
-    for i in range(numSymbolds):
+    for i in range(numbSymbols):
         letter = random.choice(ascii_letters)
         result += letter
     return result
@@ -87,7 +87,7 @@ def winTitle():
     return "PyFlow v{0}".format(currentVersion().__str__())
 
 
-## App itself
+# App itself
 class PyFlow(QMainWindow):
 
     appInstance = None
@@ -161,7 +161,7 @@ class PyFlow(QMainWindow):
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
 
-        This folder and all it's content will be removed from disc on application shutdown.
+        This folder and all its content will be removed from disc on application shutdown.
         """
         if self.currentTempDir == "":
             # create app folder in documents
@@ -452,7 +452,7 @@ class PyFlow(QMainWindow):
 
         # Tick all graphs
         # each graph will tick owning raw nodes
-        # each raw node will tick it's ui wrapper if it exists
+        # each raw node will tick its ui wrapper if it exists
         self.graphManager.get().Tick(deltaTime)
 
         # Tick canvas. Update ui only stuff such animation etc.
