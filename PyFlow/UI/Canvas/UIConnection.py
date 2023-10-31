@@ -480,10 +480,7 @@ class UIConnection(QGraphicsPathItem):
                             self.pressedSegment = 0
                         else:
                             self.snapVToFirst = False
-                        if (
-                            p1.y() + self.vOffset > p2.y() - 3
-                            and p1.y() + self.vOffset < p2.y() + 3
-                        ):
+                        if p2.y() - 3 < p1.y() + self.vOffset < p2.y() + 3:
                             self.snapVToSecond = True
                             self.pressedSegment = 2
                         else:
