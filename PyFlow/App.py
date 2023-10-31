@@ -17,11 +17,7 @@
 """
 
 import os
-import sys
-import subprocess
 import json
-import pkgutil
-import uuid
 import shutil
 from string import ascii_letters
 import random
@@ -30,22 +26,14 @@ from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import *
 
-from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import currentProcessorTime
-from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.version import *
-from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
-from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
-from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
