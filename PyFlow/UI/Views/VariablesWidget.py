@@ -18,8 +18,8 @@ import json
 from types import MethodType
 import uuid
 
-from Qt import QtCore, QtGui
-from Qt.QtWidgets import (
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QWidget,

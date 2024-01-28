@@ -15,7 +15,7 @@
 
 import sys
 from PyFlow.App import PyFlow
-from Qt.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
 
     instance = PyFlow.instance(software="standalone")
     if instance is not None:
-        app.setActiveWindow(instance)
+        instance.activateWindow()
         instance.show()
 
         try:

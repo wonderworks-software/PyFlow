@@ -14,9 +14,9 @@
 
 
 from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QAction, QTextBrowser
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QAction, QTextBrowser
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet

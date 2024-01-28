@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
 
 class KeyboardModifiersCaptureWidget(QPushButton):

@@ -8,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCompat, QtCore, QtGui, QtWidgets
+from qtpy import QtCore, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -50,7 +50,7 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QtCompat.translate("Form", "Form", None, -1))
-        self.label.setText(QtCompat.translate("Form", "Create var", None, -1))
-        self.pbNewVar.setText(QtCompat.translate("Form", "+", None, -1))
+        Form.setWindowTitle("Form")
+        self.label.setText("Create var")
+        self.pbNewVar.setText( "+")
 

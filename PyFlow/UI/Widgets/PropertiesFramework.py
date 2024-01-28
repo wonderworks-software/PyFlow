@@ -16,8 +16,8 @@
 from nine import str
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.UI.Widgets.EditPropertiesWidget import EditPropertiesTreeWidget
-from Qt import QtWidgets
-from Qt import QtCore, QtGui
+from qtpy import QtWidgets
+from qtpy import QtCore, QtGui
 
 
 # Framework

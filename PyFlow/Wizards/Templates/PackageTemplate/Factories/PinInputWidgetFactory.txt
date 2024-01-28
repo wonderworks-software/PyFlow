@@ -1,6 +1,6 @@
 from PyFlow.Core.Common import *
-from Qt import QtCore
-from Qt.QtWidgets import QCheckBox
+from qtpy import QtCore
+from qtpy.QtWidgets import QCheckBox
 from PyFlow.UI.Widgets.InputWidgets import *
 
 

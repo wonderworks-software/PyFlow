@@ -18,9 +18,9 @@ import json
 import threading
 import time
 
-from Qt.QtWidgets import *
-from Qt import QtGui
-from Qt import QtCore
+from qtpy.QtWidgets import *
+from qtpy import QtGui
+from qtpy import QtCore
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton

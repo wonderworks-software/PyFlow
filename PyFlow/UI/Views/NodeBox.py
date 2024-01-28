@@ -21,9 +21,9 @@ try:
 except:
     from inspect import getargspec
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
@@ -459,9 +459,11 @@ class NodesBox(QFrame):
         return QtCore.QSize(500, 300)
 
     def expandCategory(self):
-        for i in self.treeWidget.categoryPaths:
-            self.treeWidget.setItemExpanded(
-                self.treeWidget.categoryPaths[i], True)
+        for i in range(self.treeWidget.topLevelItemCount()):
+            item = self.treeWidget.topLevelItem(i)
+            if item.text(0) in self.treeWidget.categoryPaths:
+                index = self.treeWidget.indexFromItem(item)
+                self.treeWidget.setExpanded(index, True)
 
     def leTextChanged(self):
         if self.lineEdit.text() == '':

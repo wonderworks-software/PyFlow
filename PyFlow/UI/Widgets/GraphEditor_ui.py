@@ -8,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCompat, QtCore, QtGui, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -92,8 +92,8 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtCompat.translate("MainWindow", "PyFlow", None, -1))
-        self.label_2.setText(QtCompat.translate("MainWindow", "Name:", None, -1))
-        self.label.setText(QtCompat.translate("MainWindow", "Category:", None, -1))
-        self.toolBar.setWindowTitle(QtCompat.translate("MainWindow", "toolBar", None, -1))
+        MainWindow.setWindowTitle( "PyFlow")
+        self.label_2.setText( "Name:")
+        self.label.setText( "Category:")
+        self.toolBar.setWindowTitle( "toolBar")
 

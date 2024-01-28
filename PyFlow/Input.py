@@ -16,7 +16,7 @@
 from collections import Counter
 from collections import defaultdict
 
-from Qt import QtCore, QtGui
+from qtpy import QtCore, QtGui
 
 from PyFlow.Core.Common import *
 

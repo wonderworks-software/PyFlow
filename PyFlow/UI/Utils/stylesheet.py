@@ -24,7 +24,7 @@ if IS_PYTHON2:
 else:
     from enum import IntEnum
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager

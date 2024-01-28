@@ -15,17 +15,17 @@
 
 import json
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QInputDialog
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QLineEdit
+from qtpy.QtWidgets import QComboBox
+from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QLabel
+from qtpy.QtWidgets import QSpacerItem
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QInputDialog
 
 from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *

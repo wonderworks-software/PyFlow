@@ -15,8 +15,8 @@
 
 from nine import str
 import uuid
-from Qt import QtWidgets
-from Qt import QtGui, QtCore
+from qtpy import QtWidgets
+from qtpy import QtGui, QtCore
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
@@ -150,7 +150,7 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         ToolBase.__init__(self)
         QtWidgets.QDockWidget.__init__(self)
         self.setToolTip(self.toolTip())
-        self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
+        #self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
         self.setObjectName(self.uniqueName())
         self.setTitleBarWidget(DockTitleBar(self))
@@ -193,7 +193,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.layout().setContentsMargins(0, 0, 0, 1)
         self.buttonsLay = QtWidgets.QHBoxLayout()
         self.buttonsLay.setSpacing(1)
-        self.buttonsLay.setMargin(1)
+        self.buttonsLay.setContentsMargins(1,1,1,1)
         self.box = QtWidgets.QGroupBox("")
         self.box.setLayout(self.buttonsLay)
         self.box.setObjectName("Docked")
@@ -257,9 +257,9 @@ class DockTitleBar(QtWidgets.QWidget):
     def onFeaturesChanged(self, features):
         if not features & QtWidgets.QDockWidget.DockWidgetVerticalTitleBar:
             self.closeButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetClosable)
+                features & QtWidgets.QDockWidget.DockWidgetClosable == QtWidgets.QDockWidget.DockWidgetClosable)
             self.dockButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetFloatable)
+                features & QtWidgets.QDockWidget.DockWidgetFloatable == QtWidgets.QDockWidget.DockWidgetFloatable)
         else:
             raise ValueError('vertical title bar not supported')
 

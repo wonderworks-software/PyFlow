@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
+from qtpy import QtGui
 from PyFlow.Core.Common import *
 
 

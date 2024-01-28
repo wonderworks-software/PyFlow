@@ -16,9 +16,9 @@
 import os
 import shutil
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
 from PyFlow import Wizards
 from PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
@@ -62,7 +62,7 @@ class PackageWizard(WizardDialogueBase):
         self.p1Layout = QHBoxLayout(self.p1)
         self.lePkgName = QLineEdit("DemoPackage")
         # allow only letters without spaces
-        self.lePkgName.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("^[A-Za-z]+$")))
+        self.lePkgName.setValidator(QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("^[A-Za-z]+$")))
 
         self.lePkgName.setAlignment(QtCore.Qt.AlignCenter)
         self.p1Layout.addWidget(self.lePkgName)

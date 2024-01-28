@@ -1,6 +1,6 @@
 aenum; python_version < '3.4'
-PySide2
-Qt.py
+PySide6
+qtpy
 blinker
 nine
 docutils

@@ -18,8 +18,8 @@ from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
 
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
 
 class CompileTool(ShelfTool):

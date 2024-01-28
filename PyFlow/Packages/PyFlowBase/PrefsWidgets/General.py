@@ -15,8 +15,8 @@
 
 import os
 
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget

@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 
 
 class SelectionRect(QtWidgets.QGraphicsWidget):

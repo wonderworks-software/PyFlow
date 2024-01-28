@@ -161,7 +161,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
     from PyFlow import ConfigManager
-    from Qt.QtWidgets import QMessageBox
+    from qtpy.QtWidgets import QMessageBox
 
     packagePaths = Packages.__path__
 
@@ -207,7 +207,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
         try:
             if ispkg:
-                mod = importer.find_module(modname).load_module(modname)
+                mod = importer.find_spec(modname).loader.load_module()
                 package = getattr(mod, modname)()
                 __PACKAGES[modname] = package
                 __PACKAGE_PATHS[modname] = os.path.normpath(mod.__path__[0])

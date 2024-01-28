@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import (
+from qtpy import (
     QtGui,
     QtCore
 )

@@ -15,10 +15,12 @@
 
 from nine import str
 import logging
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtSvg
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtSvg
+from qtpy.QtWidgets import *
+from qtpy.QtSvgWidgets import QGraphicsSvgItem
+
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UIPinBase import (
@@ -55,10 +57,10 @@ class CollapseNodeActionButton(NodeActionButtonBase):
             self.svgIcon.setElementId("Collapse")
 
 
-class NodeNameValidator(QtGui.QRegExpValidator):
+class NodeNameValidator(QtGui.QRegularExpressionValidator):
     """docstring for NodeNameValidator."""
     def __init__(self, parent=None):
-        super(NodeNameValidator, self).__init__(QtCore.QRegExp('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
+        super(NodeNameValidator, self).__init__(QtCore.QRegularExpression('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
 
 
 class InputTextField(QGraphicsTextItem):
@@ -357,7 +359,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         self.setLayout(self.nodeLayout)
 
-        self.svgIcon = QtSvg.QGraphicsSvgItem(self)
+        self.svgIcon = QGraphicsSvgItem(self)
         self.svgIcon.setPos(-6, -6)
 
         self._image = None

@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt import QtCore
-from Qt.QtWidgets import QSizePolicy
+from qtpy import QtCore
+from qtpy.QtWidgets import QSizePolicy
 
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import NodePainter

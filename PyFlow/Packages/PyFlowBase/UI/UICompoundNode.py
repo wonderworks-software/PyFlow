@@ -17,9 +17,9 @@ import json
 import logging
 import os
 
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QInputDialog
+from qtpy.QtWidgets import QMessageBox
 
 from PyFlow import GET_PACKAGE_PATH, GET_PACKAGES
 from PyFlow.UI.Canvas.UICommon import validateGraphDataPackages

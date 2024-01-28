@@ -14,9 +14,9 @@
 
 
 import weakref
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtWidgets
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Widgets.QtSliders import pyf_RampSpline

@@ -13,10 +13,10 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
+from qtpy import QtGui
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from Qt.QtWidgets import QLabel
+from qtpy.QtWidgets import QLabel
 
 
 class UIImageDisplayNode(UINodeBase):

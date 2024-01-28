@@ -16,8 +16,8 @@
 # Input widgets for pins
 
 from copy import copy
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow import GET_PACKAGES

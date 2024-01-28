@@ -16,7 +16,7 @@
 import os
 import sys
 import subprocess
-from Qt import __binding__
+from qtpy import __binding__
 
 binding = __import__(__binding__)
 path = os.path.dirname(binding.__file__)

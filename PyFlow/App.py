@@ -26,9 +26,9 @@ import shutil
 from string import ascii_letters
 import random
 
-from Qt import QtGui
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtGui
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import currentProcessorTime
@@ -102,7 +102,7 @@ class PyFlow(QMainWindow):
         self.edHistory = EditorHistory(self)
         self.edHistory.statePushed.connect(self.historyStatePushed)
         self.setWindowTitle(winTitle())
-        self.undoStack = QUndoStack(self)
+        self.undoStack = QtGui.QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
         self.graphManager = GraphManagerSingleton()
         self.canvasWidget = BlueprintCanvasWidget(self.graphManager.get(), self)

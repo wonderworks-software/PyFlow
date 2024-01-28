@@ -26,10 +26,10 @@ try:
 except:
     from inspect import getargspec
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtWidgets
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
+from qtpy.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Utils.stylesheet import Colors
@@ -1781,13 +1781,13 @@ class BlueprintCanvasWidget(QWidget):
         self.canvas.requestFillProperties.connect(self.pyFlowInstance.onRequestFillProperties)
         self.canvas.requestClearProperties.connect(self.pyFlowInstance.onRequestClearProperties)
 
-        rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
-        nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
+        rxLettersAndNumbers = QtCore.QRegularExpression('^[a-zA-Z0-9]*$')
+        nameValidator = QtGui.QRegularExpressionValidator(rxLettersAndNumbers, self.leCompoundName)
         self.leCompoundName.setValidator(nameValidator)
         self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
 
-        rxLetters = QtCore.QRegExp('[a-zA-Z]+(\|[a-zA-Z]+)*')
-        categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
+        rxLetters = QtCore.QRegularExpression('[a-zA-Z]+(\|[a-zA-Z]+)*')
+        categoryValidator = QtGui.QRegularExpressionValidator(rxLetters, self.leCompoundCategory)
         self.leCompoundCategory.setValidator(categoryValidator)
         self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
 

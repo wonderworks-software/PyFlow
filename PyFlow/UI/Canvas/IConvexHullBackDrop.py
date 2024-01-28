@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
-from Qt import QtCore
+from qtpy import QtGui
+from qtpy import QtCore
 from PyFlow.UI.Canvas.loopBackDrop import backDrop
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Utils.ConvexHull import convex_hull
