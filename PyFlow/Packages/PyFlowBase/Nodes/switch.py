@@ -13,30 +13,25 @@
 ## limitations under the License.
 
 
-import uuid
-
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
-class switchOnString(NodeBase):
+class switch(NodeBase):
     def __init__(self, name):
-        super(switchOnString, self).__init__(name)
-        self.inExecPin = self.createInputPin(
-            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
-        )
-        self.inString = self.createInputPin("string", "StringPin")
-        self.defaultPin = self.createOutputPin("default", "ExecPin")
+        super(switch, self).__init__(name)
+        self.inExecPin = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
+        self.inVal = self.createInputPin('in', 'AnyPin', supportedPinDataTypes=['StringPin', 'IntPin', 'BoolPin'])
+        self.defaultPin = self.createOutputPin('default', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
 
     def addOutPin(self):
-        name = self.getUniqPinName("option")
-        return self.addNamedOutPin(name)
-
-    def addNamedOutPin(self, name):
-        p = self.createOutputPin(name, "ExecPin")
+        name = self.getUniqPinName("0")
+        
+        p = self.createOutputPin(name, 'ExecPin')
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)
         return p
@@ -44,16 +39,16 @@ class switchOnString(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType("ExecPin")
-        helper.addInputDataType("StringPin")
-        helper.addOutputDataType("ExecPin")
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('StringPin')
+        helper.addOutputDataType('ExecPin')
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return "FlowControl"
+        return 'FlowControl'
 
     @staticmethod
     def keywords():
@@ -61,23 +56,12 @@ class switchOnString(NodeBase):
 
     @staticmethod
     def description():
-        return "Execute output depending on input string"
+        return 'Execute output depending on input string'
 
     def compute(self, *args, **kwargs):
-        string = self.inString.getData()
+        string = str(self.inVal.getData())
         namePinOutputsMap = self.namePinOutputsMap
         if string in namePinOutputsMap:
             namePinOutputsMap[string].call(*args, **kwargs)
         else:
             self.defaultPin.call(*args, **kwargs)
-
-    def postCreate(self, jsonTemplate=None):
-        super(switchOnString, self).postCreate(jsonTemplate=jsonTemplate)
-        # recreate dynamically created pins
-        existingPins = self.namePinOutputsMap
-        if jsonTemplate is not None:
-            sortedOutputs = sorted(jsonTemplate["outputs"], key=lambda x: x["pinIndex"])
-            for outPinJson in sortedOutputs:
-                if outPinJson["name"] not in existingPins:
-                    dynOut = self.addNamedOutPin(outPinJson["name"])
-                    dynOut.uid = uuid.UUID(outPinJson["uuid"])

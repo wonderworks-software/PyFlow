@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
@@ -38,7 +38,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 from PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
 
-from PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
+from PyFlow.Packages.PyFlowBase.UI.UISwitchNode import UISwitch
 from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
@@ -65,8 +65,8 @@ def createUINode(raw_instance):
         return UIGetVarNode(raw_instance)
     if isinstance(raw_instance, setVar):
         return UISetVarNode(raw_instance)
-    if isinstance(raw_instance, switchOnString):
-        return UISwitchOnString(raw_instance)
+    if isinstance(raw_instance, switch):
+        return UISwitch(raw_instance)
     if isinstance(raw_instance, sequence):
         return UISequenceNode(raw_instance)
     if isinstance(raw_instance, commentNode):
