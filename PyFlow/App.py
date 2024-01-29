@@ -42,7 +42,9 @@ try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except ImportError:
     pass
+
 from PyFlow.Wizards.PackageWizard import PackageWizard
+
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager

@@ -22,6 +22,7 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import *
 
+from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
 
 from PyFlow.Core.Common import *
@@ -419,7 +420,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             pressed_text = json.dumps(jsonTemplate)
             mime_data.setText(pressed_text)
             drag.setMimeData(mime_data)
-            drag.exec_()
+            drag.exec()
 
     def update(self):
         for category in self.categoryPaths.values():

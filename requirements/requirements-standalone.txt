@@ -2,3 +2,4 @@ PySide6
 qtpy
 blinker
 docutils
+SQLAlchemy

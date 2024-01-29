@@ -142,6 +142,46 @@ class ShelfTool(ToolBase):
     def do(self):
         print(self.name(), "called!", self.canvas)  # TODO: there is no 'canvas' yet
 
+class FormTool(QtWidgets.QMdiSubWindow, ToolBase):
+    """Base class for form tools
+    """
+    def __init__(self):
+        ToolBase.__init__(self)
+        QtWidgets.QMdiSubWindow.__init__(self)
+        self.setToolTip(self.toolTip())
+        self.setObjectName(self.uniqueName())
+
+    def supportedSoftwares():
+        """Under what software to work
+        """
+        return ["any"]
+
+    @staticmethod
+    def isSingleton():
+        return False
+
+    def onShow(self):
+        super(FormTool, self).onShow()
+        self.setWindowTitle(self.name())
+
+    def contextMenuBuilder(self):
+        return None
+
+    @staticmethod
+    def getIcon():
+        return None
+
+    def restoreState(self, settings):
+        super(FormTool, self).restoreState(settings)
+        self.setObjectName(self.uniqueName())
+
+    def closeEvent(self, event):
+        self.onDestroy()
+        self.parent().unregisterToolInstance(self)
+        event.accept()
+
+    def do(self):
+        print(self.name(), "called!", self.canvas)
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """Base class for dock tools
@@ -189,7 +229,6 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
 
     def addButton(self, button):
         self.titleBarWidget().addButton(button)
-
 
 class DockTitleBar(QtWidgets.QWidget):
     def __init__(self, dockWidget, renamable=False):
