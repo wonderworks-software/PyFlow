@@ -14,7 +14,6 @@
 
 
 import unittest
-from nine import str
 
 from PyFlow.Core.Common import *
 from PyFlow import INITIALIZE, GET_PACKAGES

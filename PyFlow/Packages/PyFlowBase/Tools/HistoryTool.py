@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import *
@@ -124,4 +123,4 @@ class HistoryTool(DockTool):
 
     @staticmethod
     def name():
-        return str("History")
+        return "History"

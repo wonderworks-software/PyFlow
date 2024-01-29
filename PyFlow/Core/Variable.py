@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from blinker import Signal
 import json
 
@@ -227,7 +226,7 @@ class Variable(IItemBase):
 
         template = Variable.jsonTemplate()
 
-        uidString = str(self.uid)
+        uidString = self.uid
 
         template["name"] = self.name
         if self.dataType == "AnyPin":

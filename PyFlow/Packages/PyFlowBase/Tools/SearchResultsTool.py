@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import *
@@ -84,4 +83,4 @@ class SearchResultsTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Search results")
+        return "Search results"

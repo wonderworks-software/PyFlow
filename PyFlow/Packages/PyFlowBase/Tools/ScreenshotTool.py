@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
@@ -60,7 +59,7 @@ class ScreenshotTool(ShelfTool):
 
     @staticmethod
     def name():
-        return str("ScreenshotTool")
+        return "ScreenshotTool"
 
     def do(self):
         name_filter = "Image (*.{0})".format(self.format.lower())

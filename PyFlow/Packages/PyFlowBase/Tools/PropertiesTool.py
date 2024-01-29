@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
@@ -73,4 +72,4 @@ class PropertiesTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Properties")
+        return "Properties"

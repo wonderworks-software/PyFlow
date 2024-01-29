@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QUndoView
@@ -61,4 +60,4 @@ class VariablesTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Variables")
+        return "Variables"

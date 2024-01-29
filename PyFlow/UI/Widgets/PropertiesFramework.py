@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.UI.Widgets.EditPropertiesWidget import EditPropertiesTreeWidget
 from qtpy import QtWidgets
@@ -343,7 +342,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.mainLayout.setContentsMargins(2, 2, 2, 2)
         self.searchBox = QtWidgets.QLineEdit(self)
         self.searchBox.setObjectName("lineEdit")
-        self.searchBox.setPlaceholderText(str("search..."))
+        self.searchBox.setPlaceholderText("search...")
         self.searchBox.textChanged.connect(
             self.filterByHeaders if searchByHeaders else self.filterByHeadersAndFields
         )

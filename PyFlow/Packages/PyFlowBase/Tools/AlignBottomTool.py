@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import str
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.Core.Common import Direction
@@ -38,7 +37,7 @@ class AlignBottomTool(ShelfTool):
 
     @staticmethod
     def name():
-        return str("AlignBottomTool")
+        return "AlignBottomTool"
 
     def do(self):
         self.pyFlowInstance.getCanvas().alignSelectedNodes(Direction.Down)

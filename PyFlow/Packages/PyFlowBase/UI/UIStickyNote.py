@@ -13,8 +13,6 @@
 ## limitations under the License.
 
 
-from nine import *
-
 from qtpy import QtCore
 from qtpy import QtGui
 from PyFlow.UI.Canvas.UICommon import *

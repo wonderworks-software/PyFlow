@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import *
 import logging
 
 from PyFlow.Core import NodeBase

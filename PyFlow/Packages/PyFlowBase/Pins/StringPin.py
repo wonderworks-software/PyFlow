@@ -15,7 +15,6 @@
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
-from nine import str
 
 
 class StringPin(PinBase):

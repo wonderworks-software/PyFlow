@@ -28,7 +28,6 @@ setup(
         "enum ; python_version<'3.4'",
         "Qt.py",
         "blinker",
-        "nine",
         "docutils",
     ],
     extra_requires=["PySide2"],
