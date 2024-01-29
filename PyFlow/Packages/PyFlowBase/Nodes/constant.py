@@ -16,9 +16,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
-from PyFlow import findPinClassByType, getAllPinClasses
-from PyFlow import CreateRawPin
-from copy import copy
+from PyFlow import getAllPinClasses
 
 
 class constant(NodeBase):

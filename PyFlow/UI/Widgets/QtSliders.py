@@ -1249,8 +1249,8 @@ class pyf_timeline(QtWidgets.QSlider):
             super(pyf_timeline, self).mousePressEvent(event)
 
     def wheelEvent(self, event):
-        newMin = self.minimum() + (round(120 / event.delta()))
-        newMax = self.maximum() - (round(120 / event.delta()))
+        newMin = self.minimum() + (round(120 / event.angleDelta().y()))
+        newMax = self.maximum() - (round(120 / event.angleDelta().y()))
         distance = newMax - newMin
         if distance > 0:
             self.setRange(newMin, newMax)
@@ -1779,7 +1779,7 @@ class pyf_RampColor(pyf_RampSpline):
 
         :param u: X position for the item, defaults to 0
         :type u: float, optional
-        :param v: color value for the item, defaults to [0,0,0]
+        :param v: color value for the item, defaults to (0,0,0)
         :type v: [float,float,float], optional
         :param raw_item: Existing :obj:`PyFlow.Core.structs.Tick` to link with, if none, one new created , defaults to None
         :type raw_item: :obj:`PyFlow.Core.structs.Tick`, optional

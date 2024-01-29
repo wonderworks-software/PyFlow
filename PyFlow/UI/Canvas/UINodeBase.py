@@ -58,7 +58,7 @@ class NodeNameValidator(QtGui.QRegularExpressionValidator):
 
     def __init__(self, parent=None):
         super(NodeNameValidator, self).__init__(
-            QtCore.QRegExp("^[a-zA-Z][a-zA-Z0-9_]*$"), parent
+            QtCore.QRegularExpression("^[a-zA-Z][a-zA-Z0-9_]*$"), parent
         )
 
 

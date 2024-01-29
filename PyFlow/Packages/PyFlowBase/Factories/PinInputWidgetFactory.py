@@ -30,8 +30,8 @@ from PyFlow.UI.Widgets.FileDialog import FileDialog
 class ExecInputWidget(InputWidgetSingle):
     """docstring for ExecInputWidget"""
 
-    def __init__(self, parent=None, **kwds):
-        super(ExecInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(ExecInputWidget, self).__init__(parent=parent, **kwargs)
         self.pb = QPushButton("execute", self)
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
@@ -45,8 +45,8 @@ class FloatInputWidgetSimple(InputWidgetSingle):
     Floating point data input widget without enhancements
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwargs)
         self.sb = valueBox(type="float", buttons=True)
         self.sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
         self.sb.setSingleStep(0.01)
@@ -71,8 +71,8 @@ class FloatInputWidget(InputWidgetSingle):
     Floating point data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(FloatInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(FloatInputWidget, self).__init__(parent=parent, **kwargs)
         valueRange = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
         if "pinAnnotations" in kwargs:
             if PinSpecifiers.VALUE_RANGE in kwargs["pinAnnotations"]:
@@ -109,8 +109,8 @@ class IntInputWidgetSimple(InputWidgetSingle):
     Decimal number input widget without enhancements
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(IntInputWidgetSimple, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(IntInputWidgetSimple, self).__init__(parent=parent, **kwargs)
         self.sb = valueBox(type="int", buttons=True)
         self.sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
         self.setWidget(self.sb)
@@ -128,12 +128,12 @@ class IntInputWidget(InputWidgetSingle):
     Decimal number input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(IntInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(IntInputWidget, self).__init__(parent=parent, **kwargs)
         valueRange = (INT_RANGE_MIN, INT_RANGE_MAX)
-        if "pinAnnotations" in kwds:
-            if "ValueRange" in kwds["pinAnnotations"]:
-                valueRange = kwds["pinAnnotations"]["ValueRange"]
+        if "pinAnnotations" in kwargs:
+            if "ValueRange" in kwargs["pinAnnotations"]:
+                valueRange = kwargs["pinAnnotations"]["ValueRange"]
         self.sb = pyf_Slider(self, "int", style=1, sliderRange=valueRange)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
@@ -150,8 +150,8 @@ class StringInputWidget(InputWidgetSingle):
     String data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(StringInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(StringInputWidget, self).__init__(parent=parent, **kwargs)
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)
@@ -167,15 +167,15 @@ class StringInputWidget(InputWidgetSingle):
 class EnumInputWidget(InputWidgetSingle):
     """docstring for EnumInputWidget."""
 
-    def __init__(self, parent=None, **kwds):
-        super(EnumInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(EnumInputWidget, self).__init__(parent=parent, **kwargs)
         values = []
         if PinSpecifiers.VALUE_LIST in kwargs["pinAnnotations"]:
             values = kwargs["pinAnnotations"][PinSpecifiers.VALUE_LIST]
         self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
-        if "editable" in kwds["pinAnnotations"]:
-            self.enumBox.setEditable(kwds["pinAnnotations"]["editable"])
+        if "editable" in kwargs["pinAnnotations"]:
+            self.enumBox.setEditable(kwargs["pinAnnotations"]["editable"])
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)
 
@@ -209,8 +209,8 @@ class PathInputWidget(InputWidgetSingle):
     Path input widget
     """
 
-    def __init__(self, mode="all", parent=None, **kwds):
-        super(PathInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, mode="all", parent=None, **kwargs):
+        super(PathInputWidget, self).__init__(parent=parent, **kwargs)
         self.mode = mode
         self.content = QWidget()
         self.content.setContentsMargins(0, 0, 0, 0)
@@ -240,8 +240,8 @@ class PathInputWidget(InputWidgetSingle):
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
 
-    def __init__(self, parent=None, **kwds):
-        super(BoolInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(BoolInputWidget, self).__init__(parent=parent, **kwargs)
         self.cb = QCheckBox(self)
         self.setWidget(self.cb)
         self.cb.stateChanged.connect(lambda val: self.dataSetCallback(bool(val)))
@@ -261,8 +261,8 @@ class NoneInputWidget(InputWidgetSingle):
     String data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(NoneInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(NoneInputWidget, self).__init__(parent=parent, **kwargs)
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)

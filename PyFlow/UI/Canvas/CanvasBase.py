@@ -92,7 +92,7 @@ class CanvasBase(QGraphicsView):
             self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
     def wheelEvent(self, event):
-        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
+        zoomFactor = 1.0 + event.angleDelta().y() * self._mouseWheelZoomRate
 
         self.zoom(zoomFactor)
 

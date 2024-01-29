@@ -244,16 +244,16 @@ class LoggerTool(DockTool):
 
     def flushPython(self):
         self.logView.moveCursor(
-            QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.MoveAnchor
+            QtGui.QTextCursor.End, QtGui.QTextCursor.MoveAnchor
         )
         self.logView.moveCursor(
-            QtWidgets.QTextCursor.Up, QtWidgets.QTextCursor.MoveAnchor
+            QtGui.QTextCursor.Up, QtGui.QTextCursor.MoveAnchor
         )
         self.logView.moveCursor(
-            QtWidgets.QTextCursor.StartOfLine, QtWidgets.QTextCursor.MoveAnchor
+            QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.MoveAnchor
         )
         self.logView.moveCursor(
-            QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.KeepAnchor
+            QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor
         )
         self.logView.textCursor().removeSelectedText()
 

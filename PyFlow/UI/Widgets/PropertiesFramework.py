@@ -208,7 +208,6 @@ class CollapsibleFormWidget(CollapsibleWidget):
         return count == hidden
 
     def filterContent(self, pattern):
-        count = self.Layout.count()
         for key, value in self.entryNames.items():
             if isinstance(value, PropertyEntry):
                 value.setVisible(pattern.lower() in value.getLabel().lower())

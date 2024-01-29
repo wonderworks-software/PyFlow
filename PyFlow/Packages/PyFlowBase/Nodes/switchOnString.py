@@ -13,9 +13,10 @@
 ## limitations under the License.
 
 
+import uuid
+
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 

@@ -17,11 +17,7 @@
 """
 
 import os
-import sys
-import subprocess
 import json
-import pkgutil
-import uuid
 import shutil
 from string import ascii_letters
 import random
@@ -30,29 +26,21 @@ from qtpy import QtGui
 from qtpy import QtCore
 from qtpy.QtWidgets import *
 
-from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import currentProcessorTime
-from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.version import *
-from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
-from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
-from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
 try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
-except:
+except ImportError:
     pass
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
@@ -65,9 +53,9 @@ import PyFlow.UI.resources
 EDITOR_TARGET_FPS = 60
 
 
-def generateRandomString(numSymbolds=5):
+def generateRandomString(numbSymbols=5):
     result = ""
-    for i in range(numSymbolds):
+    for i in range(numbSymbols):
         letter = random.choice(ascii_letters)
         result += letter
     return result
@@ -87,7 +75,7 @@ def winTitle():
     return "PyFlow v{0}".format(currentVersion().__str__())
 
 
-## App itself
+# App itself
 class PyFlow(QMainWindow):
 
     appInstance = None
@@ -161,7 +149,7 @@ class PyFlow(QMainWindow):
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
 
-        This folder and all it's content will be removed from disc on application shutdown.
+        This folder and all its content will be removed from disc on application shutdown.
         """
         if self.currentTempDir == "":
             # create app folder in documents
@@ -452,7 +440,7 @@ class PyFlow(QMainWindow):
 
         # Tick all graphs
         # each graph will tick owning raw nodes
-        # each raw node will tick it's ui wrapper if it exists
+        # each raw node will tick its ui wrapper if it exists
         self.graphManager.get().Tick(deltaTime)
 
         # Tick canvas. Update ui only stuff such animation etc.
@@ -484,7 +472,9 @@ class PyFlow(QMainWindow):
                     return ToolClass()
         return None
 
-    def getRegisteredTools(self, classNameFilters=[]):
+    def getRegisteredTools(self, classNameFilters=None):
+        if classNameFilters is None:
+            classNameFilters = []
         if len(classNameFilters) == 0:
             return self._tools
         else:
