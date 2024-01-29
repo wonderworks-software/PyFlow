@@ -93,28 +93,19 @@ class UIStickyNote(UINodeBase):
         self.updateSize()
 
     def startEditing(self):
-        if IS_PYTHON2:
-            self.textInput.setPlainText(self.NonFormatedText.decode("unicode-escape"))
-        else:
-            self.textInput.setPlainText(
-                bytes(self.NonFormatedText, "utf-8").decode("unicode-escape")
-            )
+        self.textInput.setPlainText(
+            bytes(self.NonFormatedText, "utf-8").decode("unicode-escape")
+        )
 
     def editingFinished(self, succes):
         if succes:
-            if IS_PYTHON2:
-                self.NonFormatedText = self.textInput.toPlainText().encode(
-                    "unicode-escape"
-                )
-                self.textInput.setHtml(self.NonFormatedText.replace("\\n", "<br/>"))
-            else:
-                self.NonFormatedText = self.textInput.toPlainText().encode(
-                    "unicode-escape"
-                )
-                self.NonFormatedText = self.NonFormatedText.replace(
-                    b"\\n", b"<br/>"
-                ).decode("unicode-escape")
-                self.textInput.setHtml(self.NonFormatedText)
+            self.NonFormatedText = self.textInput.toPlainText().encode(
+                "unicode-escape"
+            )
+            self.NonFormatedText = self.NonFormatedText.replace(
+                b"\\n", b"<br/>"
+            ).decode("unicode-escape")
+            self.textInput.setHtml(self.NonFormatedText)
 
     def updateSize(self):
         self.textInput.setTextWidth(self.boundingRect().width() - 10)
