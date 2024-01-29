@@ -31,13 +31,13 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
 
         bOwningNodeCallable = pin.owningNode().bCallable
 
-        if not bOwningNodeCallable:
+        if not pin.dirty:
             return pin.currentData()
-
+        
         order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
         [node.processNode() for node in order]
 
-        if not bOwningNodeCallable:
+        if not pin.dirty:
             pin.owningNode().processNode()
         return pin.currentData()
 
