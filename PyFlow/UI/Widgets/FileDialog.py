@@ -1,12 +1,11 @@
-from qtpy import QtCore
 from qtpy.QtWidgets import *
 
 
 class FileDialog(QFileDialog):
     """docstring for ExecInputWidget"""
 
-    def __init__(self, mode="all", multifile=False, parent=None, **kwds):
-        super(FileDialog, self).__init__(parent=parent, **kwds)
+    def __init__(self, mode="all", multifile=False, parent=None, **kwargs):
+        super(FileDialog, self).__init__(parent=parent, **kwargs)
         self.setOption(QFileDialog.DontUseNativeDialog, True)
         if mode == "all":
             self.setFileMode(QFileDialog.Directory)

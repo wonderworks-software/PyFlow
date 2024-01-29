@@ -15,7 +15,6 @@
 
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
-from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
 
 from qtpy import QtGui
 from qtpy.QtWidgets import *
@@ -26,6 +25,7 @@ class CompileTool(ShelfTool):
 
     def __init__(self):
         super(CompileTool, self).__init__()
+        self.format = None
 
     def onSetFormat(self, fmt):
         self.format = fmt

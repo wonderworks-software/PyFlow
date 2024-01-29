@@ -95,7 +95,7 @@ class editableStyleSheet:
         self.ConnectionRoundness = [5]
         self.ConnectionOffset = [20]
 
-        self.storeDeffaults()
+        self.storeDefaults()
         self.presets = {}
         self.loadPresets(THEMES_PATH)
         try:
@@ -108,7 +108,7 @@ class editableStyleSheet:
         except:
             pass
 
-    def storeDeffaults(self):
+    def storeDefaults(self):
         for name, obj in inspect.getmembers(self):
             if isinstance(obj, QtGui.QColor):
                 obj.default = obj.getRgb()

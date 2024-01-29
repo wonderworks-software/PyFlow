@@ -137,7 +137,7 @@ class InputTextField(QGraphicsTextItem):
         self.setFocus()
 
     def focusInEvent(self, event):
-        self.node.canvasRef().disableSortcuts()
+        self.node.canvasRef().disableShortcuts()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setObjectName("MouseLocked")
         self.textBeforeEditing = self.toPlainText()
@@ -145,7 +145,7 @@ class InputTextField(QGraphicsTextItem):
         super(InputTextField, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
-        self.node.canvasRef().enableSortcuts()
+        self.node.canvasRef().enableShortcuts()
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
@@ -275,7 +275,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
-        self._rawNode.errorOccured.connect(self.onNodeErrorOccurred)
+        self._rawNode.errorOccurred.connect(self.onNodeErrorOccurred)
         self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
         self._rawNode.setDirty.connect(self.setDirty)
         self._rawNode.computing.connect(self.setComputing)

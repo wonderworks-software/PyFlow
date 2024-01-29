@@ -14,7 +14,6 @@
 
 
 from copy import copy
-import uuid
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
@@ -109,7 +108,7 @@ class getVar(NodeBase):
     def variableUid(self):
         return self.var.uid
 
-    def onVarValueChanged(self, *args, **kwargs):
+    def onVarValueChanged(self):
         push(self.out)
 
     def serialize(self):

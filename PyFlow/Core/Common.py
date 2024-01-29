@@ -23,15 +23,11 @@
 import re
 import math
 import time
-import inspect
 import struct
 import weakref
-
-from queue import Queue
-import uuid
 import sys
 
-from enum import IntEnum, Flag, auto, Enum
+from enum import IntEnum, Flag, auto
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
@@ -45,10 +41,10 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-DEFAULT_IN_EXEC_NAME = str("inExec")
-DEFAULT_OUT_EXEC_NAME = str("outExec")
-DEFAULT_WIDGET_VARIANT = str("DefaultWidget")
-REF = str("Reference")
+DEFAULT_IN_EXEC_NAME = "inExec"
+DEFAULT_OUT_EXEC_NAME = "outExec"
+DEFAULT_WIDGET_VARIANT = "DefaultWidget"
+REF = "Reference"
 
 
 def lerp(start, end, alpha):
@@ -181,7 +177,6 @@ def findGoodId(ids):
         diff = ID - lastID
         if diff > 1:
             return lastID + 1
-            break
         lastID = ID
     else:
         return ID + 1
@@ -221,9 +216,9 @@ def cycleCheck(src, dst):
     """Check for cycle connected nodes
 
     :param src: hand side pin
-    :type src: :class:`PyFlow.Core.PinBase`
+    :type src: :class:`PyFlow.Core.PinBase.PinBase`
     :param dst: hand side pin
-    :type dst: :class:`PyFlow.Core.PinBase`
+    :type dst: :class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if cycle deleted
     :rtype: bool
     """
@@ -244,9 +239,9 @@ def arePinsConnected(src, dst):
     .. note:: Pins can be passed in any order if **src** pin is :py:class:`PyFlow.Core.Common.PinDirection`, they will be swapped
 
     :param src: left hand side pin
-    :type src: :py:class:`PyFlow.Core.PinBase`
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param dst: right hand side pin
-    :type dst: :py:class:`PyFlow.Core.PinBase`
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if Pins are connected
     :rtype: bool
     """
@@ -280,7 +275,7 @@ def getConnectedPins(pin):
 
 
 def pinAffects(lhs, rhs):
-    """This function for establish dependencies bitween pins
+    """This function for establish dependencies between pins
 
     .. warning:: Used internally, users will hardly need this
 
@@ -347,14 +342,14 @@ def canConnectPins(src, dst):
         ):
             return False
         else:
-            DictElement = src.getDictElementNode([])
+            DictElementNode = src.getDictElementNode([])
             dictNode = dst.getDictNode([])
             nodeFree = False
             if dictNode:
                 nodeFree = dictNode.KeyType.checkFree([])
-            if DictElement:
-                if not DictElement.key.checkFree([]) and not nodeFree:
-                    if dst._data.keyType != DictElement.key.dataType:
+            if DictElementNode:
+                if not DictElementNode.key.checkFree([]) and not nodeFree:
+                    if dst._data.keyType != DictElementNode.key.dataType:
                         return False
 
     if src.isArray() and not dst.isArray():
@@ -486,7 +481,7 @@ def canConnectPins(src, dst):
 def connectPins(src, dst):
     """**Connects two pins**
 
-    This are the rules how pins connect:
+    These are the rules how pins connect:
 
     * Input value pins can have one output connection if :py:class:`PyFlow.Core.Common.PinOptions.AllowMultipleConnections` flag is disabled
     * Output value pins can have any number of connections
@@ -679,11 +674,11 @@ def getUniqNameFromList(existingNames, name):
 
     Iterates over **existingNames** and extracts the end digits to find a new unique id
 
-    :param existingNames: List of strings where to search for existing indexes
-    :type existingNames: list
+    :param existingNames: List or set of strings where to search for existing indexes
+    :type existingNames: list[str]|set[str]
     :param name: Name to obtain a unique version from
     :type name: str
-    :returns: New name non overlapin with any in existingNames
+    :returns: New name non overlapping with any in existingNames
     :rtype: str
     """
     if name not in existingNames:
@@ -744,17 +739,17 @@ class DictElement(tuple):
     This subclass of python's :class:`tuple` is to represent dict elements to construct typed dicts
     """
 
-    def __new__(self, a=None, b=None):
+    def __new__(cls, a=None, b=None):
         if a is None and b is None:
             new = ()
         elif b is None:
             if isinstance(a, tuple) and len(a) <= 2:
                 new = a
             else:
-                raise Exception("non Valid Input")
+                raise Exception("Invalid Input")
         else:
             new = (a, b)
-        return super(DictElement, self).__new__(self, new)
+        return super(DictElement, cls).__new__(cls, new)
 
 
 class PFDict(dict):
@@ -780,7 +775,7 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType="AnyPin", inp={}):
+    def __init__(self, keyType, valueType="AnyPin", inp=None):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
@@ -788,6 +783,8 @@ class PFDict(dict):
         :param inp: Construct from another dict, defaults to {}
         :type inp: dict, optional
         """
+        if inp is None:
+            inp = {}
         super(PFDict, self).__init__(inp)
         self.keyType = keyType
         self.valueType = valueType
@@ -795,7 +792,7 @@ class PFDict(dict):
     def __setitem__(self, key, item):
         """Re implements Python Dict __setitem__ to only allow Typed Keys.
 
-        Will throw an Exception if non Valid KeyType
+        Will throw an Exception if non-Valid KeyType
         """
         if type(key) == self.getClassFromType(self.keyType):
             super(PFDict, self).__setitem__(key, item)
@@ -804,7 +801,8 @@ class PFDict(dict):
                 "Valid key should be a {0}".format(self.getClassFromType(self.keyType))
             )
 
-    def getClassFromType(self, pinType):
+    @staticmethod
+    def getClassFromType(pinType):
         """
         Gets the internal data structure for a defined pin type
 
@@ -842,7 +840,7 @@ class PinOptions(Flag):
 
     AllowMultipleConnections = (
         auto()
-    )  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
+    )  #: This enables pin to allow more than one input connection. See :func:`~PyFlow.Core.Common.connectPins`
 
     ChangeTypeOnConnection = (
         auto()
@@ -855,7 +853,7 @@ class PinOptions(Flag):
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
     AllowAny = (
         auto()
-    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default, a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
     DictElementSupported = (
         auto()
     )  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
@@ -872,7 +870,7 @@ class StructureType(IntEnum):
     Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
     Multi = (
         3
-    )  #: This means it can became any of the previous ones on connection/user action
+    )  #: This means it can become any of the previous ones on connection/user action
 
 
 def findStructFromValue(value):
@@ -934,8 +932,8 @@ class Direction(IntEnum):
     Down = 3  #: Down
 
 
-class PinSpecifires:
-    """Pin specifires constants
+class PinSpecifiers:
+    """Pin specifiers constants
 
     :var SUPPORTED_DATA_TYPES: To specify supported data types list
     :var CONSTRAINT: To specify type constraint key

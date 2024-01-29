@@ -17,8 +17,6 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QStyle
 
-from PyFlow import getPinFromData
-
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
 
@@ -345,8 +343,6 @@ class PinPainter(object):
 
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
 
-        w = frame.width() / 2
-        h = frame.height() / 2
         halfPinSize = pin.pinSize / 2
 
         if lod < SWITCH_LOD and not pin.bLabelHidden:

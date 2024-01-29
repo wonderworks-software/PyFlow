@@ -14,7 +14,6 @@
 
 
 from qtpy import QtCore
-from qtpy import QtGui
 
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
@@ -25,6 +24,7 @@ class NodeBoxTool(DockTool):
 
     def __init__(self):
         super(NodeBoxTool, self).__init__()
+        self.content = None
 
     def onShow(self):
         super(NodeBoxTool, self).onShow()

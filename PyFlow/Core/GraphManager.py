@@ -26,7 +26,7 @@ class GraphManager(object):
     """Data structure that holds graph tree
 
     This class switches active graph. Can insert or remove graphs to tree,
-    can search nodes and variables across all graphs. Also this class responsible
+    can search nodes and variables across all graphs. Also, this class responsible
     for giving unique names.
     """
 
@@ -105,7 +105,7 @@ class GraphManager(object):
         :type data: dict
         """
         if "fileVersion" in data:
-            fileVersion = version.Version.fromString(data["fileVersion"])
+            fileVersion = version.Version.fromString(data["fileVersion"])  # TODO: find purpose
         else:
             # handle older version
             pass
@@ -115,7 +115,7 @@ class GraphManager(object):
         self._activeGraph.setIsRoot(True)
         self.selectGraph(self._activeGraph)
 
-    def clear(self, keepRoot=True, *args, **kwargs):
+    def clear(self, keepRoot=True):
         """Wipes everything.
 
         :param keepRoot: Whether to remove root graph or not
@@ -265,7 +265,6 @@ class GraphManager(object):
         graphs = self.getGraphsDict()
         if name in graphs:
             if name != self.activeGraph().name:
-                oldGraph = self.activeGraph()
                 newGraph = graphs[name]
                 self._activeGraph = newGraph
                 self.graphChanged.send(self.activeGraph())
@@ -279,7 +278,6 @@ class GraphManager(object):
         for newGraph in self.getAllGraphs():
             if newGraph.name == graph.name:
                 if newGraph.name != self.activeGraph().name:
-                    oldGraph = self.activeGraph()
                     self._activeGraph = newGraph
                     self.graphChanged.send(self.activeGraph())
                     break
@@ -291,7 +289,7 @@ class GraphManager(object):
         """
         return [g for g in self._graphs.values()]
 
-    def getAllNodes(self, classNameFilters=[]):
+    def getAllNodes(self, classNameFilters=None):
         """Returns all nodes across all graphs
 
         :param classNameFilters: If class name filters specified, only those node classes will be considered
@@ -324,7 +322,8 @@ class GraphManager(object):
             result.extend(list(graph.getVars().values()))
         return result
 
-    def getUniqGraphPinName(self, graph, name):
+    @staticmethod
+    def getUniqGraphPinName(graph, name):
         """Returns unique pin name for graph
 
         Used by compound node and graphInputs graphOutputs nodes.

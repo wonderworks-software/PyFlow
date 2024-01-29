@@ -17,10 +17,8 @@ from datetime import datetime
 from qtpy.QtWidgets import QFileDialog
 from qtpy.QtWidgets import QMessageBox
 
-from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 from PyFlow.UI.UIInterfaces import IDataExporter
-from PyFlow import getRawNodeInstance
 from PyFlow.Core.version import Version
 from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
@@ -109,7 +107,6 @@ class PythonScriptExporter(IDataExporter):
 
     @staticmethod
     def doImport(pyFlowInstance):
-        name_filter = "Graph files (*.json)"
         openFilename, filterString = QFileDialog.getOpenFileName(
             filter=PythonScriptExporter.name_filter
         )

@@ -13,15 +13,14 @@
 ## limitations under the License.
 
 
-import weakref
+import uuid
+
 from blinker import Signal
 from collections import Counter
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import CreateRawPin
 from PyFlow import getRawNodeInstance
-from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
 from PyFlow.Core.Interfaces import ISerializable
@@ -42,8 +41,8 @@ class GraphBase(ISerializable):
     :var childGraphs: a set of child graphs
     :vartype childGraphs: :class:`set`
 
-    :var nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
-    :vartype nodes: :class:`dict`
+    :var _nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
+    :vartype _nodes: :class:`dict`
 
     :var uid: Unique identifier
     :vartype uid: :class:`uuid.UUID`
@@ -78,9 +77,9 @@ class GraphBase(ISerializable):
     """
 
     def __init__(
-        self, name, manager, parentGraph=None, category="", uid=None, *args, **kwargs
+        self, name, manager, parentGraph=None, category="", uid=None
     ):
-        super(GraphBase, self).__init__(*args, **kwargs)
+        super(GraphBase, self).__init__()
         self.graphManager = manager
         self._isRoot = False
 
@@ -207,7 +206,6 @@ class GraphBase(ISerializable):
         # restore nodes
         for nodeJson in jsonData["nodes"]:
             # check if variable getter or setter and pass variable
-            nodeArgs = ()
             nodeKwargs = {}
             if nodeJson["type"] in ("getVar", "setVar"):
                 nodeKwargs["var"] = self._vars[uuid.UUID(nodeJson["varUid"])]
@@ -216,7 +214,6 @@ class GraphBase(ISerializable):
                 nodeJson["type"],
                 packageName=nodeJson["package"],
                 libName=nodeJson["lib"],
-                *nodeArgs,
                 **nodeKwargs,
             )
             self.addNode(node, nodeJson)
@@ -365,10 +362,12 @@ class GraphBase(ISerializable):
         """
         return self._nodes
 
-    def getNodesList(self, classNameFilters=[]):
+    def getNodesList(self, classNameFilters=None):
         """Returns this graph's nodes list
         :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
         """
+        if classNameFilters is None:
+            classNameFilters = []
         if len(classNameFilters) > 0:
             return [
                 n

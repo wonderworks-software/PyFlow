@@ -32,7 +32,7 @@ class forLoopBegin(NodeBase):
         self.firstIndex = self.createInputPin("Start", "IntPin")
         self.lastIndex = self.createInputPin("Stop", "IntPin")
         self.loopEndNode = self.createInputPin("Paired block", "StringPin")
-        self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.loopEndNode.setInputWidgetVariant("ObjectPathWidget")
 
         self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
         self.index = self.createOutputPin("Index", "IntPin")
@@ -77,7 +77,7 @@ class forLoopBegin(NodeBase):
             return True
         return False
 
-    def onNext(self, *args, **kwargs):
+    def onNext(self):
         while not self.isDone():
             if self.currentIndex > self.prevIndex:
                 self.index.setData(self.currentIndex)
@@ -101,8 +101,8 @@ class forLoopBegin(NodeBase):
             self.setError("{} not found".format(endNodePath))
         if not self._working:
             self.thread = threading.Thread(
-                target=self.onNext, args=(self, args, kwargs)
+                target=self.onNext, args=(self,)
             )
             self.thread.start()
             self._working = True
-        # self.onNext(*args, **kwargs)
+        # self.onNext()

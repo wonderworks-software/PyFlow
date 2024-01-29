@@ -13,8 +13,6 @@
 ## limitations under the License.
 
 
-import weakref
-
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QApplication
@@ -22,10 +20,7 @@ from qtpy.QtWidgets import QGraphicsWidget
 from qtpy.QtWidgets import QMenu
 from qtpy.QtWidgets import QInputDialog
 from qtpy.QtWidgets import QSizePolicy
-from qtpy.QtWidgets import QPlainTextEdit
 
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.stylesheet import Colors, editableStyleSheet
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow.UI.Canvas.WatchPinValueItem import WatchItem
 from PyFlow.UI.Canvas.UICommon import *
@@ -55,7 +50,7 @@ class UIPinBase(QGraphicsWidget):
         :param owningNode: Owning node
         :type owningNode: :class:`PyFlow.UI.Canvas.NodeBase`
         :param raw_pin: PinBase reference
-        :type raw_pin: :class:`PyFlow.Core.PinBase`
+        :type raw_pin: :class:`PyFlow.Core.PinBase.PinBase`
         """
 
         super(UIPinBase, self).__init__()
@@ -610,7 +605,6 @@ class PinGroup(UIPinBase):
     def paint(self, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
         frame = frame.translated(self.pinSize * 1.1, 0)
-        groupBGColor = self.owningNode().color.lighter(150)
         bgRect = QtCore.QRectF(frame)
         bgRect.setX(0)
         painter.setFont(self._font)
@@ -644,7 +638,6 @@ def REGISTER_UI_PIN_FACTORY(packageName, factory):
 
 def getUIPinInstance(owningNode, raw_instance):
     packageName = raw_instance.packageName
-    instance = None
     if packageName in UI_PINS_FACTORIES:
         return UI_PINS_FACTORIES[packageName](owningNode, raw_instance)
     else:

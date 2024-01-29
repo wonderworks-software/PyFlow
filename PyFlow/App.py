@@ -199,7 +199,6 @@ class PyFlow(QMainWindow):
         IOMenu = fileMenu.addMenu("Custom IO")
         for packageName, package in GET_PACKAGES().items():
             # exporters
-            exporters = None
             try:
                 exporters = package.GetExporters()
             except:
@@ -334,7 +333,7 @@ class PyFlow(QMainWindow):
     def loadFromData(self, data, clearHistory=False):
 
         # check first if all packages we are trying to load are legal
-        missedPackages = set()
+        missedPackages = set()  # TODO: nothing fills this, can never report missing package
         if not validateGraphDataPackages(data, missedPackages):
             msg = "This graph can not be loaded. Following packages not found:\n\n"
             index = 1
@@ -538,7 +537,6 @@ class PyFlow(QMainWindow):
         return QMessageBox.Discard
 
     def closeEvent(self, event):
-
         shouldSave = self.shouldSave()
         if shouldSave == QMessageBox.Save:
             if not self.save():
@@ -627,7 +625,6 @@ class PyFlow(QMainWindow):
         instance.startMainLoop()
 
         # populate tools
-        canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
 
         # populate menus

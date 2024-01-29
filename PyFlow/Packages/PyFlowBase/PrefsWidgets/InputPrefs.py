@@ -19,7 +19,7 @@ from collections import defaultdict
 from qtpy.QtWidgets import *
 
 from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Input import InputAction, InputManager
+from PyFlow.Input import InputManager
 from PyFlow.UI.Widgets.PropertiesFramework import (
     CollapsibleFormWidget,
     PropertiesWidget,

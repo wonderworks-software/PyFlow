@@ -15,8 +15,8 @@
 
 from blinker import Signal
 import json
+import uuid
 
-from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import IItemBase
@@ -125,7 +125,7 @@ class Variable(IItemBase):
     def packageName(self, value):
         assert isinstance(value, str)
         self._packageName = value
-        self.packageNameChanged.send(value)
+        self.packageNameChanged.send(value)  # TODO: nonexistent, single use
 
     @property
     def accessLevel(self):

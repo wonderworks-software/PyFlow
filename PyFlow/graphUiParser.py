@@ -13,21 +13,17 @@
 ## limitations under the License.
 
 import os
-import sys
 import json
 import threading
-import time
 
 from qtpy.QtWidgets import *
 from qtpy import QtGui
-from qtpy import QtCore
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-import PyFlow.UI.resources
 
 
 def run(filePath):
@@ -63,7 +59,7 @@ def run(filePath):
                     uiNode.postCreate(uiNodeJsonTemplate)
                     cat = CollapsibleFormWidget(headName=inp.name)
                     prop.layout().addWidget(cat)
-                    cat = uiNode.createOutputWidgets(cat)
+                    uiNode.createOutputWidgets(cat)
 
                 nodes = grph.getNodesList()
                 if len(nodes) > 0:
@@ -95,7 +91,7 @@ def run(filePath):
                     t.join()
 
                 app.aboutToQuit.connect(quitEvent)
-            # If no GraphInput Nodes Exit propgram
+            # If no GraphInput Nodes Exit program
             else:
                 msg.setInformativeText(filePath)
                 msg.setDetailedText("The file doesn't contain graphInputs nodes")

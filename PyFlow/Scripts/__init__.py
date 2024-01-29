@@ -14,11 +14,9 @@
 
 
 import argparse
-import sys
 import os
 import json
 import threading
-import time
 
 from PyFlow.App import PyFlow
 from PyFlow import graphUiParser
@@ -32,8 +30,8 @@ from PyFlow.Core.GraphManager import GraphManagerSingleton
 def getGraphArguments(data, parser):
     """Adds arguments to parser using graph input nodes
 
-    :param data: Serialized graph
-    :type data: json
+    :param data: Parsed json graph
+    :type data: dict
     :param parser: ArgumentParser class instance
     :type parser: ArgumentParser
     """
@@ -86,7 +84,6 @@ def main():
                 print(e)
 
     if parsedArguments.mode == "run":
-        data = None
         if not os.path.exists(filePath):
             print("No such file. {}".format(filePath))
             return

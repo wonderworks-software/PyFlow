@@ -213,7 +213,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if isinstance(value, PropertyEntry):
                 value.setVisible(pattern.lower() in value.getLabel().lower())
         for key, value in self.groups.items():
-            if isinstance(value, CollapSibleGoupBox):
+            if isinstance(value, CollapsibleGroupBox):
                 if value.isAllWidgetsHidden():
                     value.hide()
                 else:
@@ -229,7 +229,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if group in self.groups:
                 groupW = self.groups[group]
             else:
-                groupW = CollapSibleGoupBox(group)
+                groupW = CollapsibleGroupBox(group)
                 self.groups[group] = groupW
         entry = PropertyEntry(
             str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth
@@ -250,7 +250,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if group in self.groups:
                 groupW = self.groups[group]
             else:
-                groupW = CollapSibleGoupBox(group)
+                groupW = CollapsibleGroupBox(group)
                 self.groups[group] = groupW
         self.propertyNames[label] = widget
         entry = PropertyEntry(
@@ -275,9 +275,9 @@ class CollapsibleFormWidget(CollapsibleWidget):
             return None
 
 
-class CollapSibleGoupBox(QtWidgets.QWidget):
+class CollapsibleGroupBox(QtWidgets.QWidget):
     def __init__(self, name):
-        super(CollapSibleGoupBox, self).__init__()
+        super(CollapsibleGroupBox, self).__init__()
 
         # widgets
         self.controlGroup = QtWidgets.QGroupBox()
@@ -465,15 +465,12 @@ class PropertiesWidget(QtWidgets.QWidget):
                         #    folders[key][w.getLabel()] = group.groupLayout.itemAt(e).widget()
 
         for fold in folders:
-            folder = tree.addFolder(fold)
-            # for widg in folders[fold]:
-            #    child = tree.addNormal(widg,folder)
+            tree.addFolder(fold)
 
         d = QtWidgets.QDialog()
         d.setLayout(QtWidgets.QHBoxLayout())
         d.layout().addWidget(tree)
         d.exec_()
-        newOrder = tree.model_to_dict()
 
 
 if __name__ == "__main__":

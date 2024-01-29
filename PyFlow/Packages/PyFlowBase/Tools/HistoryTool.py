@@ -17,7 +17,6 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import *
 
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.EditorHistory import EditorHistory
 

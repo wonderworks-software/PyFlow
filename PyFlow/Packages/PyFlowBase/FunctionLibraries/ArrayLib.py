@@ -25,7 +25,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=("AnyPin", [], {PinSpecifires.CONSTRAINT: "1"}),
+        returns=("AnyPin", [], {PinSpecifiers.CONSTRAINT: "1"}),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
     )
     def extendArray(
@@ -33,18 +33,18 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         rhs=(
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
     ):
@@ -58,9 +58,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
@@ -70,12 +70,12 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
-        elem=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        elem=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         index=("IntPin", 0),
     ):
         """Insert an item at a given position. The first argument is the index of the element before which to insert."""
@@ -88,9 +88,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
@@ -100,12 +100,12 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
-        elem=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        elem=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         removed=(REF, ("BoolPin", False)),
     ):
         """Remove the first item from the list whose value is equal to x."""
@@ -118,7 +118,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
     )
     def popFromArray(
@@ -126,9 +126,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         index=("IntPin", -1),
@@ -139,9 +139,9 @@ class ArrayLib(FunctionLibraryBase):
                 "AnyPin",
                 [],
                 {
-                    PinSpecifires.CONSTRAINT: "1",
-                    PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                    | PinOptions.AllowAny,
+                    PinSpecifiers.CONSTRAINT: "1",
+                    PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                                   | PinOptions.AllowAny,
                 },
             ),
         ),
@@ -163,9 +163,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
@@ -175,9 +175,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         )
     ):
@@ -194,12 +194,12 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
-        element=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        element=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(REF, ("BoolPin", False)),
     ):
         """Returns index of array element if it present. If element is not in array -1 will be returned."""
@@ -220,17 +220,17 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         element=(
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.AllowAny,
             },
         ),
         result=(REF, ("BoolPin", False)),
@@ -245,7 +245,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(
-        returns=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        returns=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: []},
     )
     def arraySum(
@@ -253,8 +253,8 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         )
     ):
@@ -267,9 +267,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "Array", NodeMeta.KEYWORDS: ["in"]},
@@ -279,9 +279,9 @@ class ArrayLib(FunctionLibraryBase):
             "AnyPin",
             [],
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         start=("IntPin", 0),

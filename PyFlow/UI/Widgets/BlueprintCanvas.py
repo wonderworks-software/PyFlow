@@ -13,18 +13,11 @@
 ## limitations under the License.
 
 
-import random
 from copy import deepcopy
 import json
 import uuid
-import weakref
 from collections import Counter
 from functools import partial
-
-try:
-    from inspect import getfullargspec as getargspec
-except:
-    from inspect import getargspec
 
 from qtpy import QtCore
 from qtpy import QtGui
@@ -32,7 +25,6 @@ from qtpy import QtWidgets
 from qtpy.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
-from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.CanvasBase import CanvasBase
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
@@ -52,12 +44,9 @@ from PyFlow.UI.Views.VariablesWidget import VARIABLE_TAG, VARIABLE_DATA_TAG
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate["type"]
-    nodeName = jsonTemplate["name"]
     packageName = jsonTemplate["package"]
     if "lib" in jsonTemplate:
         libName = jsonTemplate["lib"]
@@ -130,7 +119,7 @@ class BlueprintCanvas(CanvasBase):
         )
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self._drawRealtimeLine = False
-        self._sortcuts_enabled = True
+        self._shortcuts_enabled = True
         self.autoPanController = AutoPanController()
 
         self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
@@ -375,7 +364,7 @@ class BlueprintCanvas(CanvasBase):
         self.node_box.hide()
         self.node_box.lineEdit.clear()
 
-    def shoutDown(self, *args, **kwargs):
+    def shutDown(self, *args, **kwargs):
         self.scene().clear()
         self._UIConnections.clear()
         self.hideNodeBox()
@@ -399,17 +388,17 @@ class BlueprintCanvas(CanvasBase):
             e.Tick()
 
     def isShortcutsEnabled(self):
-        return self._sortcuts_enabled
+        return self._shortcuts_enabled
 
-    def disableSortcuts(self):
-        self._sortcuts_enabled = False
+    def disableShortcuts(self):
+        self._shortcuts_enabled = False
 
-    def enableSortcuts(self):
-        self._sortcuts_enabled = True
+    def enableShortcuts(self):
+        self._shortcuts_enabled = True
 
     def onNewFile(self, keepRoot=True):
         self.getApp().undoStack.clear()
-        self.shoutDown()
+        self.shutDown()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split(".")[0]
@@ -558,7 +547,9 @@ class BlueprintCanvas(CanvasBase):
         self.pasteNodes(data=copiedJson)
         EditorHistory().saveState("Duplicate nodes", modify=True)
 
-    def makeSerializedNodesUnique(self, nodes, extra=[]):
+    def makeSerializedNodesUnique(self, nodes, extra=None):
+        if extra is None:
+            extra = []
         copiedNodes = deepcopy(nodes)
         # make names unique
         renameData = {}
@@ -645,7 +636,6 @@ class BlueprintCanvas(CanvasBase):
 
     def pasteNodes(self, move=True, data=None):
         if not data:
-            nodes = None
             try:
                 nodes = json.loads(QApplication.clipboard().text())
             except json.JSONDecodeError as err:
@@ -660,7 +650,6 @@ class BlueprintCanvas(CanvasBase):
             nodes[0]["x"], nodes[0]["y"]
         )
         self.clearSelection()
-        newNodes = {}
 
         nodesData = deepcopy(nodes)
         createdNodes = {}
@@ -920,7 +909,6 @@ class BlueprintCanvas(CanvasBase):
         self.pressedPin = self.findPinNearPosition(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
-        expandComments = False
         currentInputAction = InputAction(
             "temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers
         )
@@ -1001,10 +989,6 @@ class BlueprintCanvas(CanvasBase):
                     ):
                         self._selectionRect.destroy()
                         self._selectionRect = None
-                LeftPaning = (
-                    event.button() == QtCore.Qt.LeftButton
-                    and modifiers == QtCore.Qt.AltModifier
-                )
                 if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
@@ -1365,7 +1349,6 @@ class BlueprintCanvas(CanvasBase):
             if self.pressed_item.objectName() == "MouseLocked":
                 super(BlueprintCanvas, self).mouseMoveEvent(event)
             else:
-                newPos = self.mapToScene(event.pos())
                 scaledDelta = mouseDelta / self.currentViewScale()
 
                 selectedNodes = self.selectedNodes()
@@ -1410,7 +1393,6 @@ class BlueprintCanvas(CanvasBase):
         elif self.manipulationMode == CanvasManipulationMode.PAN:
             self.pan(mouseDelta)
         elif self.manipulationMode == CanvasManipulationMode.ZOOM:
-            zoomFactor = 1.0
             if mouseDelta.x() > 0:
                 zoomFactor = 1.0 + mouseDelta.x() / 100.0
             else:
@@ -1420,7 +1402,6 @@ class BlueprintCanvas(CanvasBase):
             delta = self.mousePos - self.mousePressPose
             if delta.manhattanLength() > 15:
                 self.manipulationMode = CanvasManipulationMode.MOVE
-                selectedNodes = self.selectedNodes()
                 copiedNodes = self.copyNodes(toClipBoard=False)
                 self.pasteNodes(move=False, data=copiedNodes)
                 scaledDelta = delta / self.currentViewScale()
@@ -1772,7 +1753,7 @@ class BlueprintCanvas(CanvasBase):
                 nodeType = jsonData["type"]
                 libName = jsonData["lib"]
                 name = nodeType
-                dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
+                # dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
                 # if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                 #######################################################
                 # Drop from nodebox by R. Scharf-Wildenhain, 2022-07-22
@@ -1902,7 +1883,9 @@ class BlueprintCanvas(CanvasBase):
         )
         return nodeInstance
 
-    def spawnNode(self, nodeClass, x, y, payload={}):
+    def spawnNode(self, nodeClass, x, y, payload=None):
+        if payload is None:
+            payload = {}
         packageName = None
         for pkgName, pkg in GET_PACKAGES().items():
             if nodeClass in pkg.GetNodeClasses():
@@ -2108,7 +2091,7 @@ class BlueprintCanvasWidget(QWidget):
         self.pyFlowInstance.fileBeenLoaded.connect(self.onFileBeenLoaded)
 
     def shoutDown(self):
-        self.canvas.shoutDown()
+        self.canvas.shutDown()
 
     def Tick(self, delta):
         self.canvas.Tick(delta)

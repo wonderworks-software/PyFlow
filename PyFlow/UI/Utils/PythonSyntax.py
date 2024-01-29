@@ -198,7 +198,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         # Do multi-line strings
         in_multiline = self.match_multiline(text, *self.tri_single)
         if not in_multiline:
-            in_multiline = self.match_multiline(text, *self.tri_double)
+            self.match_multiline(text, *self.tri_double)
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a

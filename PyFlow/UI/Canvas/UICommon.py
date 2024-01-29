@@ -54,7 +54,7 @@ def fetchPackageNames(graphJson):
     return packages
 
 
-def validateGraphDataPackages(graphData, missedPackages=set()):
+def validateGraphDataPackages(graphData, missedPackages=None):
     """Checks if packages used in serialized data accessible
 
     Missed packages will be added to output set
@@ -62,9 +62,11 @@ def validateGraphDataPackages(graphData, missedPackages=set()):
     :param graphData: Serialized graph
     :type graphData: dict
     :param missedPackages: Package names that missed
-    :type missedPackages: str
+    :type missedPackages: set
     :rtype: bool
     """
+    if missedPackages is None:
+        missedPackages = set()
     existingPackages = GET_PACKAGES().keys()
     graphPackages = fetchPackageNames(graphData)
     for pkg in graphPackages:

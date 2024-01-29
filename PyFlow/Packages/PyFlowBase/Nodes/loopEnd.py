@@ -27,7 +27,7 @@ class loopEnd(NodeBase):
             DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
         )
         self.loopBeginNode = self.createInputPin("Paired block", "StringPin")
-        self.loopBeginNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.loopBeginNode.setInputWidgetVariant("ObjectPathWidget")
         self.completed = self.createOutputPin("Completed", "ExecPin")
         self.headerColor = FLOW_CONTROL_ORANGE
         self.setExperimental()

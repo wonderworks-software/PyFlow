@@ -15,13 +15,11 @@
 
 # Input widgets for pins
 
-from copy import copy
 from qtpy import QtCore
 from qtpy.QtWidgets import *
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
@@ -38,7 +36,7 @@ class ExecInputWidget(InputWidgetSingle):
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
+    def blockWidgetSignals(self, bLock=False):
         pass
 
 
@@ -55,8 +53,8 @@ class FloatInputWidgetSimple(InputWidgetSingle):
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
@@ -76,15 +74,15 @@ class FloatInputWidget(InputWidgetSingle):
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
         valueRange = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-        if "pinAnnotations" in kwds:
-            if PinSpecifires.VALUE_RANGE in kwds["pinAnnotations"]:
-                valueRange = kwds["pinAnnotations"][PinSpecifires.VALUE_RANGE]
+        if "pinAnnotations" in kwargs:
+            if PinSpecifiers.VALUE_RANGE in kwargs["pinAnnotations"]:
+                valueRange = kwargs["pinAnnotations"][PinSpecifiers.VALUE_RANGE]
 
         steps = copy(FLOAT_SLIDER_DRAG_STEPS)
 
-        if "pinAnnotations" in kwds:
-            if PinSpecifires.DRAGGER_STEPS in kwds["pinAnnotations"]:
-                steps = kwds["pinAnnotations"][PinSpecifires.DRAGGER_STEPS]
+        if "pinAnnotations" in kwargs:
+            if PinSpecifiers.DRAGGER_STEPS in kwargs["pinAnnotations"]:
+                steps = kwargs["pinAnnotations"][PinSpecifiers.DRAGGER_STEPS]
 
         self.sb = pyf_Slider(
             self, "float", style=0, sliderRange=valueRange, draggerSteps=steps
@@ -93,8 +91,8 @@ class FloatInputWidget(InputWidgetSingle):
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
@@ -118,8 +116,8 @@ class IntInputWidgetSimple(InputWidgetSingle):
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(int(val))
@@ -140,8 +138,8 @@ class IntInputWidget(InputWidgetSingle):
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(int(val))
@@ -159,8 +157,8 @@ class StringInputWidget(InputWidgetSingle):
         self.setWidget(self.le)
         self.le.editingFinished.connect(lambda: self.dataSetCallback(self.le.text()))
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
@@ -172,8 +170,8 @@ class EnumInputWidget(InputWidgetSingle):
     def __init__(self, parent=None, **kwds):
         super(EnumInputWidget, self).__init__(parent=parent, **kwds)
         values = []
-        if PinSpecifires.VALUE_LIST in kwds["pinAnnotations"]:
-            values = kwds["pinAnnotations"][PinSpecifires.VALUE_LIST]
+        if PinSpecifiers.VALUE_LIST in kwargs["pinAnnotations"]:
+            values = kwargs["pinAnnotations"][PinSpecifiers.VALUE_LIST]
         self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
         if "editable" in kwds["pinAnnotations"]:
@@ -190,12 +188,11 @@ class EnumInputWidget(InputWidgetSingle):
             self.enumBox.setCurrentIndex(index)
 
 
-class ObjectPathWIdget(InputWidgetSingle):
-    """docstring for ObjectPathWIdget."""
+class ObjectPathWidget(InputWidgetSingle):
+    """docstring for ObjectPathWidget."""
 
-    def __init__(self, parent=None, **kwds):
-        super(ObjectPathWIdget, self).__init__(parent=parent, **kwds)
-        values = []
+    def __init__(self, parent=None, **kwargs):
+        super(ObjectPathWidget, self).__init__(parent=parent, **kwargs)
         self.enumBox = EnumComboBox(PathsRegistry().getAllPaths())
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)
@@ -233,8 +230,8 @@ class PathInputWidget(InputWidgetSingle):
         if dlg.exec_() == QFileDialog.Accepted and len(dlg.selectedFiles()) > 0:
             self.le.setText(dlg.selectedFiles()[0])
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
@@ -249,8 +246,8 @@ class BoolInputWidget(InputWidgetSingle):
         self.setWidget(self.cb)
         self.cb.stateChanged.connect(lambda val: self.dataSetCallback(bool(val)))
 
-    def blockWidgetSignals(self, bLocked):
-        self.cb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.cb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         if bool(val):
@@ -272,8 +269,8 @@ class NoneInputWidget(InputWidgetSingle):
         self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
         self.le.setEnabled(False)
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
@@ -361,8 +358,8 @@ def getInputWidget(
             return EnumInputWidget(
                 dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
             )
-        elif widgetVariant == "ObjectPathWIdget":
-            return ObjectPathWIdget(
+        elif widgetVariant == "ObjectPathWidget":
+            return ObjectPathWidget(
                 dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
             )
     if dataType == "BoolPin":

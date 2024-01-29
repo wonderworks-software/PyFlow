@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from collections import Counter
 from collections import defaultdict
+from enum import Enum
 
 from qtpy import QtCore, QtGui
 
@@ -28,13 +28,13 @@ class InputActionType(Enum):
 
 class InputAction(object):
     def __init__(
-        self,
-        name="defaultName",
-        actionType=InputActionType.Keyboard,
-        group="default",
-        mouse=QtCore.Qt.NoButton,
-        key=None,
-        modifiers=QtCore.Qt.NoModifier,
+            self,
+            name="defaultName",
+            actionType=InputActionType.Keyboard,
+            group="default",
+            mouse=QtCore.Qt.NoButton,
+            key=None,
+            modifiers=QtCore.Qt.NoModifier,
     ):
         self.__actionType = actionType
         self._name = name
@@ -63,7 +63,6 @@ class InputAction(object):
         om = other.getData()["mouse"]
         ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
-        smod == omod
         return all([sm == om, sk == ok, smod == omod])
 
     def __ne__(self, other):
@@ -88,7 +87,9 @@ class InputAction(object):
     def getMouseButton(self):
         return self.__data["mouse"]
 
-    def setKey(self, key=[]):
+    def setKey(self, key=None):
+        if key is None:
+            key = []
         assert isinstance(key, QtCore.Qt.Key)
         self.__data["key"] = key
 
@@ -118,19 +119,18 @@ class InputAction(object):
             result.append(QtCore.Qt.GroupSwitchModifier)
         return result
 
-    def _listOfModifiersToEnum(self, modifiersList):
+    @staticmethod
+    def _listOfModifiersToEnum(modifiersList):
         result = QtCore.Qt.NoModifier
         for mod in modifiersList:
             result = result | mod
         return result
 
     def toJson(self):
-        saveData = {}
-        saveData["name"] = self._name
-        saveData["group"] = self._group
-        saveData["mouse"] = int(self.__data["mouse"])
-        saveData["actionType"] = self.actionType.value
-
+        saveData = {"name": self._name,
+                    "group": self._group,
+                    "mouse": int(self.__data["mouse"]),
+                    "actionType": self.actionType.value}
         key = self.__data["key"]
         saveData["key"] = int(key) if key is not None else None
 

@@ -17,14 +17,11 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy.QtWidgets import QAction, QTextBrowser
 from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
-import json
 import os
 import subprocess
 
@@ -109,8 +106,9 @@ class SignalHandler(QtCore.QObject):
                 self.text = msg
                 logger.info(msg)
 
-    def flush(self):
-        print("flusing from handler")
+    @staticmethod
+    def flush():
+        print("flushing from handler")
 
 
 class QtHandler(logging.Handler):
@@ -121,7 +119,7 @@ class QtHandler(logging.Handler):
     def emit(self, record):
         if record:
             msj = self.format(record)
-            if "flusing from handler" in msj:
+            if "flushing from handler" in msj:
                 self.messageHolder.flushSig.emit()
             elif "bytes Downloaded" in msj:
                 nb = int(float(msj.split("(")[-1][:-2]))
@@ -139,7 +137,7 @@ class QtHandler(logging.Handler):
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
 
-    formater = logging.Formatter(
+    formatter = logging.Formatter(
         "[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S"
     )
 
@@ -172,7 +170,7 @@ class LoggerTool(DockTool):
         logger.setLevel(logging.DEBUG)
         sys.excepthook = LoggerTool.exceptHook
         if self.handler and REDIRECT:
-            self.handler.setFormatter(LoggerTool.formater)
+            self.handler.setFormatter(LoggerTool.formatter)
             logger.addHandler(self.handler)
             self.handler.messageHolder.messageWritten.connect(
                 lambda value: self.logPython(value, 0)

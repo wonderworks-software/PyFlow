@@ -23,9 +23,9 @@ from PyFlow.Core.PathsRegistry import PathsRegistry
 
 
 PIN_ALLOWS_ANYTHING = {
-    PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny
-    | PinOptions.ArraySupported
-    | PinOptions.DictSupported
+    PinSpecifiers.ENABLED_OPTIONS: PinOptions.AllowAny
+                                   | PinOptions.ArraySupported
+                                   | PinOptions.DictSupported
 }
 
 
@@ -42,11 +42,11 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.STRUCT_CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.STRUCT_CONSTRAINT: "1",
             },
         ),
         meta={NodeMeta.CATEGORY: "Utils", NodeMeta.KEYWORDS: ["id"]},
@@ -56,11 +56,11 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.STRUCT_CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.STRUCT_CONSTRAINT: "1",
             },
         ),
         deepCopy=("BoolPin", False),
@@ -76,7 +76,7 @@ class DefaultLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "Common", NodeMeta.KEYWORDS: []},
     )
     def clearConsole():
-        """Cross platform clears console."""
+        """Cross-platform clears console."""
         system = platform.system()
         if system != "":
             system = system.lower()
@@ -132,7 +132,7 @@ class DefaultLib(FunctionLibraryBase):
     def getAttribute(
         obj=("AnyPin", None, PIN_ALLOWS_ANYTHING.copy()), name=("StringPin", "attrName")
     ):
-        '''Returns attribute from object using "getattr(name)"'''
+        """Returns attribute from object using "getattr(name)\""""
         return getattr(obj, name)
 
     @staticmethod
@@ -157,7 +157,7 @@ class DefaultLib(FunctionLibraryBase):
         meta={NodeMeta.CATEGORY: "GenericTypes", NodeMeta.KEYWORDS: []},
     )
     def makePath(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Make path."""
         return path
@@ -176,7 +176,7 @@ class DefaultLib(FunctionLibraryBase):
         returns=(
             "FloatPin",
             0.0,
-            {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty},
+            {PinSpecifiers.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty},
         ),
         meta={
             NodeMeta.CATEGORY: "Utils",
@@ -194,10 +194,10 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
             },
         ),
         meta={NodeMeta.CATEGORY: "DefaultLib", NodeMeta.KEYWORDS: []},
@@ -207,20 +207,20 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
             },
         ),
         B=(
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
             },
         ),
         PickA=("BoolPin", False),
@@ -242,9 +242,9 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported
             },
         )
     ):
@@ -266,13 +266,13 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
             },
         ),
-        element=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        element=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
     ):
         """Python's **in** keyword. `element in obj` will be executed"""
         try:
@@ -285,7 +285,7 @@ class DefaultLib(FunctionLibraryBase):
         returns=(
             "IntPin",
             0,
-            {PinSpecifires.DESCRIPTION: "Number of elements of iterable"},
+            {PinSpecifiers.DESCRIPTION: "Number of elements of iterable"},
         ),
         meta={NodeMeta.CATEGORY: "DefaultLib", NodeMeta.KEYWORDS: ["len"]},
     )
@@ -294,10 +294,10 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny
-                | PinOptions.DictElementSupported,
-                PinSpecifires.DESCRIPTION: "Iterable object",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny
+                                               | PinOptions.DictElementSupported,
+                PinSpecifiers.DESCRIPTION: "Iterable object",
             },
         )
     ):
@@ -313,9 +313,9 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "DefaultLib", NodeMeta.KEYWORDS: ["get"]},
@@ -325,15 +325,15 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         element=(
             "AnyPin",
             None,
-            {PinSpecifires.SUPPORTED_DATA_TYPES: getHashableDataTypes()},
+            {PinSpecifiers.SUPPORTED_DATA_TYPES: getHashableDataTypes()},
         ),
         result=(REF, ("BoolPin", False)),
     ):
@@ -351,10 +351,10 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.STRUCT_CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.STRUCT_CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
         meta={NodeMeta.CATEGORY: "DefaultLib", NodeMeta.KEYWORDS: ["get"]},
@@ -364,13 +364,13 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.STRUCT_CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.STRUCT_CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
-        element=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        element=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(REF, ("BoolPin", False)),
     ):
         """Calls ``obj.append(element)``. And returns object. If failed - object is unchanged"""
@@ -392,23 +392,23 @@ class DefaultLib(FunctionLibraryBase):
             "AnyPin",
             None,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.STRUCT_CONSTRAINT: "1",
-                PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                | PinOptions.AllowAny,
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.STRUCT_CONSTRAINT: "1",
+                PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                               | PinOptions.AllowAny,
             },
         ),
-        element=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}),
+        element=("AnyPin", None, {PinSpecifiers.CONSTRAINT: "1"}),
         result=(
             REF,
             (
                 "AnyPin",
                 None,
                 {
-                    PinSpecifires.CONSTRAINT: "1",
-                    PinSpecifires.STRUCT_CONSTRAINT: "1",
-                    PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported
-                    | PinOptions.AllowAny,
+                    PinSpecifiers.CONSTRAINT: "1",
+                    PinSpecifiers.STRUCT_CONSTRAINT: "1",
+                    PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported
+                                                   | PinOptions.AllowAny,
                 },
             ),
         ),

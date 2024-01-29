@@ -26,7 +26,7 @@ class UIAnyPin(UIPinBase):
         :param owningNode: Owning node
         :type owningNode: :class:`PyFlow.UI.Canvas.NodeBase`
         :param raw_pin: PinBase reference
-        :type raw_pin: :class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin`
+        :type raw_pin: :class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`
         """
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._pinColor
@@ -43,7 +43,9 @@ class UIAnyPin(UIPinBase):
         self.prevDataType = None
         self.setDefault(self._rawPin.defColor())
 
-    def checkFree(self, checked=[], selfCheck=True):
+    def checkFree(self, checked=None, selfCheck=True):
+        if checked is None:
+            checked = []
         return self._rawPin.checkFree(checked, selfCheck)
 
     def disconnect(self, other):

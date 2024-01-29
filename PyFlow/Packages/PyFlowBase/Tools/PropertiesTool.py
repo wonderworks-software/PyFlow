@@ -13,11 +13,8 @@
 ## limitations under the License.
 
 
-from qtpy import QtCore
-from qtpy import QtGui
 from qtpy import QtWidgets
 
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget
 
@@ -47,7 +44,7 @@ class PropertiesTool(DockTool):
         self.fillDelegate = None
         self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
 
-    def onTearOffCopy(self, *args, **kwargs):
+    def onTearOffCopy(self):
         instance = self.pyFlowInstance.invokeDockToolByName("PyFlowBase", self.name())
         if self.fillDelegate is not None:
             instance.assignPropertiesWidget(self.fillDelegate)

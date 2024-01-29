@@ -32,10 +32,7 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Widgets.PropertiesFramework import (
-    PropertiesWidget,
-    CollapsibleFormWidget,
-)
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow import findPinClassByType

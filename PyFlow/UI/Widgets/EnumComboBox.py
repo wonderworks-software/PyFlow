@@ -21,9 +21,11 @@ class EnumComboBox(QComboBox):
     changeCallback = QtCore.Signal(str)
     textChangedCallback = QtCore.Signal(str)
 
-    def __init__(self, values=[], parent=None):
+    def __init__(self, values=None, parent=None):
         super(EnumComboBox, self).__init__(parent)
 
+        if values is None:
+            values = []
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QCompleter(self)

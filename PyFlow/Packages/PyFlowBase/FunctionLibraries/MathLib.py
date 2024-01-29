@@ -13,9 +13,6 @@
 ## limitations under the License.
 
 
-import math
-import random
-
 from PyFlow.Core import FunctionLibraryBase, IMPLEMENT_NODE
 from PyFlow.Core.Common import *
 
@@ -37,8 +34,8 @@ class MathLib(FunctionLibraryBase):
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         meta={
@@ -51,16 +48,16 @@ class MathLib(FunctionLibraryBase):
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         y=(
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
     ):
@@ -73,8 +70,8 @@ class MathLib(FunctionLibraryBase):
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         meta={
@@ -87,16 +84,16 @@ class MathLib(FunctionLibraryBase):
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
         y=(
             "AnyPin",
             0,
             {
-                PinSpecifires.CONSTRAINT: "1",
-                PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
+                PinSpecifiers.CONSTRAINT: "1",
+                PinSpecifiers.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"],
             },
         ),
     ):

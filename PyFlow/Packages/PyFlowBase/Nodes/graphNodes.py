@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from blinker import Signal
+import uuid
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
@@ -28,7 +28,6 @@ class graphInputs(NodeBase):
         self.bCacheEnabled = True
 
     def getUniqPinName(self, name):
-        result = name
         graphNodes = self.graph().getNodesList(
             classNameFilters=["graphInputs", "graphOutputs"]
         )
@@ -96,7 +95,6 @@ class graphOutputs(NodeBase):
         self.bCacheEnabled = False
 
     def getUniqPinName(self, name):
-        result = name
         graphNodes = self.graph().getNodesList(
             classNameFilters=["graphInputs", "graphOutputs"]
         )

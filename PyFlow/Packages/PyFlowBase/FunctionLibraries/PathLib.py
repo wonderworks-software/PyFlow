@@ -37,9 +37,9 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def abspath(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
-        """Return a absolute version of a path. On most platforms, this is equivalent to calling the function normpath()"""
+        """Return an absolute version of a path. On most platforms, this is equivalent to calling the function normpath()"""
         return osPath.abspath(path)
 
     @staticmethod
@@ -51,7 +51,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def basename(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the base name of pathname path. This is the second element of the pair returned by passing path to the function split(). Note that the result of this function is different from the Unix basename program; where basename for '/foo/bar/' returns 'bar', the basename() function returns an empty string ('')"""
         return osPath.basename(path)
@@ -77,7 +77,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def dirname(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the directory name of pathname path. This is the first element of the pair returned by passing path to the function split()."""
         return osPath.dirname(path)
@@ -91,7 +91,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def exists(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path refers to an existing path. Returns False for broken symbolic links. On some platforms, this function may return False if permission is not granted to execute os.stat() on the requested file, even if the path physically exists."""
         return osPath.exists(path)
@@ -105,7 +105,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def lexists(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path refers to an existing path. Returns True for broken symbolic links. Equivalent to exists() on platforms lacking os.lstat()."""
         return osPath.lexists(path)
@@ -119,7 +119,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def expanduser(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """On Unix and Windows, return the argument with an initial component of ~ or ~user replaced by that user’s home directory.
         On Unix, an initial ~ is replaced by the environment variable HOME if it is set; otherwise the current user’s home directory is looked up in the password directory through the built-in module pwd. An initial ~user is looked up directly in the password directory.
@@ -136,7 +136,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def expandvars(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the argument with environment variables expanded. Substrings of the form $name or ${name} are replaced by the value of environment variable name. Malformed variable names and references to non-existing variables are left unchanged.
         On Windows, %name% expansions are supported in addition to $name and ${name}."""
@@ -151,7 +151,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getatime(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the time of last access of path. The return value is a number giving the number of seconds since the epoch (see the time module). Raise os.error if the file does not exist or is inaccessible."""
         return osPath.getatime(path)
@@ -165,10 +165,10 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getmtime(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the time of last modification of path. The return value is a number giving the number of seconds since the epoch (see the time module). Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getmtime(path, path2)
+        return osPath.getmtime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -179,10 +179,10 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getctime(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the system’s ctime which, on some systems (like Unix) is the time of the last metadata change, and, on others (like Windows), is the creation time for path. The return value is a number giving the number of seconds since the epoch (see the time module). Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getctime(path, path2)
+        return osPath.getctime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -193,10 +193,10 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getsize(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the size, in bytes, of path. Raise os.error if the file does not exist or is inaccessible."""
-        return osPath.getctime(path, path2)
+        return osPath.getctime(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -207,7 +207,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def isabs(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path is an absolute pathname. On Unix, that means it begins with a slash, on Windows that it begins with a (back)slash after chopping off a potential drive letter."""
         return osPath.isabs(path)
@@ -221,10 +221,10 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def isFile(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path is an existing regular file. This follows symbolic links, so both islink() and isfile() can be true for the same path."""
-        return osPath.isFile(path)
+        return osPath.isfile(path)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -235,7 +235,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def isDir(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path is an existing directory. This follows symbolic links, so both islink() and isdir() can be true for the same path."""
         return osPath.isdir(path)
@@ -249,7 +249,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def islink(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if path refers to a directory entry that is a symbolic link. Always False if symbolic links are not supported by the Python runtime."""
         return osPath.islink(path)
@@ -263,7 +263,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def ismount(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return True if pathname path is a mount point: a point in a file system where a different file system has been mounted. The function checks whether path’s parent, path/.., is on a different device than path, or whether path/.. and path point to the same i-node on the same device — this should detect mount points for all Unix and POSIX variants."""
         return osPath.ismount(path)
@@ -277,7 +277,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def join(
-        base=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        base=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         paths=("StringPin", []),
     ):
         """Join one or more path components intelligently. The return value is the concatenation of path and any members of *paths with exactly one directory separator (os.sep) following each non-empty part except the last, meaning that the result will only end in a separator if the last part is empty. If a component is an absolute path, all previous components are thrown away and joining continues from the absolute path component.
@@ -293,7 +293,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def normcase(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Normalize the case of a pathname. On Unix and Mac OS X, this returns the path unchanged; on case-insensitive filesystems, it converts the path to lowercase. On Windows, it also converts forward slashes to backward slashes."""
         return osPath.normcase(path)
@@ -307,7 +307,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def normpath(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Normalize a pathname by collapsing redundant separators and up-level references so that A//B, A/B/, A/./B and A/foo/../B all become A/B. This string manipulation may change the meaning of a path that contains symbolic links. On Windows, it converts forward slashes to backward slashes. To normalize case, use normcase()."""
         return osPath.normpath(path)
@@ -321,7 +321,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def realpath(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Return the canonical path of the specified filename, eliminating any symbolic links encountered in the path (if they are supported by the operating system)."""
         return osPath.realpath(path)
@@ -335,13 +335,13 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def relpath(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         start=("StringPin", os.curdir),
     ):
         """Return a relative filepath to path either from the current directory or from an optional start directory. This is a path computation: the filesystem is not accessed to confirm the existence or nature of path or start.
         start defaults to os.curdir.
         Availability: Windows, Unix."""
-        return osPath.relpath(path)
+        return osPath.relpath(path, start)
 
     @staticmethod
     @IMPLEMENT_NODE(
@@ -352,7 +352,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def split(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         head=(REF, ("StringPin", "")),
         tail=(REF, ("StringPin", "")),
     ):
@@ -375,7 +375,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def splitdrive(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         drive=(REF, ("StringPin", "")),
         tail=(REF, ("StringPin", "")),
     ):
@@ -398,7 +398,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def splitext(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         root=(REF, ("StringPin", "")),
         ext=(REF, ("StringPin", "")),
     ):
@@ -421,12 +421,12 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def splitunc(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         unc=(REF, ("StringPin", "")),
         rest=(REF, ("StringPin", "")),
     ):
         """Split the pathname path into a pair (unc, rest) so that unc is the UNC mount point (such as r'\\host\mount'), if present, and rest the rest of the path (such as r'\path\file.ext'). For paths containing drive letters, unc will always be the empty string."""
-        splited = osPath.splitunc(path)
+        splited = osPath.splitdrive(path)
         if len(splited):
             unc(splited[0])
             rest(splited[1])
@@ -444,7 +444,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def walk(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"}),
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"}),
         topdown=("BoolPin", False),
         files=(REF, ("StringPin", [])),
         folders=(REF, ("StringPin", [])),
@@ -473,7 +473,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getFolders(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Lists directories on Path"""
         return [
@@ -491,7 +491,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def getFiles(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Lists files on Path"""
         return [
@@ -509,7 +509,7 @@ class PathLib(FunctionLibraryBase):
         },
     )
     def listDir(
-        path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})
+        path=("StringPin", "", {PinSpecifiers.INPUT_WIDGET_VARIANT: "PathWidget"})
     ):
         """Lists files and directories on Path"""
         return [osPath.join(path, x) for x in os.listdir(path)]

@@ -223,19 +223,19 @@ def generatePackage(
         if dirName == "PrefsWidgets" and not bIncludePrefsWindget:
             shutil.rmtree(path)
         if dirName == "Factories":
-            removedFactoresCount = 0
+            removedFactoriesCount = 0
 
             if not bIncludeUINodeFactory:
                 os.remove(os.path.join(path, "UINodeFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
             if not bIncludeUIPinFactory:
                 os.remove(os.path.join(path, "UIPinFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
             if not bIncludePinInputWidgetFactory:
                 os.remove(os.path.join(path, "PinInputWidgetFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
 
-            if removedFactoresCount == 3:
+            if removedFactoriesCount == 3:
                 shutil.rmtree(path)
 
         if dirName == "UI":

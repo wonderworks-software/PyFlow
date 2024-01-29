@@ -14,10 +14,8 @@
 
 
 from qtpy import QtCore
-from qtpy import QtGui
 from qtpy.QtWidgets import *
 
-from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Widgets.PropertiesFramework import *
 
@@ -43,7 +41,7 @@ class SearchResultsTool(DockTool):
         self.content.setLockCheckBoxVisible(False)
         self.content.setTearOffCopyVisible(False)
 
-        self.content.setObjectName("SearchResultstent")
+        self.content.setObjectName("SearchResults")
         self.scrollArea.setWidget(self.content)
         self.setWindowTitle(self.uniqueName())
         self.setWidget(self.scrollArea)

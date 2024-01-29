@@ -92,11 +92,7 @@ class CanvasBase(QGraphicsView):
             self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
     def wheelEvent(self, event):
-        (xfo, invRes) = self.transform().inverted()
-        topLeft = xfo.map(self.rect().topLeft())
-        bottomRight = xfo.map(self.rect().bottomRight())
-        center = (topLeft + bottomRight) * 0.5
-        zoomFactor = 1.0 + event.angleDelta().y() * self._mouseWheelZoomRate
+        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
 
         self.zoom(zoomFactor)
 
@@ -104,7 +100,7 @@ class CanvasBase(QGraphicsView):
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
         if futureScale <= self._minimum_scale:
-            scale_factor = (self._minimum_scale) / self.factor
+            scale_factor = self._minimum_scale / self.factor
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
@@ -122,7 +118,6 @@ class CanvasBase(QGraphicsView):
         # zoom to fit content
         ws = windowRect.size()
         rect += QtCore.QMargins(40, 40, 40, 40)
-        rs = rect.size()
         widthRef = ws.width()
         heightRef = ws.height()
         sx = widthRef / rect.width()
@@ -179,8 +174,6 @@ class CanvasBase(QGraphicsView):
         super(CanvasBase, self).drawBackground(painter, rect)
         lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
-
-        polygon = self.mapToScene(self.viewport().rect())
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 

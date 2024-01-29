@@ -14,7 +14,6 @@
 
 
 from qtpy.QtWidgets import QMenu
-from qtpy.QtWidgets import QAction
 
 
 class ContextMenuGenerator(object):

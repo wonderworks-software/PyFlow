@@ -30,7 +30,7 @@ class FloatLib(FunctionLibraryBase):
         returns=("FloatPin", 0.0),
         meta={NodeMeta.CATEGORY: "Math|Float", NodeMeta.KEYWORDS: ["lerp"]},
     )
-    ## Linear interpolate
+    # Linear interpolate
     def lerpf(
         a=("FloatPin", 0.0),
         b=("FloatPin", 0.0),
@@ -38,8 +38,8 @@ class FloatLib(FunctionLibraryBase):
             "FloatPin",
             0.0,
             {
-                PinSpecifires.VALUE_RANGE: (0.0, 1.0),
-                PinSpecifires.DRAGGER_STEPS: [0.1, 0.01, 0.001],
+                PinSpecifiers.VALUE_RANGE: (0.0, 1.0),
+                PinSpecifiers.DRAGGER_STEPS: [0.1, 0.01, 0.001],
             },
         ),
     ):
@@ -94,7 +94,7 @@ class FloatLib(FunctionLibraryBase):
     )
     def roundf(
         Value=("FloatPin", 0.0),
-        Digits=("IntPin", 0, {PinSpecifires.VALUE_RANGE: (0, 323)}),
+        Digits=("IntPin", 0, {PinSpecifiers.VALUE_RANGE: (0, 323)}),
     ):
         """
         Round a number to a given precision in decimal digits.

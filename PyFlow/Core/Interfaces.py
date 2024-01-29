@@ -148,7 +148,7 @@ class IPin(IItemBase):
         :returns: Rgba tuple
         :rtype: tuple(0, 0, 0, 255)
         """
-        return (255, 0, 0, 255)
+        return 255, 0, 0, 255
 
     def isExec(self):
         """Is this pin executable or not
@@ -159,7 +159,7 @@ class IPin(IItemBase):
         raise NotImplementedError("isExec method of IPin is not implemented")
 
     def isArray(self):
-        """Is this pin holds an list of values or not
+        """Is this pin holds a list of values or not
 
         :rtype: bool
         :raises NotImplementedError: If not implemented
@@ -199,7 +199,7 @@ class IPin(IItemBase):
     def supportedDataTypes():
         """List of supported data types
 
-        List of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc.
+        List of data types that can be cast to this type. For example - int can support float, or vector3 can support vector4 etc.
 
         :rtype: list(object)
         :raises NotImplementedError: If not implemented
@@ -288,7 +288,7 @@ class INode(IItemBase):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         raise NotImplementedError("createInputPin method of INode is not implemented")
@@ -301,7 +301,7 @@ class INode(IItemBase):
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
-        supportedPinDataTypes=[],
+        supportedPinDataTypes=None,
         group="",
     ):
         raise NotImplementedError("createOutputPin method of INode is not implemented")
