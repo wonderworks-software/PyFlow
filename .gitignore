@@ -9,4 +9,6 @@ PyFlow/Configs/
 docs/build/
 docs/source/_build/
 docs/build_docs_env.bat
+.venv
+.idea
 __pycache__/
