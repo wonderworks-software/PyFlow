@@ -504,21 +504,18 @@ class PyFlow(QMainWindow):
 
     def shouldSave(self):
         if self.modified:
-            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Discard)
-            if btn == QMessageBox.No:
-                return QMessageBox.No
-            else:
-                return btn
-        return QMessageBox.No
+            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Save | QMessageBox.Cancel | QMessageBox.Discard)
+            return btn
+        return QMessageBox.Discard
 
     def closeEvent(self, event):
 
         shouldSave = self.shouldSave()
-        if shouldSave == QMessageBox.Yes:
+        if shouldSave == QMessageBox.Save:
             if not self.save():
                 event.ignore()
                 return
-        elif shouldSave == QMessageBox.Discard:
+        elif shouldSave == QMessageBox.Cancel:
             event.ignore()
             return
 
