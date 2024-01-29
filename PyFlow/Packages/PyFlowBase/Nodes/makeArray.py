@@ -21,23 +21,27 @@ from PyFlow.Core.Common import *
 class makeArray(NodeBase):
     def __init__(self, name):
         super(makeArray, self).__init__(name)
-        self.arrayData = self.createInputPin('data', 'AnyPin', structure=StructureType.Array, constraint="1")
+        self.arrayData = self.createInputPin(
+            "data", "AnyPin", structure=StructureType.Array, constraint="1"
+        )
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
         self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
 
-        self.sorted = self.createInputPin('sorted', 'BoolPin')
-        self.reversed = self.createInputPin('reversed', 'BoolPin')
-        self.outArray = self.createOutputPin('out', 'AnyPin', structure=StructureType.Array, constraint="1")
+        self.sorted = self.createInputPin("sorted", "BoolPin")
+        self.reversed = self.createInputPin("reversed", "BoolPin")
+        self.outArray = self.createOutputPin(
+            "out", "AnyPin", structure=StructureType.Array, constraint="1"
+        )
 
-        self.result = self.createOutputPin('result', 'BoolPin')
+        self.result = self.createOutputPin("result", "BoolPin")
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('AnyPin')
-        helper.addInputDataType('BoolPin')
-        helper.addOutputDataType('AnyPin')
-        helper.addOutputDataType('BoolPin')
+        helper.addInputDataType("AnyPin")
+        helper.addInputDataType("BoolPin")
+        helper.addOutputDataType("AnyPin")
+        helper.addOutputDataType("BoolPin")
         helper.addInputStruct(StructureType.Array)
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Array)
@@ -46,7 +50,7 @@ class makeArray(NodeBase):
 
     @staticmethod
     def category():
-        return 'GenericTypes'
+        return "GenericTypes"
 
     @staticmethod
     def keywords():
@@ -54,11 +58,13 @@ class makeArray(NodeBase):
 
     @staticmethod
     def description():
-        return 'Creates a list from connected pins'
+        return "Creates a list from connected pins"
 
     def compute(self, *args, **kwargs):
         outArray = []
-        ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
+        ySortedPins = sorted(
+            self.arrayData.affected_by, key=lambda pin: pin.owningNode().y
+        )
 
         for i in ySortedPins:
             if isinstance(i.getData(), list):

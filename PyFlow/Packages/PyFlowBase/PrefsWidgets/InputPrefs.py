@@ -20,7 +20,10 @@ from qtpy.QtWidgets import *
 
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
+from PyFlow.UI.Widgets.PropertiesFramework import (
+    CollapsibleFormWidget,
+    PropertiesWidget,
+)
 from PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
@@ -28,6 +31,7 @@ from PyFlow.UI.Canvas.UICommon import clearLayout
 
 class InputPreferences(CategoryWidgetBase):
     """docstring for InputPreferences."""
+
     def __init__(self, parent=None):
         super(InputPreferences, self).__init__(parent)
         self.content = QWidget()
@@ -57,7 +61,11 @@ class InputPreferences(CategoryWidgetBase):
             for inputActionVariant in variants:
                 actionWidget = InputActionWidget(inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
-                category.addWidget(label=inputActionVariant.getName(), widget=actionWidget, maxLabelWidth=150)
+                category.addWidget(
+                    label=inputActionVariant.getName(),
+                    widget=actionWidget,
+                    maxLabelWidth=150,
+                )
             properties.addWidget(category)
             category.setCollapsed(True)
         self.layout.addWidget(properties)

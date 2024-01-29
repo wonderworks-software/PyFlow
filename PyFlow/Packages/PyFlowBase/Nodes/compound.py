@@ -30,6 +30,7 @@ class compound(NodeBase):
 
     pins can be edited only from inside the compound
     """
+
     def __init__(self, name):
         super(compound, self).__init__(name)
         self.isCompoundNode = True
@@ -54,7 +55,7 @@ class compound(NodeBase):
 
     @rawGraph.setter
     def rawGraph(self, newGraph):
-        assert(newGraph is not None)
+        assert newGraph is not None
         self._rawGraph = newGraph
 
     def syncPins(self):
@@ -62,7 +63,7 @@ class compound(NodeBase):
         nodeInputPins = self.namePinInputsMap
         nodeOutputPins = self.namePinOutputsMap
 
-        graphInputsNodes = self.rawGraph.getNodesList(classNameFilters=['graphInputs'])
+        graphInputsNodes = self.rawGraph.getNodesList(classNameFilters=["graphInputs"])
         graphInputPins = {}
         for graphInputNode in graphInputsNodes:
             for outPin in graphInputNode.orderedOutputs.values():
@@ -71,7 +72,7 @@ class compound(NodeBase):
                 if outPin.name not in nodeInputPins:
                     self.onGraphInputPinCreated(outPin)
 
-        graphOutputNodes = self.rawGraph.getNodesList(classNameFilters=['graphOutputs'])
+        graphOutputNodes = self.rawGraph.getNodesList(classNameFilters=["graphOutputs"])
         graphOutputPins = {}
         for graphOutputNode in graphOutputNodes:
             for inPin in graphOutputNode.orderedInputs.values():
@@ -106,7 +107,7 @@ class compound(NodeBase):
 
     @staticmethod
     def category():
-        return 'SubGraphs'
+        return "SubGraphs"
 
     @staticmethod
     def keywords():
@@ -114,11 +115,11 @@ class compound(NodeBase):
 
     @staticmethod
     def description():
-        return 'Encapsulate a graph inside a node'
+        return "Encapsulate a graph inside a node"
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        default['graphData'] = self.rawGraph.serialize()
+        default["graphData"] = self.rawGraph.serialize()
         return default
 
     def onGraphInputPinCreated(self, outPin):
@@ -129,22 +130,28 @@ class compound(NodeBase):
         """
 
         # add companion pin for graphInputs node's output pin
-        subgraphInputPin = self.createInputPin(outPin.name,
-                                               outPin.__class__.__name__,
-                                               outPin.defaultValue(),
-                                               outPin.call,
-                                               outPin.structureType,
-                                               outPin.constraint,
-                                               outPin.structConstraint,
-                                               group=outPin.owningNode().name)
+        subgraphInputPin = self.createInputPin(
+            outPin.name,
+            outPin.__class__.__name__,
+            outPin.defaultValue(),
+            outPin.call,
+            outPin.structureType,
+            outPin.constraint,
+            outPin.structConstraint,
+            group=outPin.owningNode().name,
+        )
         if subgraphInputPin.isAny():
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
-            subgraphInputPin.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
+            subgraphInputPin.enableOptions(
+                PinOptions.AllowAny | PinOptions.DictElementSupported
+            )
 
         outPin.owningNode().constraints[outPin.constraint].append(subgraphInputPin)
         self.constraints[outPin.constraint].append(outPin)
 
-        outPin.owningNode().structConstraints[outPin.structConstraint].append(subgraphInputPin)
+        outPin.owningNode().structConstraints[outPin.structConstraint].append(
+            subgraphInputPin
+        )
         self.structConstraints[outPin.structConstraint].append(outPin)
 
         self.__inputsMap[subgraphInputPin] = outPin
@@ -153,6 +160,7 @@ class compound(NodeBase):
 
         def forceRename(name):
             subgraphInputPin.setName(name, force=True)
+
         outPin.nameChanged.connect(forceRename, weak=False)
 
         # broadcast for UI wrapper class
@@ -166,16 +174,20 @@ class compound(NodeBase):
         """
 
         # add companion pin for graphOutputs node's input pin
-        subgraphOutputPin = self.createOutputPin(inPin.name,
-                                                 inPin.__class__.__name__,
-                                                 inPin.defaultValue(),
-                                                 inPin.structureType,
-                                                 inPin.constraint,
-                                                 inPin.structConstraint,
-                                                 group=inPin.owningNode().name)
+        subgraphOutputPin = self.createOutputPin(
+            inPin.name,
+            inPin.__class__.__name__,
+            inPin.defaultValue(),
+            inPin.structureType,
+            inPin.constraint,
+            inPin.structConstraint,
+            group=inPin.owningNode().name,
+        )
         if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
-            subgraphOutputPin.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
+            subgraphOutputPin.enableOptions(
+                PinOptions.AllowAny | PinOptions.DictElementSupported
+            )
 
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
@@ -183,7 +195,9 @@ class compound(NodeBase):
         inPin.owningNode().constraints[inPin.constraint].append(subgraphOutputPin)
         self.constraints[inPin.constraint].append(inPin)
 
-        inPin.owningNode().structConstraints[inPin.structConstraint].append(subgraphOutputPin)
+        inPin.owningNode().structConstraints[inPin.structConstraint].append(
+            subgraphOutputPin
+        )
         self.structConstraints[inPin.structConstraint].append(inPin)
 
         self.__outputsMap[subgraphOutputPin] = inPin
@@ -192,6 +206,7 @@ class compound(NodeBase):
         # connect
         def forceRename(name):
             subgraphOutputPin.setName(name, force=True)
+
         inPin.nameChanged.connect(forceRename, weak=False)
 
         # broadcast for UI wrapper class
@@ -204,24 +219,30 @@ class compound(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
 
-        if jsonTemplate is not None and 'graphData' in jsonTemplate:
-            parentGraph = self.graph().graphManager.findGraph(jsonTemplate['owningGraphName'])
+        if jsonTemplate is not None and "graphData" in jsonTemplate:
+            parentGraph = self.graph().graphManager.findGraph(
+                jsonTemplate["owningGraphName"]
+            )
             self.rawGraph = GraphBase(self.name, self.graph().graphManager, parentGraph)
             # recreate graph contents
-            jsonTemplate['graphData']['name'] = self.getName()
-            self.rawGraph.populateFromJson(jsonTemplate['graphData'])
+            jsonTemplate["graphData"]["name"] = self.getName()
+            self.rawGraph.populateFromJson(jsonTemplate["graphData"])
 
             self.syncPins()
 
             inputsMap = self.namePinInputsMap
-            for inpJson in jsonTemplate['inputs']:
-                inputsMap[inpJson['name']].uid = uuid.UUID(inpJson['uuid'])
+            for inpJson in jsonTemplate["inputs"]:
+                inputsMap[inpJson["name"]].uid = uuid.UUID(inpJson["uuid"])
 
             outputsMap = self.namePinOutputsMap
-            for outJson in jsonTemplate['outputs']:
-                outputsMap[outJson['name']].uid = uuid.UUID(outJson['uuid'])
+            for outJson in jsonTemplate["outputs"]:
+                outputsMap[outJson["name"]].uid = uuid.UUID(outJson["uuid"])
         else:
-            self.rawGraph = GraphBase(self.name, self.graph().graphManager, self.graph().graphManager.activeGraph())
+            self.rawGraph = GraphBase(
+                self.name,
+                self.graph().graphManager,
+                self.graph().graphManager.activeGraph(),
+            )
 
     def addNode(self, node):
         self.rawGraph.addNode(node)

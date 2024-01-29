@@ -24,6 +24,7 @@ from qtpy.QtWidgets import *
 
 class CompileTool(ShelfTool):
     """docstring for CompileTool."""
+
     def __init__(self):
         super(CompileTool, self).__init__()
 

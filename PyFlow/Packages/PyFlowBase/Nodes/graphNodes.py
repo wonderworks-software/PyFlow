@@ -22,13 +22,16 @@ from PyFlow.Core.Common import *
 class graphInputs(NodeBase):
     """Represents a group of input pins on compound node
     """
+
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
         self.bCacheEnabled = True
 
     def getUniqPinName(self, name):
         result = name
-        graphNodes = self.graph().getNodesList(classNameFilters=['graphInputs', 'graphOutputs'])
+        graphNodes = self.graph().getNodesList(
+            classNameFilters=["graphInputs", "graphOutputs"]
+        )
         conflictingPinNames = set()
         for node in graphNodes:
             for pin in node.pins:
@@ -38,7 +41,7 @@ class graphInputs(NodeBase):
 
     @staticmethod
     def category():
-        return 'SubGraphs'
+        return "SubGraphs"
 
     @staticmethod
     def keywords():
@@ -46,22 +49,27 @@ class graphInputs(NodeBase):
 
     @staticmethod
     def description():
-        return ''
+        return ""
 
     def addOutPin(self, name=None, dataType="AnyPin"):
         if name is None:
-            name = self.getUniqPinName('in')
-        p = self.createOutputPin(name, dataType, constraint=name, structConstraint=name, structure=StructureType.Multi)
+            name = self.getUniqPinName("in")
+        p = self.createOutputPin(
+            name,
+            dataType,
+            constraint=name,
+            structConstraint=name,
+            structure=StructureType.Multi,
+        )
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         if dataType == "AnyPin":
             p.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
         return p
 
-
     def compute(self, *args, **kwargs):
         for o in self.outputs.values():
             for i in o.affected_by:
-                if len(i.affected_by)>0:
+                if len(i.affected_by) > 0:
                     for e in i.affected_by:
                         o.setData(e.getData())
                 else:
@@ -74,21 +82,24 @@ class graphInputs(NodeBase):
         if jsonTemplate is not None:
             sortedOutputs = sorted(jsonTemplate["outputs"], key=lambda x: x["pinIndex"])
             for outPinJson in sortedOutputs:
-                if outPinJson['name'] not in existingPins:
-                    dynOut = self.addOutPin(outPinJson['name'], outPinJson["dataType"])
-                    dynOut.uid = uuid.UUID(outPinJson['uuid'])
+                if outPinJson["name"] not in existingPins:
+                    dynOut = self.addOutPin(outPinJson["name"], outPinJson["dataType"])
+                    dynOut.uid = uuid.UUID(outPinJson["uuid"])
 
 
 class graphOutputs(NodeBase):
     """Represents a group of output pins on compound node
     """
+
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
         self.bCacheEnabled = False
 
     def getUniqPinName(self, name):
         result = name
-        graphNodes = self.graph().getNodesList(classNameFilters=['graphInputs', 'graphOutputs'])
+        graphNodes = self.graph().getNodesList(
+            classNameFilters=["graphInputs", "graphOutputs"]
+        )
         conflictingPinNames = set()
         for node in graphNodes:
             for pin in node.pins:
@@ -98,7 +109,7 @@ class graphOutputs(NodeBase):
 
     @staticmethod
     def category():
-        return 'SubGraphs'
+        return "SubGraphs"
 
     @staticmethod
     def keywords():
@@ -106,7 +117,7 @@ class graphOutputs(NodeBase):
 
     @staticmethod
     def description():
-        return ''
+        return ""
 
     def postCreate(self, jsonTemplate=None):
         super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
@@ -115,14 +126,20 @@ class graphOutputs(NodeBase):
         if jsonTemplate is not None:
             sortedInputs = sorted(jsonTemplate["inputs"], key=lambda x: x["pinIndex"])
             for inPinJson in sortedInputs:
-                if inPinJson['name'] not in existingPins:
-                    inDyn = self.addInPin(inPinJson['name'], inPinJson["dataType"])
-                    inDyn.uid = uuid.UUID(inPinJson['uuid'])
+                if inPinJson["name"] not in existingPins:
+                    inDyn = self.addInPin(inPinJson["name"], inPinJson["dataType"])
+                    inDyn.uid = uuid.UUID(inPinJson["uuid"])
 
     def addInPin(self, name=None, dataType="AnyPin"):
         if name is None:
-            name = self.getUniqPinName('out')
-        p = self.createInputPin(name, dataType, constraint=name, structConstraint=name, structure=StructureType.Multi)
+            name = self.getUniqPinName("out")
+        p = self.createInputPin(
+            name,
+            dataType,
+            constraint=name,
+            structConstraint=name,
+            structure=StructureType.Multi,
+        )
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         if dataType == "AnyPin":
             p.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)

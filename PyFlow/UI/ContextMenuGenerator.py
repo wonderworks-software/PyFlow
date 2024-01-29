@@ -19,6 +19,7 @@ from qtpy.QtWidgets import QAction
 
 class ContextMenuGenerator(object):
     """docstring for ContextMenuGenerator."""
+
     def __init__(self, menuDataBuilder):
         super(ContextMenuGenerator, self).__init__()
         self.builder = menuDataBuilder
@@ -27,7 +28,7 @@ class ContextMenuGenerator(object):
         if "separator" in menuEntryData:
             parentMenu.addSeparator()
             return
-        icon = menuEntryData['icon']
+        icon = menuEntryData["icon"]
         if "sub_menu" in menuEntryData:
             subMenuData = menuEntryData["sub_menu"]
             subMenu = parentMenu.addMenu(menuEntryData["title"])
@@ -35,10 +36,10 @@ class ContextMenuGenerator(object):
                 subMenu.setIcon(icon)
             self.__createMenuEntry(subMenu, subMenuData)
         else:
-            action = parentMenu.addAction(menuEntryData['title'])
+            action = parentMenu.addAction(menuEntryData["title"])
             if icon is not None:
                 action.setIcon(icon)
-            action.triggered.connect(menuEntryData['callback'])
+            action.triggered.connect(menuEntryData["callback"])
 
     def generate(self):
         menuData = self.builder.get()

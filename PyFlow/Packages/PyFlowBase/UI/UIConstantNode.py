@@ -32,7 +32,8 @@ class UIConstantNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
         self.headColor = self.headColorOverride = QtGui.QColor(
-            *findPinClassByType("AnyPin").color())
+            *findPinClassByType("AnyPin").color()
+        )
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -45,8 +46,7 @@ class UIConstantNode(UINodeBase):
         newOuts = []
         for i in self.UIoutputs.values():
             for connection in i.connections:
-                newOuts.append([connection.destination(),
-                                connection.drawDestination])
+                newOuts.append([connection.destination(), connection.drawDestination])
         if inp.connections:
             source = inp.connections[0].source()
             for out in newOuts:
@@ -70,7 +70,8 @@ class UIConstantNode(UINodeBase):
 
     def changeType(self, dataType):
         self.headColor = self.headColorOverride = QtGui.QColor(
-            *findPinClassByType(dataType).color())
+            *findPinClassByType(dataType).color()
+        )
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -86,8 +87,7 @@ class UIConstantNode(UINodeBase):
     def selectStructure(self, valToUpdate, inputsCategory, group):
         if valToUpdate is not None:
             del valToUpdate
-            super(UIConstantNode, self).createInputWidgets(
-                inputsCategory, group)
+            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
 
     def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         inputVal = None
@@ -101,8 +101,7 @@ class UIConstantNode(UINodeBase):
         for i in self._rawNode.pinTypes:
             selector.addItem(i)
         if self.input.dataType in self._rawNode.pinTypes:
-            selector.setCurrentIndex(
-                self._rawNode.pinTypes.index(self.input.dataType))
+            selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
 
         structSelector = QComboBox()
         for i in [i.name for i in list(StructureType)]:
@@ -112,11 +111,14 @@ class UIConstantNode(UINodeBase):
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
         selector.activated.connect(self._rawNode.updateType)
         selector.activated.connect(
-            lambda: self.updateType(inputVal, inputsCategory, inGroup))
+            lambda: self.updateType(inputVal, inputsCategory, inGroup)
+        )
         structSelector.activated.connect(self._rawNode.selectStructure)
         structSelector.activated.connect(
-            lambda: self.selectStructure(inputVal, inputsCategory, inGroup))
+            lambda: self.selectStructure(inputVal, inputsCategory, inGroup)
+        )
 
+        inputsCategory.insertWidget(preIndex, "DataType", selector, group=inGroup)
         inputsCategory.insertWidget(
-            preIndex, "DataType", selector, group=inGroup)
-        inputsCategory.insertWidget(preIndex + 1, "Structure", structSelector, group=inGroup)
+            preIndex + 1, "Structure", structSelector, group=inGroup
+        )

@@ -26,12 +26,14 @@ from PyFlow import CreateRawPin
 class getVar(NodeBase):
     def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
-        assert(isinstance(var, Variable))
+        assert isinstance(var, Variable)
         self._var = var
         if var.structure == StructureType.Dict:
-            self.out = self.createOutputPin('out', var.value.valueType, structure=StructureType.Dict, constraint="2")
+            self.out = self.createOutputPin(
+                "out", var.value.valueType, structure=StructureType.Dict, constraint="2"
+            )
         else:
-            self.out = self.createOutputPin('out', var.dataType)
+            self.out = self.createOutputPin("out", var.dataType)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.valueChanged.connect(self.onVarValueChanged)
@@ -69,7 +71,7 @@ class getVar(NodeBase):
         self.out.kill()
         del self.out
         self.out = None
-        self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
+        self.out = CreateRawPin("out", self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
         self.updateStructure()
         return self.out
@@ -113,7 +115,7 @@ class getVar(NodeBase):
     def serialize(self):
         default = NodeBase.serialize(self)
         if self.var is not None:
-            default['varUid'] = str(self.var.uid)
+            default["varUid"] = str(self.var.uid)
         return default
 
     @staticmethod
@@ -126,7 +128,7 @@ class getVar(NodeBase):
 
     @staticmethod
     def description():
-        return 'Access variable value'
+        return "Access variable value"
 
     def compute(self, *args, **kwargs):
         self.out.setData(copy(self.var.value))

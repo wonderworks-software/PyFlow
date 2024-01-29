@@ -21,7 +21,10 @@ from collections import defaultdict
 from qtpy.QtWidgets import *
 from qtpy import QtGui
 
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
+from PyFlow.UI.Widgets.PropertiesFramework import (
+    CollapsibleFormWidget,
+    PropertiesWidget,
+)
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet, ConnectionTypes
@@ -34,6 +37,7 @@ THEMES_PATH = os.path.join(UIModule.__path__[0], "Themes")
 
 class ThemePreferences(CategoryWidgetBase):
     """docstring for ThemePreferences."""
+
     def __init__(self, parent=None):
         super(ThemePreferences, self).__init__(parent)
         self.content = QWidget()
@@ -59,32 +63,80 @@ class ThemePreferences(CategoryWidgetBase):
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
-                inp = pyf_ColorSlider(type="int", alpha=len(list(obj.toTuple())) == 4, startColor=list(obj.toTuple()))
-                inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
-                if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
+                inp = pyf_ColorSlider(
+                    type="int",
+                    alpha=len(list(obj.toTuple())) == 4,
+                    startColor=list(obj.toTuple()),
+                )
+                inp.valueChanged.connect(
+                    lambda color, name=name, update=True: editableStyleSheet().setColor(
+                        name, color, update
+                    )
+                )
+                if name in [
+                    "TextColor",
+                    "MainColor",
+                    "TextSelectedColor",
+                    "ButtonsColor",
+                ]:
                     general.addWidget(name, inp)
-                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor", "LoggerBgColor"]:
+                elif name in [
+                    "InputFieldColor",
+                    "BgColor",
+                    "BgColorDarker",
+                    "BgColorBright",
+                    "BorderColor",
+                    "LoggerBgColor",
+                ]:
                     bg.addWidget(name, inp)
-                elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
+                elif name in [
+                    "CanvasBgColor",
+                    "CanvastextColor",
+                    "CanvasGridColor",
+                    "CanvasGridColorDarker",
+                ]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj, list):
-                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness", "ConnectionOffset"]:
+                if name in [
+                    "GridSizeFine",
+                    "GridSizeHuge",
+                    "ConnectionRoundness",
+                    "ConnectionOffset",
+                ]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.setMinimum(0)
                     inp.setMaximum(1000.0)
-                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
-                elif name in ["DrawNumbers", "SetAppStyleSheet","DrawGrid"]:
+                    inp.valueChanged.connect(
+                        lambda color, name=name, update=False: editableStyleSheet().setColor(
+                            name, color, update
+                        )
+                    )
+                elif name in ["DrawNumbers", "SetAppStyleSheet", "DrawGrid"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
-                    inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                    inp.stateChanged.connect(
+                        lambda color, name=name, update=True: editableStyleSheet().setColor(
+                            name, color, update
+                        )
+                    )
                 elif name == "ConnectionMode":
                     inp = QComboBox()
                     for i in ConnectionTypes:
                         inp.addItem(i.name)
                     inp.setCurrentIndex(obj[0])
-                    inp.currentIndexChanged.connect(lambda value, name=name, update=False: editableStyleSheet().setColor(name, value, update))
-                elif name in ["LOD_Number", "NodeSwitch", "ConnectionSwitch", "PinSwitch", "CanvasSwitch"]:
+                    inp.currentIndexChanged.connect(
+                        lambda value, name=name, update=False: editableStyleSheet().setColor(
+                            name, value, update
+                        )
+                    )
+                elif name in [
+                    "LOD_Number",
+                    "NodeSwitch",
+                    "ConnectionSwitch",
+                    "PinSwitch",
+                    "CanvasSwitch",
+                ]:
                     inp = pyf_Slider(self, type="int")
                     inp.setValue(obj[0])
                     if name != "LOD_Number":
@@ -94,13 +146,26 @@ class ThemePreferences(CategoryWidgetBase):
                     else:
                         lodMax = inp
                         inp.setMinimum(0)
-                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
+                    inp.valueChanged.connect(
+                        lambda color, name=name, update=False: editableStyleSheet().setColor(
+                            name, color, update
+                        )
+                    )
 
-                if name in ["ConnectionMode", "ConnectionRoundness","ConnectionOffset"]:
+                if name in [
+                    "ConnectionMode",
+                    "ConnectionRoundness",
+                    "ConnectionOffset",
+                ]:
                     connections.addWidget(name, inp)
                 elif name == "SetAppStyleSheet":
                     general.insertWidget(0, name, inp)
-                elif name in ["NodeSwitch", "ConnectionSwitch", "PinSwitch", "CanvasSwitch"]:
+                elif name in [
+                    "NodeSwitch",
+                    "ConnectionSwitch",
+                    "PinSwitch",
+                    "CanvasSwitch",
+                ]:
                     lods.addWidget(name, inp)
                 elif name == "LOD_Number":
                     lods.insertWidget(0, name, inp)
@@ -118,10 +183,16 @@ class ThemePreferences(CategoryWidgetBase):
         else:
             if isinstance(settings, str):
                 if settings in editableStyleSheet().presets:
-                    self.selector.setCurrentIndex(list(editableStyleSheet().presets.keys()).index(settings))
-            elif settings and settings.value('Theme_Name'):
-                if settings.value('Theme_Name') in editableStyleSheet().presets:
-                    self.selector.setCurrentIndex(list(editableStyleSheet().presets.keys()).index(settings.value('Theme_Name')))
+                    self.selector.setCurrentIndex(
+                        list(editableStyleSheet().presets.keys()).index(settings)
+                    )
+            elif settings and settings.value("Theme_Name"):
+                if settings.value("Theme_Name") in editableStyleSheet().presets:
+                    self.selector.setCurrentIndex(
+                        list(editableStyleSheet().presets.keys()).index(
+                            settings.value("Theme_Name")
+                        )
+                    )
             self.currTheme = self.selector.currentIndex()
 
         self.layout.addWidget(self.selector)
@@ -161,7 +232,9 @@ class ThemePreferences(CategoryWidgetBase):
         self.onShow(self.selector.currentText())
 
     def deleteTheme(self):
-        if os.path.exists(os.path.join(THEMES_PATH, self.selector.currentText() + ".json")):
+        if os.path.exists(
+            os.path.join(THEMES_PATH, self.selector.currentText() + ".json")
+        ):
             os.remove(os.path.join(THEMES_PATH, self.selector.currentText() + ".json"))
             self.selector.removeItem(self.selector.currentIndex())
             self.onShow(self.selector.currentText())
@@ -173,11 +246,13 @@ class ThemePreferences(CategoryWidgetBase):
     def saveThemeAs(self, fileName=None):
         okPressed = True
         if not fileName:
-            fileName, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
-        if okPressed and fileName != '':
+            fileName, okPressed = QInputDialog.getText(
+                self, "Get text", "Your name:", QLineEdit.Normal, ""
+            )
+        if okPressed and fileName != "":
             data = editableStyleSheet().serialize()
             with open(os.path.join(THEMES_PATH, fileName + ".json"), "w") as f:
-                json.dump(data, f, separators=(',', ':'))
+                json.dump(data, f, separators=(",", ":"))
             self.onShow(fileName)
 
     def serialize(self, settings):

@@ -22,10 +22,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
 from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
-from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
-    graphInputs,
-    graphOutputs
-)
+from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import graphInputs, graphOutputs
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 
@@ -49,10 +46,7 @@ from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
 from PyFlow.Packages.PyFlowBase.UI.UIStickyNote import UIStickyNote
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
 from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
-from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
-    UIGraphInputs,
-    UIGraphOutputs
-)
+from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import UIGraphInputs, UIGraphOutputs
 from PyFlow.Packages.PyFlowBase.UI.UIFloatRamp import UIFloatRamp
 from PyFlow.Packages.PyFlowBase.UI.UIColorRamp import UIColorRamp
 
@@ -103,8 +97,8 @@ def createUINode(raw_instance):
         return UIColorRamp(raw_instance)
     if isinstance(raw_instance, imageDisplay):
         return UIImageDisplayNode(raw_instance)
-    if isinstance(raw_instance,forLoopBegin):
+    if isinstance(raw_instance, forLoopBegin):
         return UIForLoopBeginNode(raw_instance)
-    if isinstance(raw_instance,whileLoopBegin):
+    if isinstance(raw_instance, whileLoopBegin):
         return UIWhileLoopBeginNode(raw_instance)
     return UINodeBase(raw_instance)

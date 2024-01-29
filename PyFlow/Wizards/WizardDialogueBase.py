@@ -27,6 +27,7 @@ def rst2html(rst):
 
 class WizardDialogueBase(QDialog):
     """docstring for WizardDialogueBase."""
+
     def __init__(self, parent=None):
         super(WizardDialogueBase, self).__init__(parent)
         self.setWindowTitle("Package wizard")
@@ -131,7 +132,9 @@ class WizardDialogueBase(QDialog):
 
     def onGoForward(self):
         futureIndex = self.stackWidget.currentIndex() + 1
-        isCurrentPageValid = self.pageValidationHooks[self.stackWidget.currentWidget()]()
+        isCurrentPageValid = self.pageValidationHooks[
+            self.stackWidget.currentWidget()
+        ]()
         if isCurrentPageValid:
             self.stackWidget.setCurrentIndex(futureIndex)
             self.updateNavigationVisibility()
@@ -142,7 +145,14 @@ class WizardDialogueBase(QDialog):
         else:
             self.setMessageRst(self.errorMessages[self.stackWidget.currentWidget()])
 
-    def addPageWidget(self, widget, messageRst, errorMessageRst="Something is wrong!", validationHook=lambda: True, pageEnterCallback=lambda: None):
+    def addPageWidget(
+        self,
+        widget,
+        messageRst,
+        errorMessageRst="Something is wrong!",
+        validationHook=lambda: True,
+        pageEnterCallback=lambda: None,
+    ):
         self.stackWidget.addWidget(widget)
         self.messages[widget] = messageRst
         self.pageValidationHooks[widget] = validationHook
@@ -163,6 +173,7 @@ class WizardDialogueBase(QDialog):
 
 if __name__ == "__main__":
     import sys
+
     app = QApplication(sys.argv)
 
     w = WizardDialogueBase()

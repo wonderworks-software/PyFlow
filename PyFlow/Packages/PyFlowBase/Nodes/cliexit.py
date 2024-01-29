@@ -23,18 +23,20 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class cliexit(NodeBase):
     def __init__(self, name):
         super(cliexit, self).__init__(name)
-        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
+        self.inp0 = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'CLI'
+        return "CLI"
 
     @staticmethod
     def keywords():
@@ -42,7 +44,7 @@ class cliexit(NodeBase):
 
     @staticmethod
     def description():
-        return 'Stops cli program loop'
+        return "Stops cli program loop"
 
     def compute(self, *args, **kwargs):
         man = GraphManagerSingleton().get()

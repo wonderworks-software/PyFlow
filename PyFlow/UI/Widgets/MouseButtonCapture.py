@@ -19,6 +19,7 @@ from qtpy import QtCore, QtGui
 
 class MouseButtonCaptureWidget(QPushButton):
     """docstring for MouseButtonCaptureWidget."""
+
     captured = QtCore.Signal(object)
 
     def __init__(self, parent=None):
@@ -27,7 +28,9 @@ class MouseButtonCaptureWidget(QPushButton):
         self.setText(self._currentButton.name)
         self.bCapturing = False
         self.setCheckable(True)
-        self.setToolTip("<b>Esc</b> will set button to <u>NoButton</u> clear.<br><b>Left mouse button</b> will initiate capturing")
+        self.setToolTip(
+            "<b>Esc</b> will set button to <u>NoButton</u> clear.<br><b>Left mouse button</b> will initiate capturing"
+        )
 
     @property
     def currentButton(self):
@@ -60,6 +63,7 @@ class MouseButtonCaptureWidget(QPushButton):
 
 if __name__ == "__main__":
     import sys
+
     a = QApplication(sys.argv)
 
     w = MouseButtonCaptureWidget()

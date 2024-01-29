@@ -23,25 +23,27 @@ class flipFlop(NodeBase):
     def __init__(self, name):
         super(flipFlop, self).__init__(name)
         self.bState = True
-        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.outA = self.createOutputPin('A', 'ExecPin')
-        self.outB = self.createOutputPin('B', 'ExecPin')
-        self.bIsA = self.createOutputPin('IsA', 'BoolPin')
+        self.inp0 = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
+        self.outA = self.createOutputPin("A", "ExecPin")
+        self.outB = self.createOutputPin("B", "ExecPin")
+        self.bIsA = self.createOutputPin("IsA", "BoolPin")
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addOutputDataType('ExecPin')
-        helper.addOutputDataType('BoolPin')
+        helper.addInputDataType("ExecPin")
+        helper.addOutputDataType("ExecPin")
+        helper.addOutputDataType("BoolPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
@@ -49,7 +51,7 @@ class flipFlop(NodeBase):
 
     @staticmethod
     def description():
-        return 'Changes flow each time called'
+        return "Changes flow each time called"
 
     def compute(self, *args, **kwargs):
         if self.bState:

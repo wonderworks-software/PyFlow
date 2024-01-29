@@ -23,10 +23,10 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class timer(NodeBase):
     def __init__(self, name):
         super(timer, self).__init__(name)
-        self.out = self.createOutputPin("OUT", 'ExecPin')
-        self.beginPin = self.createInputPin("Begin", 'ExecPin', None, self.start)
-        self.stopPin = self.createInputPin("Stop", 'ExecPin', None, self.stop)
-        self.interval = self.createInputPin("Delta(s)", 'FloatPin')
+        self.out = self.createOutputPin("OUT", "ExecPin")
+        self.beginPin = self.createInputPin("Begin", "ExecPin", None, self.start)
+        self.stopPin = self.createInputPin("Stop", "ExecPin", None, self.stop)
+        self.interval = self.createInputPin("Delta(s)", "FloatPin")
         self.interval.setDefaultValue(0.2)
         self.accum = 0.0
         self.bWorking = False
@@ -46,9 +46,9 @@ class timer(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('FloatPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("FloatPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
@@ -63,4 +63,4 @@ class timer(NodeBase):
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"

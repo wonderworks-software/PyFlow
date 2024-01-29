@@ -9,6 +9,7 @@ from PyFlow.Core.Common import *
 
 class WatchItem(QGraphicsTextItem):
     """docstring for WatchItem."""
+
     def __init__(self, text=""):
         super(WatchItem, self).__init__(text)
 

@@ -28,32 +28,47 @@ from PyFlow import Packages
 
 class PackageWizard(WizardDialogueBase):
     """docstring for PackageWizard."""
+
     def __init__(self, parent=None):
         super(PackageWizard, self).__init__(parent)
 
     def addFinalPage(self):
-        self.addPageWidget(QWidget(), "Everything is ready! Click done to generate the package!" +
-                           "\n\n**Note**: When job will be done, you will need to restart the editor in order to see your new stuff!" +
-                           "\nGood luck!")
+        self.addPageWidget(
+            QWidget(),
+            "Everything is ready! Click done to generate the package!"
+            + "\n\n**Note**: When job will be done, you will need to restart the editor in order to see your new stuff!"
+            + "\nGood luck!",
+        )
 
     def onDone(self):
         # if we are here, everything is correct
         packageName = self.lePkgName.text()
-        includeUINodeFactory = self.cbIncludeUINodeFactory.checkState() == QtCore.Qt.Checked and self.cbIncludeUINodeFactory.isEnabled()
-        IncludeUIPinFactory = self.cbUIPinFactory.checkState() == QtCore.Qt.Checked and self.cbUIPinFactory.isEnabled()
-        IncludePinInputWidgetFactory = self.cbPinInputWidgetFactory.checkState() == QtCore.Qt.Checked and self.cbPinInputWidgetFactory.isEnabled()
+        includeUINodeFactory = (
+            self.cbIncludeUINodeFactory.checkState() == QtCore.Qt.Checked
+            and self.cbIncludeUINodeFactory.isEnabled()
+        )
+        IncludeUIPinFactory = (
+            self.cbUIPinFactory.checkState() == QtCore.Qt.Checked
+            and self.cbUIPinFactory.isEnabled()
+        )
+        IncludePinInputWidgetFactory = (
+            self.cbPinInputWidgetFactory.checkState() == QtCore.Qt.Checked
+            and self.cbPinInputWidgetFactory.isEnabled()
+        )
         IncludePrefsWidget = self.cbPrefsWidget.checkState() == QtCore.Qt.Checked
-        generatePackage(packageName,
-                        self.pbOutPathSelect.text(),
-                        bIncludeClassNode=self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked,
-                        bIncludeFooLib=self.cbIncludeFooLib.checkState() == QtCore.Qt.Checked,
-                        bIncludeUINodeFactory=includeUINodeFactory,
-                        bIncludePin=self.cbIncludePin.checkState() == QtCore.Qt.Checked,
-                        bIncludeUIPinFactory=IncludeUIPinFactory,
-                        bIncludeTool=self.cbIncludeTool.checkState() == QtCore.Qt.Checked,
-                        bIncludeExporter=self.cbIncludeExporter.checkState() == QtCore.Qt.Checked,
-                        bIncludePinInputWidgetFactory=IncludePinInputWidgetFactory,
-                        bIncludePrefsWindget=IncludePrefsWidget)
+        generatePackage(
+            packageName,
+            self.pbOutPathSelect.text(),
+            bIncludeClassNode=self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked,
+            bIncludeFooLib=self.cbIncludeFooLib.checkState() == QtCore.Qt.Checked,
+            bIncludeUINodeFactory=includeUINodeFactory,
+            bIncludePin=self.cbIncludePin.checkState() == QtCore.Qt.Checked,
+            bIncludeUIPinFactory=IncludeUIPinFactory,
+            bIncludeTool=self.cbIncludeTool.checkState() == QtCore.Qt.Checked,
+            bIncludeExporter=self.cbIncludeExporter.checkState() == QtCore.Qt.Checked,
+            bIncludePinInputWidgetFactory=IncludePinInputWidgetFactory,
+            bIncludePrefsWindget=IncludePrefsWidget,
+        )
         self.accept()
 
     def populate(self):
@@ -121,9 +136,12 @@ class PackageWizard(WizardDialogueBase):
         self.p2Layout.addWidget(self.cbIncludeExporter)
         self.p2Layout.addWidget(self.cbPrefsWidget)
 
-        self.addPageWidget(self.p2, "What components should be included?",
-                           "Please select at least one component to include to package!",
-                           self.isPackaeModuleSelected)
+        self.addPageWidget(
+            self.p2,
+            "What components should be included?",
+            "Please select at least one component to include to package!",
+            self.isPackaeModuleSelected,
+        )
 
         # third page
         self.p3 = QWidget()
@@ -131,10 +149,12 @@ class PackageWizard(WizardDialogueBase):
         self.pbOutPathSelect = QPushButton("...")
         self.p3Layout.addWidget(self.pbOutPathSelect)
         self.pbOutPathSelect.clicked.connect(self.onSelectPackageDirectory)
-        self.addPageWidget(self.p3,
-                           "Select output directory for your new package!" +
-                           "\n\n**Note**: Output directory should be writable.",
-                           pageEnterCallback=self.onSelectPackageRootEntered)
+        self.addPageWidget(
+            self.p3,
+            "Select output directory for your new package!"
+            + "\n\n**Note**: Output directory should be writable.",
+            pageEnterCallback=self.onSelectPackageRootEntered,
+        )
 
     def checkUIPinFactories(self, state):
         checked = self.cbIncludePin.checkState() == QtCore.Qt.Checked
@@ -143,7 +163,9 @@ class PackageWizard(WizardDialogueBase):
 
     def checkIncludeUINodeFactory(self, state):
         # ui node factories can be created now only for class nodes
-        self.cbIncludeUINodeFactory.setEnabled(self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked)
+        self.cbIncludeUINodeFactory.setEnabled(
+            self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked
+        )
 
     def onGotoComponentsDocs(self):
         print("Open components docs page")
@@ -152,15 +174,24 @@ class PackageWizard(WizardDialogueBase):
         self.pbOutPathSelect.setText(Packages.__path__[0])
 
     def isPackaeModuleSelected(self):
-        return any([self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked,
-                    self.cbIncludeFooLib.checkState() == QtCore.Qt.Checked,
-                    self.cbIncludePin.checkState() == QtCore.Qt.Checked,
-                    self.cbIncludeTool.checkState() == QtCore.Qt.Checked,
-                    self.cbIncludeExporter.checkState() == QtCore.Qt.Checked])
+        return any(
+            [
+                self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked,
+                self.cbIncludeFooLib.checkState() == QtCore.Qt.Checked,
+                self.cbIncludePin.checkState() == QtCore.Qt.Checked,
+                self.cbIncludeTool.checkState() == QtCore.Qt.Checked,
+                self.cbIncludeExporter.checkState() == QtCore.Qt.Checked,
+            ]
+        )
 
     def onSelectPackageDirectory(self, *args):
         packageName = self.lePkgName.text()
-        packageRoot = QFileDialog.getExistingDirectory(self, "Choose folder", "Choose folder", QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+        packageRoot = QFileDialog.getExistingDirectory(
+            self,
+            "Choose folder",
+            "Choose folder",
+            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
+        )
         newPackagePath = os.path.join(packageRoot, packageName)
         newPackagePath = os.path.normpath(newPackagePath)
         self.pbOutPathSelect.setText(packageRoot)

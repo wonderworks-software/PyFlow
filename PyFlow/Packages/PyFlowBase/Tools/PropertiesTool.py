@@ -25,6 +25,7 @@ from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget
 
 class PropertiesTool(DockTool):
     """docstring for Properties tool."""
+
     def __init__(self):
         super(PropertiesTool, self).__init__()
         self.scrollArea = QtWidgets.QScrollArea(self)
@@ -33,9 +34,13 @@ class PropertiesTool(DockTool):
         self.propertiesWidget = PropertiesWidget()
         self.scrollArea.setWidget(self.propertiesWidget)
 
-        self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.lockCheckBox)
+        self.propertiesWidget.searchBoxLayout.removeWidget(
+            self.propertiesWidget.lockCheckBox
+        )
         self.addButton(self.propertiesWidget.lockCheckBox)
-        self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.tearOffCopy)
+        self.propertiesWidget.searchBoxLayout.removeWidget(
+            self.propertiesWidget.tearOffCopy
+        )
         self.addButton(self.propertiesWidget.tearOffCopy)
         # self.addButton(self.propertiesWidget.settingsButton)
 

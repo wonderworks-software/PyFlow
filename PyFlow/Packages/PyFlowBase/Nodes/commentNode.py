@@ -22,7 +22,7 @@ class commentNode(NodeBase):
 
     @staticmethod
     def category():
-        return 'UI'
+        return "UI"
 
     @staticmethod
     def keywords():
@@ -30,4 +30,4 @@ class commentNode(NodeBase):
 
     @staticmethod
     def description():
-        return 'Can drag intersected nodes. You can also specify color and resize it.'
+        return "Can drag intersected nodes. You can also specify color and resize it."

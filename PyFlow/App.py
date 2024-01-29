@@ -49,6 +49,7 @@ from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+
 try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except:
@@ -130,7 +131,7 @@ class PyFlow(QMainWindow):
         self._lastClock = 0.0
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
-        self._currentFileName = ''
+        self._currentFileName = ""
         self.currentFileName = None
 
     def historyStatePushed(self, state):
@@ -166,7 +167,7 @@ class PyFlow(QMainWindow):
             # create app folder in documents
             # random string used for cases when multiple instances of app are running in the same time
             tempDirPath = ConfigManager().getPrefsValue("PREFS", "General/TempFilesDir")
-            if tempDirPath[-1:] in ('/', '\\'):
+            if tempDirPath[-1:] in ("/", "\\"):
                 tempDirPath = tempDirPath[:-1]
             self.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
 
@@ -209,10 +210,18 @@ class PyFlow(QMainWindow):
                 fileFormatMenu.setToolTip(exporterClass.toolTip())
                 if exporterClass.createExporterMenu():
                     exportAction = fileFormatMenu.addAction("Export")
-                    exportAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doExport(app))
+                    exportAction.triggered.connect(
+                        lambda checked=False, app=self, exporter=exporterClass: exporter.doExport(
+                            app
+                        )
+                    )
                 if exporterClass.createImporterMenu():
                     importAction = fileFormatMenu.addAction("Import")
-                    importAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doImport(app))
+                    importAction.triggered.connect(
+                        lambda checked=False, app=self, exporter=exporterClass: exporter.doImport(
+                            app
+                        )
+                    )
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
@@ -224,8 +233,16 @@ class PyFlow(QMainWindow):
         packagePlugin.triggered.connect(PackageWizard.run)
 
         helpMenu = self.menuBar.addMenu("Help")
-        helpMenu.addAction("Homepage").triggered.connect(lambda _=False, url="https://wonderworks-software.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(url))
-        helpMenu.addAction("Docs").triggered.connect(lambda _=False, url="https://pyflow.readthedocs.io/en/latest/": QtGui.QDesktopServices.openUrl(url))
+        helpMenu.addAction("Homepage").triggered.connect(
+            lambda _=False, url="https://wonderworks-software.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(
+                url
+            )
+        )
+        helpMenu.addAction("Docs").triggered.connect(
+            lambda _=False, url="https://pyflow.readthedocs.io/en/latest/": QtGui.QDesktopServices.openUrl(
+                url
+            )
+        )
 
     def showPreferencesWindow(self):
         self.preferencesWindow.show()
@@ -264,7 +281,12 @@ class PyFlow(QMainWindow):
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
-        currentInputAction = InputAction(name="temp", actionType=InputActionType.Keyboard, key=event.key(), modifiers=modifiers)
+        currentInputAction = InputAction(
+            name="temp",
+            actionType=InputActionType.Keyboard,
+            key=event.key(),
+            modifiers=modifiers,
+        )
 
         actionSaveVariants = InputManager()["App.Save"]
         actionNewFileVariants = InputManager()["App.NewFile"]
@@ -346,11 +368,13 @@ class PyFlow(QMainWindow):
         self.updateLabel()
 
     def loadFromFile(self, filePath):
-        with open(filePath, 'r') as f:
+        with open(filePath, "r") as f:
             data = json.load(f)
             self.loadFromData(data, clearHistory=True)
             self.currentFileName = filePath
-            EditorHistory().saveState("Open {}".format(os.path.basename(self.currentFileName)))
+            EditorHistory().saveState(
+                "Open {}".format(os.path.basename(self.currentFileName))
+            )
 
     def load(self):
         name_filter = "Graph files (*.pygraph)"
@@ -359,7 +383,7 @@ class PyFlow(QMainWindow):
             fpath = savepath[0]
         else:
             fpath = savepath
-        if not fpath == '':
+        if not fpath == "":
             self.loadFromFile(fpath)
 
     def save(self, save_as=False):
@@ -370,7 +394,7 @@ class PyFlow(QMainWindow):
                 pth = savepath[0]
             else:
                 pth = savepath
-            if not pth == '':
+            if not pth == "":
                 self.currentFileName = pth
             else:
                 self.currentFileName = None
@@ -382,7 +406,7 @@ class PyFlow(QMainWindow):
                     pth = savepath[0]
                 else:
                     pth = savepath
-                if not pth == '':
+                if not pth == "":
                     self.currentFileName = pth
                 else:
                     self.currentFileName = None
@@ -393,8 +417,8 @@ class PyFlow(QMainWindow):
         if not self.currentFileName.endswith(".pygraph"):
             self.currentFileName += ".pygraph"
 
-        if not self.currentFileName == '':
-            with open(self.currentFileName, 'w') as f:
+        if not self.currentFileName == "":
+            with open(self.currentFileName, "w") as f:
                 saveData = self.graphManager.get().serialize()
                 json.dump(saveData, f, indent=4)
             print(str("// saved: '{0}'".format(self.currentFileName)))
@@ -423,7 +447,7 @@ class PyFlow(QMainWindow):
 
     def mainLoop(self):
         deltaTime = currentProcessorTime() - self._lastClock
-        ds = (deltaTime * 1000.0)
+        ds = deltaTime * 1000.0
         if ds > 0:
             self.fps = int(1000.0 / ds)
 
@@ -486,7 +510,7 @@ class PyFlow(QMainWindow):
                         tool.show()
                         tool.onShow()
                         # Highlight window
-                        #print("highlight", tool.uniqueName())
+                        # print("highlight", tool.uniqueName())
                         return tool
         ToolInstance = self.createToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
@@ -504,7 +528,12 @@ class PyFlow(QMainWindow):
 
     def shouldSave(self):
         if self.modified:
-            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Save | QMessageBox.Cancel | QMessageBox.Discard)
+            btn = QMessageBox.warning(
+                self,
+                "Confirm?",
+                "Unsaved data will be lost. Save?",
+                QMessageBox.Save | QMessageBox.Cancel | QMessageBox.Discard,
+            )
             return btn
         return QMessageBox.Discard
 
@@ -531,13 +560,13 @@ class PyFlow(QMainWindow):
         settings.clear()
         settings.sync()
 
-        settings.beginGroup('Editor')
+        settings.beginGroup("Editor")
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("state", self.saveState())
         settings.endGroup()
 
         # save tools state
-        settings.beginGroup('Tools')
+        settings.beginGroup("Tools")
         for tool in self._tools:
             if isinstance(tool, ShelfTool):
                 settings.beginGroup("ShelfTools")
@@ -567,7 +596,9 @@ class PyFlow(QMainWindow):
 
     @staticmethod
     def instance(parent=None, software=""):
-        assert(software != ""), "Invalid arguments. Please pass you software name as second argument!"
+        assert (
+            software != ""
+        ), "Invalid arguments. Please pass you software name as second argument!"
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
@@ -579,7 +610,9 @@ class PyFlow(QMainWindow):
 
         try:
             extraPackagePaths = []
-            extraPathsString = ConfigManager().getPrefsValue("PREFS", "General/ExtraPackageDirs")
+            extraPathsString = ConfigManager().getPrefsValue(
+                "PREFS", "General/ExtraPackageDirs"
+            )
             if extraPathsString is not None:
                 extraPathsString = extraPathsString.rstrip(";")
                 extraPathsRaw = extraPathsString.split(";")
@@ -600,10 +633,10 @@ class PyFlow(QMainWindow):
         # populate menus
         instance.populateMenu()
 
-        geo = settings.value('Editor/geometry')
+        geo = settings.value("Editor/geometry")
         if geo is not None:
             instance.restoreGeometry(geo)
-        state = settings.value('Editor/state')
+        state = settings.value("Editor/state")
         if state is not None:
             instance.restoreState(state)
         settings.beginGroup("Tools")
@@ -637,7 +670,9 @@ class PyFlow(QMainWindow):
 
                 if issubclass(ToolClass, DockTool):
                     menus = instance.menuBar.findChildren(QMenu)
-                    pluginsMenuAction = [m for m in menus if m.title() == "Plugins"][0].menuAction()
+                    pluginsMenuAction = [m for m in menus if m.title() == "Plugins"][
+                        0
+                    ].menuAction()
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
                     instance.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
@@ -646,14 +681,20 @@ class PyFlow(QMainWindow):
                     icon = ToolClass.getIcon()
                     if icon:
                         showToolAction.setIcon(icon)
-                    showToolAction.triggered.connect(lambda pkgName=packageName, toolName=ToolClass.name(): instance.invokeDockToolByName(pkgName, toolName))
+                    showToolAction.triggered.connect(
+                        lambda pkgName=packageName, toolName=ToolClass.name(): instance.invokeDockToolByName(
+                            pkgName, toolName
+                        )
+                    )
 
                     settings.beginGroup("DockTools")
                     childGroups = settings.childGroups()
                     for dockToolGroupName in childGroups:
                         # This dock tool data been saved on last shutdown
                         settings.beginGroup(dockToolGroupName)
-                        if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
+                        if dockToolGroupName in [
+                            t.uniqueName() for t in instance._tools
+                        ]:
                             settings.endGroup()
                             continue
                         toolName = dockToolGroupName.split("::")[0]

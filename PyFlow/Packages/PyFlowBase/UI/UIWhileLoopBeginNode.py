@@ -38,17 +38,19 @@ class UIWhileLoopBeginNode(UINodeBase, IConvexHullBackDrop):
     def eventDropOnCanvas(self):
         # TODO: try to simplify this with Canvas.spawnNode
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyFlowBase"
-        nodeTemplate['lib'] = ""
-        nodeTemplate['type'] = "loopEnd"
-        nodeTemplate['name'] = self.canvasRef().graphManager.getUniqNodeName("loopEnd")
-        nodeTemplate['x'] = self.scenePos().x() + self.geometry().width() + 30
-        nodeTemplate['y'] = self.scenePos().y()
-        nodeTemplate['uuid'] = str(uuid.uuid4())
+        nodeTemplate["package"] = "PyFlowBase"
+        nodeTemplate["lib"] = ""
+        nodeTemplate["type"] = "loopEnd"
+        nodeTemplate["name"] = self.canvasRef().graphManager.getUniqNodeName("loopEnd")
+        nodeTemplate["x"] = self.scenePos().x() + self.geometry().width() + 30
+        nodeTemplate["y"] = self.scenePos().y()
+        nodeTemplate["uuid"] = str(uuid.uuid4())
         endNode = self.canvasRef()._createNode(nodeTemplate)
         self.getPinSG("Paired block").setData(str(endNode.path()))
         endNode.getPinSG("Paired block").setData(self.path())
-        self.canvasRef().connectPins(self.getPinSG("LoopBody"), endNode.getPinSG(DEFAULT_IN_EXEC_NAME))
+        self.canvasRef().connectPins(
+            self.getPinSG("LoopBody"), endNode.getPinSG(DEFAULT_IN_EXEC_NAME)
+        )
 
     def paint(self, painter, option, widget):
         self.computeHull()

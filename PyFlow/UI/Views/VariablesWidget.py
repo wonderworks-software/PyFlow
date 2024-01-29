@@ -38,6 +38,7 @@ VARIABLE_DATA_TAG = "VAR_DATA"
 
 class VariablesListWidget(QListWidget):
     """docstring for VariablesListWidget."""
+
     def __init__(self, parent=None):
         super(VariablesListWidget, self).__init__(parent)
         self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -102,8 +103,14 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setItemWidget(item, uiVariable)
         return uiVariable
 
-    def createVariable(self, dataType=str('BoolPin'), accessLevel=AccessLevel.public, uid=None):
-        rawVariable = self.pyFlowInstance.graphManager.get().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+    def createVariable(
+        self, dataType=str("BoolPin"), accessLevel=AccessLevel.public, uid=None
+    ):
+        rawVariable = (
+            self.pyFlowInstance.graphManager.get()
+            .activeGraph()
+            .createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        )
         uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         EditorHistory().saveState("Create variable", modify=True)
         return uiVariable

@@ -24,6 +24,7 @@ from PyFlow.Core.Common import SingletonDecorator
 
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
+
     def __init__(self, icon=None, text="test", parent=None):
         super(CategoryButton, self).__init__(text, parent)
         self.setMinimumHeight(30)
@@ -33,6 +34,7 @@ class CategoryButton(QPushButton):
 
 class CategoryWidgetBase(QScrollArea):
     """docstring for CategoryWidgetBase."""
+
     def __init__(self, parent=None):
         super(CategoryWidgetBase, self).__init__(parent)
         self.setWidgetResizable(True)
@@ -50,6 +52,7 @@ class CategoryWidgetBase(QScrollArea):
 @SingletonDecorator
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
+
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.resize(600, 400)
@@ -145,12 +148,16 @@ class PreferencesWindow(QMainWindow):
 
     def addCategory(self, name, widget):
         categoryButton = CategoryButton(text=name)
-        self.categoriesVerticalLayout.insertWidget(self.categoriesVerticalLayout.count() - 2, categoryButton)
+        self.categoriesVerticalLayout.insertWidget(
+            self.categoriesVerticalLayout.count() - 2, categoryButton
+        )
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)
         self.categoryButtons[index] = categoryButton
-        categoryButton.clicked.connect(lambda checked=False, idx=index: self.switchCategoryContent(idx))
+        categoryButton.clicked.connect(
+            lambda checked=False, idx=index: self.switchCategoryContent(idx)
+        )
 
     def switchCategoryContent(self, index):
         self.stackedWidget.setCurrentIndex(index)

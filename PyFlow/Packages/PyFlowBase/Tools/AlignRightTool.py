@@ -24,6 +24,7 @@ from qtpy.QtWidgets import QFileDialog
 
 class AlignRightTool(ShelfTool):
     """docstring for AlignRightTool."""
+
     def __init__(self):
         super(AlignRightTool, self).__init__()
 

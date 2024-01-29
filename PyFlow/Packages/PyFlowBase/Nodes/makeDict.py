@@ -22,15 +22,29 @@ from PyFlow.Core.Common import *
 class makeDict(NodeBase):
     def __init__(self, name):
         super(makeDict, self).__init__(name)
-        self.KeyType = self.createInputPin('KeyType', 'AnyPin', defaultValue=str(""), constraint="1", supportedPinDataTypes=getHashableDataTypes())
+        self.KeyType = self.createInputPin(
+            "KeyType",
+            "AnyPin",
+            defaultValue=str(""),
+            constraint="1",
+            supportedPinDataTypes=getHashableDataTypes(),
+        )
         self.KeyType.hidden = True
 
-        self.arrayData = self.createInputPin('data', 'AnyPin', structure=StructureType.Dict, constraint="2")
-        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSupported)
+        self.arrayData = self.createInputPin(
+            "data", "AnyPin", structure=StructureType.Dict, constraint="2"
+        )
+        self.arrayData.enableOptions(
+            PinOptions.AllowMultipleConnections
+            | PinOptions.AllowAny
+            | PinOptions.DictElementSupported
+        )
         self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
-        self.outArray = self.createOutputPin('out', 'AnyPin', structure=StructureType.Dict, constraint="2")
+        self.outArray = self.createOutputPin(
+            "out", "AnyPin", structure=StructureType.Dict, constraint="2"
+        )
         self.outArray.enableOptions(PinOptions.AllowAny)
-        self.result = self.createOutputPin('result', 'BoolPin')
+        self.result = self.createOutputPin("result", "BoolPin")
         self.arrayData.onPinDisconnected.connect(self.inPinDisconnected)
         self.arrayData.onPinConnected.connect(self.inPinConnected)
         self.KeyType.typeChanged.connect(self.updateDicts)
@@ -38,9 +52,9 @@ class makeDict(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('AnyPin')
-        helper.addOutputDataType('AnyPin')
-        helper.addOutputDataType('BoolPin')
+        helper.addInputDataType("AnyPin")
+        helper.addOutputDataType("AnyPin")
+        helper.addOutputDataType("BoolPin")
         helper.addInputStruct(StructureType.Dict)
         helper.addOutputStruct(StructureType.Dict)
         helper.addOutputStruct(StructureType.Single)
@@ -48,7 +62,7 @@ class makeDict(NodeBase):
 
     @staticmethod
     def category():
-        return 'GenericTypes'
+        return "GenericTypes"
 
     @staticmethod
     def keywords():
@@ -56,7 +70,7 @@ class makeDict(NodeBase):
 
     @staticmethod
     def description():
-        return 'Creates a list from connected pins'
+        return "Creates a list from connected pins"
 
     def postCreate(self, jsonData):
         super(makeDict, self).postCreate(jsonData)
@@ -90,7 +104,9 @@ class makeDict(NodeBase):
 
     def compute(self, *args, **kwargs):
         outArray = PFDict(self.KeyType.dataType, self.arrayData.dataType)
-        ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
+        ySortedPins = sorted(
+            self.arrayData.affected_by, key=lambda pin: pin.owningNode().y
+        )
 
         for i in ySortedPins:
             if isinstance(i.getData(), DictElement):

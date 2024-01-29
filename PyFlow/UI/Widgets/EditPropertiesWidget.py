@@ -63,7 +63,7 @@ class EditPropertiesTreeWidget(QtWidgets.QTreeWidget):
         return d
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     form = EditPropertiesTreeWidget()
     form.addNormal("Normal")

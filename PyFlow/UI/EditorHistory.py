@@ -25,6 +25,7 @@ from PyFlow.ConfigManager import ConfigManager
 
 class _EditorState(object):
     """docstring for _EditorState."""
+
     def __init__(self, text, modify):
         super(_EditorState, self).__init__()
         self.text = text
@@ -42,6 +43,7 @@ class _EditorState(object):
 class EditorHistory(object):
 
     """docstring for EditorHistory."""
+
     def __init__(self, app):
 
         self.statePushed = Signal(object)
@@ -51,7 +53,9 @@ class EditorHistory(object):
         self.app = app
         self.stack = list()
         try:
-            self._capacity = int(ConfigManager().getPrefsValue("PREFS", "General/HistoryDepth"))
+            self._capacity = int(
+                ConfigManager().getPrefsValue("PREFS", "General/HistoryDepth")
+            )
         except:
             self._capacity = 10
 

@@ -24,8 +24,8 @@ from copy import copy
 class convertTo(NodeBase):
     def __init__(self, name):
         super(convertTo, self).__init__(name)
-        self.input = self.createInputPin("in", 'AnyPin', defaultValue=None)
-        self.output = self.createOutputPin("result", 'AnyPin', defaultValue=None)
+        self.input = self.createInputPin("in", "AnyPin", defaultValue=None)
+        self.output = self.createOutputPin("result", "AnyPin", defaultValue=None)
         pinAffects(self.input, self.output)
         self.input.enableOptions(PinOptions.AllowAny)
         self.pinTypes = []
@@ -36,17 +36,17 @@ class convertTo(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('AnyPin')
-        helper.addOutputDataType('AnyPin')
+        helper.addInputDataType("AnyPin")
+        helper.addOutputDataType("AnyPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'GenericTypes'
-        
-    def serialize(self):      
+        return "GenericTypes"
+
+    def serialize(self):
         orig = super(convertTo, self).serialize()
         orig["currDataType"] = self.output.dataType
         return orig

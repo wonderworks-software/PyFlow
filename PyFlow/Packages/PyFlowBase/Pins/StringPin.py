@@ -20,6 +20,7 @@ from nine import str
 
 class StringPin(PinBase):
     """doc string for StringPin"""
+
     def __init__(self, name, parent, direction, **kwargs):
         super(StringPin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue("")
@@ -33,12 +34,14 @@ class StringPin(PinBase):
             if PinSpecifires.VALUE_LIST in self.annotationDescriptionDict:
                 return "EnumWidget"
             if PinSpecifires.INPUT_WIDGET_VARIANT in self.annotationDescriptionDict:
-                return self.annotationDescriptionDict[PinSpecifires.INPUT_WIDGET_VARIANT]
+                return self.annotationDescriptionDict[
+                    PinSpecifires.INPUT_WIDGET_VARIANT
+                ]
         return self._inputWidgetVariant
 
     @staticmethod
     def supportedDataTypes():
-        return ('StringPin',)
+        return ("StringPin",)
 
     @staticmethod
     def color():
@@ -46,7 +49,7 @@ class StringPin(PinBase):
 
     @staticmethod
     def pinDataTypeHint():
-        return 'StringPin', ''
+        return "StringPin", ""
 
     @staticmethod
     def internalDataStructure():

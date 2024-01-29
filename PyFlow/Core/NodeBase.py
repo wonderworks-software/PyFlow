@@ -21,6 +21,7 @@ import keyword
 import json
 from collections import OrderedDict
 from copy import copy
+
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -36,14 +37,18 @@ from PyFlow import CreateRawPin
 
 from datetime import datetime
 
+
 class NodePinsSuggestionsHelper(object):
     """Describes node's pins types and structs for inputs and outputs
     separately. Used by nodebox to suggest good nodes.
     """
+
     def __init__(self):
         super(NodePinsSuggestionsHelper, self).__init__()
-        self.template = {'types': {'inputs': [], 'outputs': []},
-                         'structs': {'inputs': [], 'outputs': []}}
+        self.template = {
+            "types": {"inputs": [], "outputs": []},
+            "structs": {"inputs": [], "outputs": []},
+        }
         self.inputTypes = set()
         self.outputTypes = set()
         self.inputStructs = set()
@@ -104,7 +109,9 @@ class NodeBase(INode):
 
     def setDeprecated(self, message):
         self._deprecated = True
-        self._deprecationMessage = "This node will be removed in later releases! {}".format(message)
+        self._deprecationMessage = "This node will be removed in later releases! {}".format(
+            message
+        )
 
     def isDeprecated(self):
         return self._deprecated
@@ -198,7 +205,9 @@ class NodeBase(INode):
                 except:
                     raise Exception("Could not find pin with name:{0}".format(pinName))
             else:
-                raise Exception("Could not find signature for __getitem__:{0}".format(type(pinName)))
+                raise Exception(
+                    "Could not find signature for __getitem__:{0}".format(type(pinName))
+                )
 
     @property
     def pins(self):
@@ -288,17 +297,18 @@ class NodeBase(INode):
 
     @staticmethod
     def jsonTemplate():
-        template = {'package': None,
-                    'lib': None,
-                    'type': None,
-                    'owningGraphName': None,
-                    'name': None,
-                    'uuid': None,
-                    'inputs': [],
-                    'outputs': [],
-                    'meta': {'var': {}},
-                    'wrapper': {}
-                    }
+        template = {
+            "package": None,
+            "lib": None,
+            "type": None,
+            "owningGraphName": None,
+            "name": None,
+            "uuid": None,
+            "inputs": [],
+            "outputs": [],
+            "meta": {"var": {}},
+            "wrapper": {},
+        }
         return template
 
     def serialize(self):
@@ -307,22 +317,22 @@ class NodeBase(INode):
         uidString = str(self.uid)
         nodeName = self.name
 
-        template['package'] = self.packageName
-        template['lib'] = self.lib
-        template['type'] = self.__class__.__name__
-        template['name'] = nodeName
-        template['owningGraphName'] = self.graph().name
-        template['uuid'] = uidString
-        template['inputs'] = [i.serialize() for i in self.inputs.values()]
-        template['outputs'] = [o.serialize() for o in self.outputs.values()]
-        template['meta']['label'] = self.name
-        template['x'] = self.x
-        template['y'] = self.y
+        template["package"] = self.packageName
+        template["lib"] = self.lib
+        template["type"] = self.__class__.__name__
+        template["name"] = nodeName
+        template["owningGraphName"] = self.graph().name
+        template["uuid"] = uidString
+        template["inputs"] = [i.serialize() for i in self.inputs.values()]
+        template["outputs"] = [o.serialize() for o in self.outputs.values()]
+        template["meta"]["label"] = self.name
+        template["x"] = self.x
+        template["y"] = self.y
 
         # if running with ui get ui wrapper data to save
         wrapper = self.getWrapper()
         if wrapper:
-            template['wrapper'] = wrapper.serializationHook()
+            template["wrapper"] = wrapper.serializationHook()
         return template
 
     def isUnderActiveGraph(self):
@@ -381,8 +391,8 @@ class NodeBase(INode):
             pin.setClean()
 
     def processNode(self, *args, **kwargs):
-        start=datetime.now()
-        #if not self.isValid():
+        start = datetime.now()
+        # if not self.isValid():
         #    return
         self.computing.send()
         if self.bCacheEnabled:
@@ -392,17 +402,17 @@ class NodeBase(INode):
                     self.clearError()
                     self.checkForErrors()
                     self.afterCompute()
-                except Exception as e:                
-                    self.setError(traceback.format_exc() )
+                except Exception as e:
+                    self.setError(traceback.format_exc())
         else:
             try:
                 self.compute()
                 self.clearError()
                 self.checkForErrors()
-            except Exception as e:               
-                    self.setError(traceback.format_exc() )
-        delta = (datetime.now()-start)
-        self._computingTime =delta
+            except Exception as e:
+                self.setError(traceback.format_exc())
+        delta = datetime.now() - start
+        self._computingTime = delta
         self.computed.send()
 
     # INode interface
@@ -463,14 +473,25 @@ class NodeBase(INode):
         """
         for i in self.inputs.values():
             for o in self.outputs.values():
-                assert(i is not o)
+                assert i is not o
                 if not i.IsValuePin() and o.IsValuePin():
                     continue
                 if i.IsValuePin() and not o.IsValuePin():
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createInputPin(
+        self,
+        pinName,
+        dataType,
+        defaultValue=None,
+        foo=None,
+        structure=StructureType.Single,
+        constraint=None,
+        structConstraint=None,
+        supportedPinDataTypes=[],
+        group="",
+    ):
         """Creates input pin
 
         :param pinName: Pin name
@@ -516,9 +537,13 @@ class NodeBase(INode):
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
         if dataType == "AnyPin" and supportedPinDataTypes:
+
             def supportedDataTypes():
                 return supportedPinDataTypes
-            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(supportedPinDataTypes)
+
+            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(
+                supportedPinDataTypes
+            )
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
@@ -528,7 +553,17 @@ class NodeBase(INode):
         p.markedAsDirty.connect(self.setDirty.send)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createOutputPin(
+        self,
+        pinName,
+        dataType,
+        defaultValue=None,
+        structure=StructureType.Single,
+        constraint=None,
+        structConstraint=None,
+        supportedPinDataTypes=[],
+        group="",
+    ):
         """Creates output pin
 
         :param pinName: Pin name
@@ -569,8 +604,10 @@ class NodeBase(INode):
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
         if dataType == "AnyPin" and supportedPinDataTypes:
+
             def supportedDataTypes():
                 return supportedPinDataTypes
+
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
@@ -589,7 +626,7 @@ class NodeBase(INode):
         :type pinSelectionGroup: :class:`~PyFlow.Core.Common.PinSelectionGroup`
         """
         p = self.getPinSG(str(pinName), pinSelectionGroup)
-        assert(p is not None), "Failed to find pin by name: {}".format(pinName)
+        assert p is not None, "Failed to find pin by name: {}".format(pinName)
         p.setData(data)
 
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
@@ -602,7 +639,7 @@ class NodeBase(INode):
         :rtype: object
         """
         p = self.getPinSG(str(pinName), pinSelectionGroup)
-        assert(p is not None), "Failed to find pin by name: {}".format(pinName)
+        assert p is not None, "Failed to find pin by name: {}".format(pinName)
         return p.getData()
 
     def getUniqPinName(self, name):
@@ -612,12 +649,18 @@ class NodeBase(INode):
         :type name: str
         :rtype: str
         """
-        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))]
+        pinNames = [
+            i.name
+            for i in list(list(self.inputs.values()))
+            + list(list(self.outputs.values()))
+        ]
         return getUniqNameFromList(pinNames, name)
 
     def __repr__(self):
         graphName = self.graph().name if self.graph is not None else str(None)
-        return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
+        return "<class[{0}]; name[{1}]; graph[{2}]>".format(
+            self.__class__.__name__, self.getName(), graphName
+        )
 
     def call(self, name, *args, **kwargs):
         """Call exec pin by name
@@ -680,30 +723,34 @@ class NodeBase(INode):
         :type jsonTemplate: dict or None
         """
         if jsonTemplate is not None:
-            self.uid = uuid.UUID(jsonTemplate['uuid'])
-            self.setName(jsonTemplate['name'])
-            self.x = jsonTemplate['x']
-            self.y = jsonTemplate['y']
+            self.uid = uuid.UUID(jsonTemplate["uuid"])
+            self.setName(jsonTemplate["name"])
+            self.x = jsonTemplate["x"]
+            self.y = jsonTemplate["y"]
 
             # set pins data
-            sortedInputs = sorted(jsonTemplate['inputs'], key=lambda pinDict: pinDict["pinIndex"])
+            sortedInputs = sorted(
+                jsonTemplate["inputs"], key=lambda pinDict: pinDict["pinIndex"]
+            )
             for inpJson in sortedInputs:
                 dynamicEnabled = PinOptions.Dynamic.value in inpJson["options"]
-                if dynamicEnabled or inpJson['name'] not in self.namePinInputsMap:
+                if dynamicEnabled or inpJson["name"] not in self.namePinInputsMap:
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPinSG(str(inpJson['name']), PinSelectionGroup.Inputs)
+                pin = self.getPinSG(str(inpJson["name"]), PinSelectionGroup.Inputs)
                 pin.deserialize(inpJson)
 
-            sortedOutputs = sorted(jsonTemplate['outputs'], key=lambda pinDict: pinDict["pinIndex"])
+            sortedOutputs = sorted(
+                jsonTemplate["outputs"], key=lambda pinDict: pinDict["pinIndex"]
+            )
             for outJson in sortedOutputs:
                 dynamicEnabled = PinOptions.Dynamic.value in outJson["options"]
-                if dynamicEnabled or outJson['name'] not in self.namePinOutputsMap:
+                if dynamicEnabled or outJson["name"] not in self.namePinOutputsMap:
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPinSG(str(outJson['name']), PinSelectionGroup.Outputs)
+                pin = self.getPinSG(str(outJson["name"]), PinSelectionGroup.Outputs)
                 pin.deserialize(outJson)
 
             # store data for wrapper
@@ -714,7 +761,7 @@ class NodeBase(INode):
             self.bCallable = True
 
         # make no sense cache nodes without inputs
-        #if len(self.inputs) == 0:
+        # if len(self.inputs) == 0:
         #    self.bCacheEnabled = False
 
         self.autoAffectPins()
@@ -732,35 +779,45 @@ class NodeBase(INode):
         """
         retAnyOpts = None
         retConstraint = None
-        meta = foo.__annotations__['meta']
+        meta = foo.__annotations__["meta"]
         returnType = returnDefaultValue = None
         returnPinOptionsToEnable = None
         returnPinOptionsToDisable = None
         returnWidgetVariant = "DefaultWidget"
         retStructConstraint = None
         returnAnnotationDict = None
-        if foo.__annotations__['return'] is not None:
-            returnType = foo.__annotations__['return'][0]
-            returnDefaultValue = foo.__annotations__['return'][1]
-            if len(foo.__annotations__['return']) == 3:
-                returnAnnotationDict = foo.__annotations__['return'][2]
+        if foo.__annotations__["return"] is not None:
+            returnType = foo.__annotations__["return"][0]
+            returnDefaultValue = foo.__annotations__["return"][1]
+            if len(foo.__annotations__["return"]) == 3:
+                returnAnnotationDict = foo.__annotations__["return"][2]
 
                 if PinSpecifires.SUPPORTED_DATA_TYPES in returnAnnotationDict:
-                    retAnyOpts = returnAnnotationDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                    retAnyOpts = returnAnnotationDict[
+                        PinSpecifires.SUPPORTED_DATA_TYPES
+                    ]
                 if PinSpecifires.CONSTRAINT in returnAnnotationDict:
                     retConstraint = returnAnnotationDict[PinSpecifires.CONSTRAINT]
                 if PinSpecifires.STRUCT_CONSTRAINT in returnAnnotationDict:
-                    retStructConstraint = returnAnnotationDict[PinSpecifires.STRUCT_CONSTRAINT]
+                    retStructConstraint = returnAnnotationDict[
+                        PinSpecifires.STRUCT_CONSTRAINT
+                    ]
                 if PinSpecifires.ENABLED_OPTIONS in returnAnnotationDict:
-                    returnPinOptionsToEnable = returnAnnotationDict[PinSpecifires.ENABLED_OPTIONS]
+                    returnPinOptionsToEnable = returnAnnotationDict[
+                        PinSpecifires.ENABLED_OPTIONS
+                    ]
                 if PinSpecifires.DISABLED_OPTIONS in returnAnnotationDict:
-                    returnPinOptionsToDisable = returnAnnotationDict[PinSpecifires.DISABLED_OPTIONS]
+                    returnPinOptionsToDisable = returnAnnotationDict[
+                        PinSpecifires.DISABLED_OPTIONS
+                    ]
                 if PinSpecifires.INPUT_WIDGET_VARIANT in returnAnnotationDict:
-                    returnWidgetVariant = returnAnnotationDict[PinSpecifires.INPUT_WIDGET_VARIANT]
+                    returnWidgetVariant = returnAnnotationDict[
+                        PinSpecifires.INPUT_WIDGET_VARIANT
+                    ]
 
-        nodeType = foo.__annotations__['nodeType']
-        _packageName = foo.__annotations__['packageName']
-        libName = foo.__annotations__['lib']
+        nodeType = foo.__annotations__["nodeType"]
+        _packageName = foo.__annotations__["packageName"]
+        libName = foo.__annotations__["lib"]
         fooArgNames = getargspec(foo).args
 
         @staticmethod
@@ -778,11 +835,16 @@ class NodeBase(INode):
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
 
-        nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
-                                                     'category': category,
-                                                     'keywords': keywords,
-                                                     'description': description
-                                                     })
+        nodeClass = type(
+            foo.__name__,
+            (NodeBase,),
+            {
+                "__init__": constructor,
+                "category": category,
+                "keywords": keywords,
+                "description": description,
+            },
+        )
 
         nodeClass._packageName = _packageName
 
@@ -806,32 +868,46 @@ class NodeBase(INode):
             foo.owningNode = self
             result = foo(**kwds)
             if returnType is not None:
-                self.setData(str('out'), result)
+                self.setData(str("out"), result)
             if nodeType == NodeTypes.Callable:
                 outExec.call(*args, **kwargs)
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
         raw_inst._nodeMetaData = meta
-        if 'CacheEnabled' in meta:
-            raw_inst.bCacheEnabled = meta['CacheEnabled']
+        if "CacheEnabled" in meta:
+            raw_inst.bCacheEnabled = meta["CacheEnabled"]
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
-            outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
+            inputExec = raw_inst.createInputPin(
+                DEFAULT_IN_EXEC_NAME, "ExecPin", None, raw_inst.compute
+            )
+            outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, "ExecPin")
             raw_inst.bCallable = True
             raw_inst.bCacheEnabled = False
 
         if returnType is not None:
-            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, supportedPinDataTypes=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)
+            p = raw_inst.createOutputPin(
+                "out",
+                returnType,
+                returnDefaultValue,
+                supportedPinDataTypes=retAnyOpts,
+                constraint=retConstraint,
+                structConstraint=retStructConstraint,
+            )
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
             p.initAsDict(isinstance(returnDefaultValue, dict))
             p.setInputWidgetVariant(returnWidgetVariant)
-            p.annotationDescriptionDict = copy(returnAnnotationDict) if returnAnnotationDict is not None else None
-            if p.annotationDescriptionDict is not None and "Description" in p.annotationDescriptionDict:
+            p.annotationDescriptionDict = (
+                copy(returnAnnotationDict) if returnAnnotationDict is not None else None
+            )
+            if (
+                p.annotationDescriptionDict is not None
+                and "Description" in p.annotationDescriptionDict
+            ):
                 p.description = p.annotationDescriptionDict["Description"]
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
@@ -874,9 +950,20 @@ class NodeBase(INode):
                     if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
                         inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
-                outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
-                outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
-                if outRef.annotationDescriptionDict is not None and "Description" in outRef.annotationDescriptionDict:
+                outRef = raw_inst.createOutputPin(
+                    argName,
+                    pinDataType,
+                    supportedPinDataTypes=anyOpts,
+                    constraint=constraint,
+                    structConstraint=structConstraint,
+                )
+                outRef.annotationDescriptionDict = (
+                    copy(pinDict) if pinDict is not None else None
+                )
+                if (
+                    outRef.annotationDescriptionDict is not None
+                    and "Description" in outRef.annotationDescriptionDict
+                ):
                     outRef.description = outRef.annotationDescriptionDict["Description"]
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.initAsDict(isinstance(pinDefaultValue, dict))
@@ -887,7 +974,9 @@ class NodeBase(INode):
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
-                if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
+                if not outRef.isArray() and outRef.optionEnabled(
+                    PinOptions.ArraySupported
+                ):
                     outRef.structureType = StructureType.Multi
                 elif outRef.isArray():
                     outRef.structureType = StructureType.Array
@@ -913,9 +1002,20 @@ class NodeBase(INode):
                     if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
                         inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
-                inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
-                inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
-                if inp.annotationDescriptionDict is not None and "Description" in inp.annotationDescriptionDict:
+                inp = raw_inst.createInputPin(
+                    argName,
+                    pinDataType,
+                    supportedPinDataTypes=anyOpts,
+                    constraint=constraint,
+                    structConstraint=structConstraint,
+                )
+                inp.annotationDescriptionDict = (
+                    copy(pinDict) if pinDict is not None else None
+                )
+                if (
+                    inp.annotationDescriptionDict is not None
+                    and "Description" in inp.annotationDescriptionDict
+                ):
                     inp.description = inp.annotationDescriptionDict["Description"]
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.initAsDict(isinstance(pinDefaultValue, dict))

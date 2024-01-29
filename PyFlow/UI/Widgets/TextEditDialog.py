@@ -22,6 +22,7 @@ from qtpy.QtWidgets import QTextEdit
 
 class TextEditingField(QTextEdit):
     """docstring for TextEditingField."""
+
     accepted = QtCore.Signal()
 
     def __init__(self, parent=None):
@@ -29,7 +30,10 @@ class TextEditingField(QTextEdit):
 
     def keyPressEvent(self, event):
         super(TextEditingField, self).keyPressEvent(event)
-        if event.modifiers() == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Return:
+        if (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_Return
+        ):
             self.accepted.emit()
 
 
@@ -46,7 +50,8 @@ class TextEditDialog(QDialog):
         self.te.setTextColor(textColor)
         self.layout.addWidget(self.te)
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self
+        )
         self.buttons.accepted.connect(self.onAccept)
         self.buttons.rejected.connect(self.onReject)
         self.layout.addWidget(self.buttons)

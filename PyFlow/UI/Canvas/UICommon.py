@@ -42,13 +42,14 @@ def fetchPackageNames(graphJson):
             packages.add(node["package"])
 
             for inpJson in node["inputs"]:
-                packages.add(inpJson['package'])
+                packages.add(inpJson["package"])
 
             for outJson in node["inputs"]:
-                packages.add(outJson['package'])
+                packages.add(outJson["package"])
 
             if "graphData" in node:
                 worker(node["graphData"])
+
     worker(graphJson)
     return packages
 
@@ -99,19 +100,18 @@ class Spacings:
 
 
 def lineRectIntersection(l, r):
-    it_left, impactLeft = l.intersect(
-        QtCore.QLineF(r.topLeft(), r.bottomLeft()))
+    it_left, impactLeft = l.intersect(QtCore.QLineF(r.topLeft(), r.bottomLeft()))
     if it_left == QtCore.QLineF.BoundedIntersection:
         return impactLeft
     it_top, impactTop = l.intersect(QtCore.QLineF(r.topLeft(), r.topRight()))
     if it_top == QtCore.QLineF.BoundedIntersection:
         return impactTop
     it_bottom, impactBottom = l.intersect(
-        QtCore.QLineF(r.bottomLeft(), r.bottomRight()))
+        QtCore.QLineF(r.bottomLeft(), r.bottomRight())
+    )
     if it_bottom == QtCore.QLineF.BoundedIntersection:
         return impactBottom
-    it_right, impactRight = l.intersect(
-        QtCore.QLineF(r.topRight(), r.bottomRight()))
+    it_right, impactRight = l.intersect(QtCore.QLineF(r.topRight(), r.bottomRight()))
     if it_right == QtCore.QLineF.BoundedIntersection:
         return impactRight
 

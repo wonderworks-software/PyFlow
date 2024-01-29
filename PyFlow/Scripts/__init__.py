@@ -37,12 +37,7 @@ def getGraphArguments(data, parser):
     :param parser: ArgumentParser class instance
     :type parser: ArgumentParser
     """
-    typeMapping = {
-        "BoolPin": bool,
-        "StringPin": str,
-        "IntPin": int,
-        "FloatPin": float
-    }
+    typeMapping = {"BoolPin": bool, "StringPin": str, "IntPin": int, "FloatPin": float}
 
     graphNode = None
     for node in data["nodes"]:
@@ -53,12 +48,16 @@ def getGraphArguments(data, parser):
     for outPin in graphNode["outputs"]:
         pinType = outPin["dataType"]
         if pinType != "ExecPin":
-            parser.add_argument("--{0}".format(outPin["name"]), type=typeMapping[pinType])
+            parser.add_argument(
+                "--{0}".format(outPin["name"]), type=typeMapping[pinType]
+            )
 
 
 def main():
     parser = argparse.ArgumentParser(description="PyFlow CLI")
-    parser.add_argument("-m", "--mode", type=str, default="edit", choices=["edit", "run", "runui"])
+    parser.add_argument(
+        "-m", "--mode", type=str, default="edit", choices=["edit", "run", "runui"]
+    )
     parser.add_argument("-f", "--filePath", type=str, default="untitled.pygraph")
     parser.add_argument("--version", action="version", version=str(currentVersion()))
     parsedArguments, unknown = parser.parse_known_args(sys.argv[1:])
@@ -76,7 +75,7 @@ def main():
             app.setActiveWindow(instance)
             instance.show()
             if os.path.exists(filePath):
-                with open(filePath, 'r') as f:
+                with open(filePath, "r") as f:
                     data = json.load(f)
                     instance.loadFromData(data)
                     instance.currentFileName = filePath
@@ -91,7 +90,7 @@ def main():
         if not os.path.exists(filePath):
             print("No such file. {}".format(filePath))
             return
-        with open(filePath, 'r') as f:
+        with open(filePath, "r") as f:
             data = json.load(f)
         getGraphArguments(data, parser)
         parsedArguments = parser.parse_args()

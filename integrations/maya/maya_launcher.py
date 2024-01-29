@@ -9,7 +9,7 @@ try:
 except NameError:
     long = int  # Python 3
 
-ptvsd.enable_attach(address=('0.0.0.0', 3000), redirect_output=True)
+ptvsd.enable_attach(address=("0.0.0.0", 3000), redirect_output=True)
 
 mayaMainWindowPtr = omui.MQtUtil.mainWindow()
 mayaMainWindow = wrapInstance(long(mayaMainWindowPtr), QWidget)

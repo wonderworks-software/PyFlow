@@ -22,7 +22,7 @@ except:
     import builtins
 
 
-def format(color, style=''):
+def format(color, style=""):
     """Return a QTextCharFormat with the given attributes.
     """
     _color = QColor()
@@ -30,9 +30,9 @@ def format(color, style=''):
 
     _format = QTextCharFormat()
     _format.setForeground(_color)
-    if 'bold' in style:
+    if "bold" in style:
         _format.setFontWeight(QFont.Bold)
-    if 'italic' in style:
+    if "italic" in style:
         _format.setFontItalic(True)
 
     return _format
@@ -40,49 +40,94 @@ def format(color, style=''):
 
 # Syntax styles that can be shared by all languages
 STYLES = {
-    'keyword': format('darkMagenta'),
-    'operator': format('white', 'bold'),
-    'brace': format('darkGray'),
-    'defclass': format('cyan', 'bold'),
-    'string': format('yellow'),
-    'string2': format('yellow'),
-    'comment': format('gray', 'italic'),
-    'self': format('green', 'italic'),
-    'numbers': format('brown'),
-    'dataAccess': format('orange'),
-    'builtinFunction': format('cyan')
+    "keyword": format("darkMagenta"),
+    "operator": format("white", "bold"),
+    "brace": format("darkGray"),
+    "defclass": format("cyan", "bold"),
+    "string": format("yellow"),
+    "string2": format("yellow"),
+    "comment": format("gray", "italic"),
+    "self": format("green", "italic"),
+    "numbers": format("brown"),
+    "dataAccess": format("orange"),
+    "builtinFunction": format("cyan"),
 }
 
 
-class PythonHighlighter (QSyntaxHighlighter):
+class PythonHighlighter(QSyntaxHighlighter):
     """Syntax highlighter for the Python language.
     """
+
     # Python keywords
     keywords = [
-        'and', 'assert', 'break', 'class', 'continue', 'def',
-        'del', 'elif', 'else', 'except', 'exec', 'finally',
-        'for', 'from', 'global', 'if', 'import', 'in',
-        'is', 'lambda', 'not', 'or', 'pass', 'raise',
-        'return', 'try', 'while', 'yield', 'None', 'True', 'False',
+        "and",
+        "assert",
+        "break",
+        "class",
+        "continue",
+        "def",
+        "del",
+        "elif",
+        "else",
+        "except",
+        "exec",
+        "finally",
+        "for",
+        "from",
+        "global",
+        "if",
+        "import",
+        "in",
+        "is",
+        "lambda",
+        "not",
+        "or",
+        "pass",
+        "raise",
+        "return",
+        "try",
+        "while",
+        "yield",
+        "None",
+        "True",
+        "False",
     ]
 
     # Python operators
     operators = [
-        '=',
+        "=",
         # Comparison
-        '==', '!=', '<', '<=', '>', '>=',
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
         # Arithmetic
-        '\+', '-', '\*', '/', '//', '\%', '\*\*',
+        "\+",
+        "-",
+        "\*",
+        "/",
+        "//",
+        "\%",
+        "\*\*",
         # In-place
-        '\+=', '-=', '\*=', '/=', '\%=',
+        "\+=",
+        "-=",
+        "\*=",
+        "/=",
+        "\%=",
         # Bitwise
-        '\^', '\|', '\&', '\~', '>>', '<<',
+        "\^",
+        "\|",
+        "\&",
+        "\~",
+        ">>",
+        "<<",
     ]
 
     # Python braces
-    braces = [
-        '\{', '\}', '\(', '\)', '\[', '\]',
-    ]
+    braces = ["\{", "\}", "\(", "\)", "\[", "\]"]
 
     def __init__(self, document):
         QSyntaxHighlighter.__init__(self, document)
@@ -96,38 +141,38 @@ class PythonHighlighter (QSyntaxHighlighter):
         rules = []
 
         # Keyword, operator, and brace rules
-        rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in PythonHighlighter.keywords]
-        rules += [(r'%s' % o, 0, STYLES['operator']) for o in PythonHighlighter.operators]
-        rules += [(r'%s' % b, 0, STYLES['brace']) for b in PythonHighlighter.braces]
-        rules += [(r'%s' % b, 0, STYLES['builtinFunction']) for b in dir(builtins)]
+        rules += [
+            (r"\b%s\b" % w, 0, STYLES["keyword"]) for w in PythonHighlighter.keywords
+        ]
+        rules += [
+            (r"%s" % o, 0, STYLES["operator"]) for o in PythonHighlighter.operators
+        ]
+        rules += [(r"%s" % b, 0, STYLES["brace"]) for b in PythonHighlighter.braces]
+        rules += [(r"%s" % b, 0, STYLES["builtinFunction"]) for b in dir(builtins)]
 
         # All other rules
         rules += [
             # 'self'
-            (r'\bself\b', 0, STYLES['self']),
-            (r'\bsetData\b', 0, STYLES['dataAccess']),
-            (r'\bgetData\b', 0, STYLES['dataAccess']),
-            (r'\bsetClean\b', 0, STYLES['dataAccess']),
-            (r'\bsetDirty\b', 0, STYLES['dataAccess']),
-            (r'\bcurrentData\b', 0, STYLES['dataAccess']),
-
+            (r"\bself\b", 0, STYLES["self"]),
+            (r"\bsetData\b", 0, STYLES["dataAccess"]),
+            (r"\bgetData\b", 0, STYLES["dataAccess"]),
+            (r"\bsetClean\b", 0, STYLES["dataAccess"]),
+            (r"\bsetDirty\b", 0, STYLES["dataAccess"]),
+            (r"\bcurrentData\b", 0, STYLES["dataAccess"]),
             # Double-quoted string, possibly containing escape sequences
-            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
+            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES["string"]),
             # Single-quoted string, possibly containing escape sequences
-            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES['string']),
-
+            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES["string"]),
             # 'def' followed by an identifier
-            (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
+            (r"\bdef\b\s*(\w+)", 1, STYLES["defclass"]),
             # 'class' followed by an identifier
-            (r'\bclass\b\s*(\w+)', 1, STYLES['defclass']),
-
+            (r"\bclass\b\s*(\w+)", 1, STYLES["defclass"]),
             # From '#' until a newline
-            (r'#[^\n]*', 0, STYLES['comment']),
-
+            (r"#[^\n]*", 0, STYLES["comment"]),
             # Numeric literals
-            (r'\b[+-]?[0-9]+[lL]?\b', 0, STYLES['numbers']),
-            (r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', 0, STYLES['numbers']),
-            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, STYLES['numbers']),
+            (r"\b[+-]?[0-9]+[lL]?\b", 0, STYLES["numbers"]),
+            (r"\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b", 0, STYLES["numbers"]),
+            (r"\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b", 0, STYLES["numbers"]),
         ]
 
         # Build a QRegularExpression for each pattern

@@ -25,7 +25,9 @@ class dictKeys(NodeBase):
         self.dict.enableOptions(PinOptions.DictSupported)
         self.dict.onPinConnected.connect(self.dictConnected)
         self.dict.dictChanged.connect(self.dictChanged)
-        self.keys = self.createOutputPin("keys", "AnyPin", structure=StructureType.Array)
+        self.keys = self.createOutputPin(
+            "keys", "AnyPin", structure=StructureType.Array
+        )
         self.keys.disableOptions(PinOptions.ChangeTypeOnConnection)
 
     def dictConnected(self, other):
@@ -41,15 +43,15 @@ class dictKeys(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('AnyPin')
-        helper.addOutputDataType('AnyPin')
+        helper.addInputDataType("AnyPin")
+        helper.addOutputDataType("AnyPin")
         helper.addInputStruct(StructureType.Dict)
         helper.addOutputStruct(StructureType.Array)
         return helper
 
     @staticmethod
     def category():
-        return 'Dictionary'
+        return "Dictionary"
 
     @staticmethod
     def keywords():
@@ -57,7 +59,7 @@ class dictKeys(NodeBase):
 
     @staticmethod
     def description():
-        return 'Returns an array of dict keys.'
+        return "Returns an array of dict keys."
 
     def compute(self, *args, **kwargs):
         self.keys.setData(list(self.dict.getData().keys()))

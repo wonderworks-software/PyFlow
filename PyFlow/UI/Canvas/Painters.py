@@ -31,7 +31,6 @@ ExposedPropertiesColor = Colors.NodeNameRectBlue
 
 # Determines how to paint the node
 class NodePainter(object):
-
     @staticmethod
     def drawDeprecated(node, painter, option, widget):
         if node.isDeprecated():
@@ -41,8 +40,9 @@ class NodePainter(object):
             textRect = node.boundingRect()
             textRect.setTop(textRect.height() - 10)
             painter.fillRect(textRect, Colors.Red.darker(130))
-            painter.drawText(textRect, QtCore.Qt.AlignCenter |
-                             QtCore.Qt.AlignVCenter, "Deprecated")
+            painter.drawText(
+                textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, "Deprecated"
+            )
 
     @staticmethod
     def drawExperimental(node, painter, option, widget):
@@ -53,8 +53,9 @@ class NodePainter(object):
             textRect = node.boundingRect()
             textRect.setTop(textRect.height() - 10)
             painter.fillRect(textRect, Colors.Yellow.darker(180))
-            painter.drawText(textRect, QtCore.Qt.AlignCenter |
-                             QtCore.Qt.AlignVCenter, "Experimental")
+            painter.drawText(
+                textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, "Experimental"
+            )
 
     @staticmethod
     def drawResizeHandles(node, painter, option, widget):
@@ -121,8 +122,9 @@ class NodePainter(object):
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(frame, node.roundness, node.roundness)
-        painter.drawLine(frame.left() + 5, node.labelHeight,
-                         frame.right() - 5, node.labelHeight)
+        painter.drawLine(
+            frame.left() + 5, node.labelHeight, frame.right() - 5, node.labelHeight
+        )
         NodePainter.drawResizeHandles(node, painter, option, widget)
 
     @staticmethod
@@ -134,22 +136,18 @@ class NodePainter(object):
             if grp.hovered and grp.expanded:
                 if grp.numPins() > 0:
                     grpPos = grp.geometry().bottomLeft()
-                    lastPinPos = grp._pins[grp.numPins(
-                    ) - 1].geometry().bottomLeft()
+                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomLeft()
                     painter.drawLine(grpPos, grpPos + inputsOffset)
-                    painter.drawLine(grpPos + inputsOffset,
-                                     lastPinPos + inputsOffset)
+                    painter.drawLine(grpPos + inputsOffset, lastPinPos + inputsOffset)
                     painter.drawLine(lastPinPos + inputsOffset, lastPinPos)
 
         for grp in node.groups["output"].values():
             if grp.hovered and grp.expanded:
                 if grp.numPins() > 0:
                     grpPos = grp.geometry().bottomRight()
-                    lastPinPos = grp._pins[grp.numPins(
-                    ) - 1].geometry().bottomRight()
+                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomRight()
                     painter.drawLine(grpPos, grpPos + outputsOffset)
-                    painter.drawLine(grpPos + outputsOffset,
-                                     lastPinPos + outputsOffset)
+                    painter.drawLine(grpPos + outputsOffset, lastPinPos + outputsOffset)
                     painter.drawLine(lastPinPos + outputsOffset, lastPinPos)
 
     @staticmethod
@@ -207,7 +205,11 @@ class NodePainter(object):
             else:
                 painter.fillRect(lr, headColor)
 
-        if not node.isCallable() and node._rawNode.bCacheEnabled or node._rawNode.__class__.__name__=="graphOutputs":
+        if (
+            not node.isCallable()
+            and node._rawNode.bCacheEnabled
+            or node._rawNode.__class__.__name__ == "graphOutputs"
+        ):
             NodePainter.drawState(node, painter, pen, lod, SWITCH_LOD, r)
 
         if not node.isValid():
@@ -238,14 +240,14 @@ class NodePainter(object):
 
     @staticmethod
     def drawState(node, painter, pen, lod, SWITCH_LOD, r):
-        prevWidth = pen.width()  
+        prevWidth = pen.width()
         paint = False
         if node.computing:
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.optPenSelectedType)
             pen.setWidth(prevWidth * 2)
             paint = True
-        else:        
+        else:
             if node._rawNode.isDirty():
                 pen.setColor(Colors.Orange)
                 pen.setStyle(node.optPenSelectedType)
@@ -255,7 +257,7 @@ class NodePainter(object):
                 pen.setColor(Colors.Green)
                 pen.setStyle(node.optPenSelectedType)
                 pen.setWidth(prevWidth * 2)
-                paint = True         
+                paint = True
 
         if paint and node.isValid():
             painter.setPen(pen)
@@ -265,10 +267,10 @@ class NodePainter(object):
                 rect.setWidth(rect.width() - pen.width() / 2)
                 rect.setHeight(rect.height() - pen.width() / 2)
                 rect.setX(pen.width() / 2)
-                rect.setY(rect.y() + pen.width() / 2)            
+                rect.setY(rect.y() + pen.width() / 2)
                 painter.drawRoundedRect(rect, node.roundness, node.roundness)
             else:
-                painter.drawRect(r)    
+                painter.drawRect(r)
         pen.setWidth(prevWidth)
 
     @staticmethod
@@ -290,14 +292,14 @@ class NodePainter(object):
             pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(node.optPenSelectedType)
         painter.setPen(pen)
-        painter.drawRoundedRect(node.boundingRect(),
-                                node.roundness, node.roundness)
+        painter.drawRoundedRect(node.boundingRect(), node.roundness, node.roundness)
         painter.setFont(node.nodeNameFont)
         painter.setPen(QtGui.QPen(QtCore.Qt.white, 0.5))
         textRect = node.boundingRect()
         textRect.setWidth(textRect.width() - 10)
-        painter.drawText(textRect, QtCore.Qt.AlignCenter |
-                         QtCore.Qt.AlignVCenter, node.var.name)
+        painter.drawText(
+            textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.var.name
+        )
 
     @staticmethod
     def asRerouteNode(node, painter, option, widget):
@@ -322,8 +324,11 @@ class NodePainter(object):
             pen.setStyle(node.optPenSelectedType)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
-        painter.drawEllipse(node.boundingRect().center(
-        ), node.drawRect.width() / 2, node.drawRect.width() / 2)
+        painter.drawEllipse(
+            node.boundingRect().center(),
+            node.drawRect.width() / 2,
+            node.drawRect.width() / 2,
+        )
 
 
 # Determines how to paint a pin
@@ -346,8 +351,9 @@ class PinPainter(object):
 
         if lod < SWITCH_LOD and not pin.bLabelHidden:
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(
-                painter.font()).horizontalAdvance(pin.displayName())
+            textWidth = QtGui.QFontMetrics(painter.font()).horizontalAdvance(
+                pin.displayName()
+            )
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -359,7 +365,8 @@ class PinPainter(object):
 
         pinCenter = pin.pinCenter()
         radialGrad = QtGui.QRadialGradient(
-            pinCenter.x(), pinCenter.y() - 0.3, halfPinSize * 0.8)
+            pinCenter.x(), pinCenter.y() - 0.3, halfPinSize * 0.8
+        )
         if not pin._rawPin.hasConnections():
             radialGrad.setColorAt(0, pin.color().darker(280))
             radialGrad.setColorAt(0.5, pin.color().darker(280))
@@ -375,8 +382,12 @@ class PinPainter(object):
             painter.setBrush(QtGui.QColor(128, 128, 128, 30))
             painter.drawRoundedRect(frame, 3, 3)
         painter.setBrush(radialGrad)
-        painter.drawEllipse(pinCenter.x() - halfPinSize,
-                            pinCenter.y() - halfPinSize, pin.pinSize, pin.pinSize)
+        painter.drawEllipse(
+            pinCenter.x() - halfPinSize,
+            pinCenter.y() - halfPinSize,
+            pin.pinSize,
+            pin.pinSize,
+        )
 
     @staticmethod
     def asExecPin(pin, painter, option, widget):
@@ -390,8 +401,9 @@ class PinPainter(object):
         painter.setPen(PinPainter._execPen)
 
         if lod < SWITCH_LOD and not pin.bLabelHidden:
-            textWidth = QtGui.QFontMetrics(
-                painter.font()).horizontalAdvance(pin.displayName())
+            textWidth = QtGui.QFontMetrics(painter.font()).horizontalAdvance(
+                pin.displayName()
+            )
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -406,16 +418,20 @@ class PinPainter(object):
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
         pinCenter = pin.pinCenter()
-        xOffset = pinCenter.x() - \
-            pin.pinSize if pin.direction == PinDirection.Input else pinCenter.x() - \
-            pin.pinSize * 0.8
-        arrow = QtGui.QPolygonF([QtCore.QPointF(2, 0.0),
-                                 QtCore.QPointF(2 + pin.pinSize / 2.0, 0.0),
-                                 QtCore.QPointF(2 + pin.pinSize,
-                                                pin.pinSize / 2.0),
-                                 QtCore.QPointF(
-                                     2 + pin.pinSize / 2.0, pin.pinSize),
-                                 QtCore.QPointF(2, pin.pinSize)]).translated(xOffset, 1)
+        xOffset = (
+            pinCenter.x() - pin.pinSize
+            if pin.direction == PinDirection.Input
+            else pinCenter.x() - pin.pinSize * 0.8
+        )
+        arrow = QtGui.QPolygonF(
+            [
+                QtCore.QPointF(2, 0.0),
+                QtCore.QPointF(2 + pin.pinSize / 2.0, 0.0),
+                QtCore.QPointF(2 + pin.pinSize, pin.pinSize / 2.0),
+                QtCore.QPointF(2 + pin.pinSize / 2.0, pin.pinSize),
+                QtCore.QPointF(2, pin.pinSize),
+            ]
+        ).translated(xOffset, 1)
         painter.drawPolygon(arrow)
         if pin.hovered:
             painter.setPen(QtCore.Qt.NoPen)
@@ -428,14 +444,21 @@ class PinPainter(object):
         painter.setBrush(QtGui.QBrush(Colors.AbsoluteBlack))
         # painter.setBrush(QtCore.Qt.NoBrush)
         if not pin.expanded:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                     QtCore.QPointF(
-                                         pin.pinSize, pin.pinSize / 2.0),
-                                     QtCore.QPointF(0, pin.pinSize)])
+            arrow = QtGui.QPolygonF(
+                [
+                    QtCore.QPointF(0.0, 0.0),
+                    QtCore.QPointF(pin.pinSize, pin.pinSize / 2.0),
+                    QtCore.QPointF(0, pin.pinSize),
+                ]
+            )
         else:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.pinSize / 2, pin.pinSize),
-                                     QtCore.QPointF(0, 0),
-                                     QtCore.QPointF(pin.pinSize, 0)])
+            arrow = QtGui.QPolygonF(
+                [
+                    QtCore.QPointF(pin.pinSize / 2, pin.pinSize),
+                    QtCore.QPointF(0, 0),
+                    QtCore.QPointF(pin.pinSize, 0),
+                ]
+            )
         painter.drawPolygon(arrow)
 
     @staticmethod
@@ -460,8 +483,9 @@ class PinPainter(object):
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(
-                painter.font()).horizontalAdvance(pin.displayName())
+            textWidth = QtGui.QFontMetrics(painter.font()).horizontalAdvance(
+                pin.displayName()
+            )
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -500,8 +524,9 @@ class PinPainter(object):
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(
-                painter.font()).horizontalAdvance(pin.displayName())
+            textWidth = QtGui.QFontMetrics(painter.font()).horizontalAdvance(
+                pin.displayName()
+            )
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -515,9 +540,9 @@ class PinPainter(object):
                 painter.setBrush(QtGui.QColor(128, 128, 128, 30))
                 painter.drawRoundedRect(frame, 3, 3)
 
+
 # Determines how to paint a connection:
 class ConnectionPainter(object):
-
     @staticmethod
     def linearPath(path, closed=False):
         mPath = QtGui.QPainterPath()
@@ -546,8 +571,8 @@ class ConnectionPainter(object):
 
             maxLen = max(0, min(fDist.length() / 2, (bDist.length()) / 2))
 
-            dot = fDist.x() * bDist.x() + fDist.y() * bDist.y()      # dot product
-            det = fDist.x() * bDist.y() - fDist.y() * bDist.x()      # determinant
+            dot = fDist.x() * bDist.x() + fDist.y() * bDist.y()  # dot product
+            det = fDist.x() * bDist.y() - fDist.y() * bDist.x()  # determinant
             angle = degrees(atan2(det, dot))  # atan2(y, x) or atan2(sin, cos)
 
             if abs(angle) > 45:
@@ -621,31 +646,39 @@ class ConnectionPainter(object):
                 prevPoint = QtGui.QVector2D(point.x(), point.y())
                 fDist = nextPoint - currPoint
                 bDist = currPoint - prevPoint
-                xRoundnes = min(min(roundness, fDist.length() / 2.0), bDist.length() / 2.0)
+                xRoundnes = min(
+                    min(roundness, fDist.length() / 2.0), bDist.length() / 2.0
+                )
 
                 n = currPoint + fDist.normalized() * xRoundnes
                 p = currPoint - bDist.normalized() * xRoundnes
                 highlightedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
-                highlightedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))
+                highlightedSegmentPath.quadTo(
+                    QtCore.QPointF(currPoint.x(), currPoint.y()),
+                    QtCore.QPointF(n.x(), n.y()),
+                )
 
         return mPath, highlightedSegmentPath
 
     @staticmethod
-    def BasicCircuit(p1, p2,
-                     offset=20,
-                     roundness=5,
-                     sameSide=0,
-                     lod=0,
-                     complexLine=False,
-                     vOffset=0,
-                     hOffsetL=0,
-                     vOffsetSShape=0,
-                     hOffsetR=0,
-                     hOffsetRSShape=0,
-                     hOffsetLSShape=0,
-                     snapVToFirst=False,
-                     snapVToSecond=False,
-                     highlightedSegment=-1):
+    def BasicCircuit(
+        p1,
+        p2,
+        offset=20,
+        roundness=5,
+        sameSide=0,
+        lod=0,
+        complexLine=False,
+        vOffset=0,
+        hOffsetL=0,
+        vOffsetSShape=0,
+        hOffsetR=0,
+        hOffsetRSShape=0,
+        hOffsetLSShape=0,
+        snapVToFirst=False,
+        snapVToSecond=False,
+        highlightedSegment=-1,
+    ):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -693,7 +726,9 @@ class ConnectionPainter(object):
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
-            mPath, section = ConnectionPainter.roundCornersPath(path, roundness, highlightedSegment=highlightedSegment)
+            mPath, section = ConnectionPainter.roundCornersPath(
+                path, roundness, highlightedSegment=highlightedSegment
+            )
         return mPath, path, section
 
     @staticmethod

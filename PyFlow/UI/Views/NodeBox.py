@@ -16,6 +16,7 @@
 import json
 import os
 import weakref
+
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -42,12 +43,16 @@ class NodeBoxLineEdit(QLineEdit):
         self.setParent(parent)
         self._events = events
         self.parent = parent
-        self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.setLocale(
+            QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates)
+        )
         self.setObjectName("le_nodes")
-        style = "border-radius: 2px;" +\
-                "font-size: 14px;" +\
-                "border-style: outset;" +\
-                "border-width: 1px;"
+        style = (
+            "border-radius: 2px;"
+            + "font-size: 14px;"
+            + "border-style: outset;"
+            + "border-width: 1px;"
+        )
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
 
@@ -56,12 +61,21 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True, bGripsEnabled=True):
+    def __init__(
+        self,
+        parent,
+        canvas,
+        bNodeInfoEnabled=True,
+        useDragAndDrop=True,
+        bGripsEnabled=True,
+    ):
         super(NodeBoxTreeWidget, self).__init__(parent)
-        style = "border-radius: 2px;" +\
-                "font-size: 14px;" +\
-                "border-style: outset;" +\
-                "border-width: 1px;"
+        style = (
+            "border-radius: 2px;"
+            + "font-size: 14px;"
+            + "border-style: outset;"
+            + "border-width: 1px;"
+        )
         self.setStyleSheet(style)
         self.bGripsEnabled = bGripsEnabled
         self.canvas = canvas
@@ -98,21 +112,29 @@ class NodeBoxTreeWidget(QTreeWidget):
             return True
         if not bFound:
             for c in categories:
-                sepCatNames = c.split('|')
+                sepCatNames = c.split("|")
                 if len(sepCatNames) == 1:
                     if category_name == c:
                         return True
                 else:
                     for i in range(0, len(sepCatNames)):
-                        c = '|'.join(sepCatNames)
+                        c = "|".join(sepCatNames)
                         if category_name == c:
                             return True
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None, bPyNode=False, bCompoundNode=False):
-        nodePath = nodeCategoryPath.split('|')
-        categoryPath = ''
+    def insertNode(
+        self,
+        nodeCategoryPath,
+        name,
+        doc=None,
+        libName=None,
+        bPyNode=False,
+        bCompoundNode=False,
+    ):
+        nodePath = nodeCategoryPath.split("|")
+        categoryPath = ""
         # walk from tree top to bottom, creating folders if needed
         # also writing all paths in dict to avoid duplications
         for folderId in range(0, len(nodePath)):
@@ -125,17 +147,22 @@ class NodeBoxTreeWidget(QTreeWidget):
                     rootFolderItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     rootFolderItem.setText(0, folderName)
                     rootFolderItem.setBackground(
-                        folderId, editableStyleSheet().BgColorBright)
+                        folderId, editableStyleSheet().BgColorBright
+                    )
                     self.categoryPaths[categoryPath] = rootFolderItem
             else:
                 parentCategoryPath = categoryPath
-                categoryPath += '|{}'.format(folderName)
+                categoryPath += "|{}".format(folderName)
                 if categoryPath not in self.categoryPaths:
-                    childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                    childCategoryItem = QTreeWidgetItem(
+                        self.categoryPaths[parentCategoryPath]
+                    )
                     childCategoryItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
-                    childCategoryItem.setBackground(0, editableStyleSheet().BgColorBright.lighter(150))
+                    childCategoryItem.setBackground(
+                        0, editableStyleSheet().BgColorBright.lighter(150)
+                    )
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         # TODO: Subclass QTreeWidgetItem to not create dynamic attributes. Below code is ugly
@@ -148,7 +175,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem.docString = doc
         return nodeItem
 
-    def refresh(self, pattern='', pinDirection=None, pinStructure=StructureType.Single):
+    def refresh(self, pattern="", pinDirection=None, pinStructure=StructureType.Single):
         self.clear()
         self.categoryPaths = {}
 
@@ -168,16 +195,18 @@ class NodeBoxTreeWidget(QTreeWidget):
                     fooOutTypes = set()
                     fooInpStructs = set()
                     fooOutStructs = set()
-                    if foo.__annotations__['nodeType'] == NodeTypes.Callable:
-                        fooInpTypes.add('ExecPin')
-                        fooOutTypes.add('ExecPin')
+                    if foo.__annotations__["nodeType"] == NodeTypes.Callable:
+                        fooInpTypes.add("ExecPin")
+                        fooOutTypes.add("ExecPin")
                         fooInpStructs.add(StructureType.Single)
                         fooOutStructs.add(StructureType.Single)
 
                     # consider return type if not None
-                    if foo.__annotations__['return'] is not None:
-                        fooOutTypes.add(foo.__annotations__['return'][0])
-                        fooOutStructs.add(findStructFromValue(foo.__annotations__['return'][1]))
+                    if foo.__annotations__["return"] is not None:
+                        fooOutTypes.add(foo.__annotations__["return"][0])
+                        fooOutStructs.add(
+                            findStructFromValue(foo.__annotations__["return"][1])
+                        )
 
                     for index in range(len(fooArgNames)):
                         dType = foo.__annotations__[fooArgNames[index]]
@@ -186,43 +215,65 @@ class NodeBoxTreeWidget(QTreeWidget):
                         fooInpTypes.add(dType[0])
                         fooInpStructs.add(findStructFromValue(dType[1]))
 
-                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta'][NodeMeta.CATEGORY])
-                    keywords = foo.__annotations__['meta'][NodeMeta.KEYWORDS]
-                    checkString = name + nodeCategoryPath + ''.join(keywords)
+                    nodeCategoryPath = "{0}|{1}".format(
+                        package_name, foo.__annotations__["meta"][NodeMeta.CATEGORY]
+                    )
+                    keywords = foo.__annotations__["meta"][NodeMeta.KEYWORDS]
+                    checkString = name + nodeCategoryPath + "".join(keywords)
                     if pattern.lower() in checkString.lower():
                         # create all nodes items if clicked on canvas
                         if dataType is None:
                             self.suggestionsEnabled = False
-                            self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                            self.insertNode(
+                                nodeCategoryPath, name, foo.__doc__, libName
+                            )
                         else:
                             self.suggestionsEnabled = True
                             if pinDirection == PinDirection.Output:
                                 if pinStructure != StructureType.Multi:
                                     hasMultiPins = StructureType.Multi in fooInpStructs
-                                    if dataType in fooInpTypes and (pinStructure in fooInpStructs or hasMultiPins):
-                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    if dataType in fooInpTypes and (
+                                        pinStructure in fooInpStructs or hasMultiPins
+                                    ):
+                                        self.insertNode(
+                                            nodeCategoryPath, name, foo.__doc__, libName
+                                        )
                                 elif dataType in fooInpTypes:
-                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    self.insertNode(
+                                        nodeCategoryPath, name, foo.__doc__, libName
+                                    )
                             else:
                                 if pinStructure != StructureType.Multi:
                                     hasMultiPins = StructureType.Multi in fooOutStructs
-                                    if dataType in fooOutTypes and (pinStructure in fooOutStructs or hasMultiPins):
-                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    if dataType in fooOutTypes and (
+                                        pinStructure in fooOutStructs or hasMultiPins
+                                    ):
+                                        self.insertNode(
+                                            nodeCategoryPath, name, foo.__doc__, libName
+                                        )
                                 elif dataType in fooOutTypes:
-                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    self.insertNode(
+                                        nodeCategoryPath, name, foo.__doc__, libName
+                                    )
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
-                if node_class.__name__ in ('setVar', 'getVar'):
+                if node_class.__name__ in ("setVar", "getVar"):
                     continue
 
                 nodeCategoryPath = "{0}|{1}".format(package_name, node_class.category())
 
-                checkString = node_class.__name__ + nodeCategoryPath + ''.join(node_class.keywords())
+                checkString = (
+                    node_class.__name__
+                    + nodeCategoryPath
+                    + "".join(node_class.keywords())
+                )
                 if pattern.lower() not in checkString.lower():
                     continue
                 if dataType is None:
-                    self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                    self.insertNode(
+                        nodeCategoryPath, node_class.__name__, node_class.description()
+                    )
                 else:
                     # if pressed pin is output pin
                     # filter by nodes input types
@@ -230,19 +281,39 @@ class NodeBoxTreeWidget(QTreeWidget):
                     if pinDirection == PinDirection.Output:
                         if pinStructure != StructureType.Multi:
                             hasMultiPins = StructureType.Multi in hints.inputStructs
-                            if dataType in hints.inputTypes and (pinStructure in hints.inputStructs or hasMultiPins):
-                                self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                            if dataType in hints.inputTypes and (
+                                pinStructure in hints.inputStructs or hasMultiPins
+                            ):
+                                self.insertNode(
+                                    nodeCategoryPath,
+                                    node_class.__name__,
+                                    node_class.description(),
+                                )
                         elif dataType in hints.inputTypes:
-                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                            self.insertNode(
+                                nodeCategoryPath,
+                                node_class.__name__,
+                                node_class.description(),
+                            )
                     else:
                         # if pressed pin is input pin
                         # filter by nodes output types
                         if pinStructure != StructureType.Multi:
                             hasMultiPins = StructureType.Multi in hints.outputStructs
-                            if dataType in hints.outputTypes and (pinStructure in hints.outputStructs or hasMultiPins):
-                                self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                            if dataType in hints.outputTypes and (
+                                pinStructure in hints.outputStructs or hasMultiPins
+                            ):
+                                self.insertNode(
+                                    nodeCategoryPath,
+                                    node_class.__name__,
+                                    node_class.description(),
+                                )
                         elif dataType in hints.outputTypes:
-                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                            self.insertNode(
+                                nodeCategoryPath,
+                                node_class.__name__,
+                                node_class.description(),
+                            )
 
             # populate exported py nodes
             packagePath = GET_PACKAGE_PATH(package_name)
@@ -255,7 +326,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                             p = os.path.normpath(path)
                             folders = p.split(os.sep)
                             index = folders.index("PyNodes")
-                            categorySuffix = '|'.join(folders[index:])
+                            categorySuffix = "|".join(folders[index:])
                             category = "{0}|{1}".format(package_name, categorySuffix)
                             self.insertNode(category, pyNodeName, bPyNode=True)
 
@@ -268,12 +339,16 @@ class NodeBoxTreeWidget(QTreeWidget):
                         if extension == ".compound":
                             compoundsRoot = os.path.normpath(path)
                             fullCompoundPath = os.path.join(compoundsRoot, f)
-                            with open(fullCompoundPath, 'r') as compoundFile:
+                            with open(fullCompoundPath, "r") as compoundFile:
                                 data = json.load(compoundFile)
                                 compoundCategoryName = data["category"]
                                 compoundNodeName = data["name"]
-                                category = "{0}|{1}|{2}".format(package_name, "Compounds", compoundCategoryName)
-                                self.insertNode(category, compoundNodeName, bCompoundNode=True)
+                                category = "{0}|{1}|{2}".format(
+                                    package_name, "Compounds", compoundCategoryName
+                                )
+                                self.insertNode(
+                                    category, compoundNodeName, bCompoundNode=True
+                                )
 
             # expand all categories
             if dataType is not None:
@@ -312,14 +387,14 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
 
         jsonTemplate = NodeBase.jsonTemplate()
-        jsonTemplate['package'] = packageName
-        jsonTemplate['lib'] = libName
-        jsonTemplate['type'] = pressed_text
-        jsonTemplate['name'] = pressed_text
-        jsonTemplate['uuid'] = str(uuid.uuid4())
-        jsonTemplate['meta']['label'] = pressed_text
-        jsonTemplate['bPyNode'] = bPyNode
-        jsonTemplate['bCompoundNode'] = bCompoundNode
+        jsonTemplate["package"] = packageName
+        jsonTemplate["lib"] = libName
+        jsonTemplate["type"] = pressed_text
+        jsonTemplate["name"] = pressed_text
+        jsonTemplate["uuid"] = str(uuid.uuid4())
+        jsonTemplate["meta"]["label"] = pressed_text
+        jsonTemplate["bPyNode"] = bPyNode
+        jsonTemplate["bCompoundNode"] = bCompoundNode
 
         if self.canvas.pressedPin is not None and self.bGripsEnabled:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
@@ -354,16 +429,17 @@ class NodeBoxTreeWidget(QTreeWidget):
     def update(self):
         for category in self.categoryPaths.values():
             if not category.parent():
-                category.setBackground(
-                    0, editableStyleSheet().BgColorBright)
+                category.setBackground(0, editableStyleSheet().BgColorBright)
             else:
                 category.setBackground(
-                    0, editableStyleSheet().BgColorBright.lighter(150))
+                    0, editableStyleSheet().BgColorBright.lighter(150)
+                )
         super(NodeBoxTreeWidget, self).update()
 
 
 class NodeBoxSizeGrip(QSizeGrip):
     """docstring for NodeBoxSizeGrip."""
+
     def __init__(self, parent=None):
         super(NodeBoxSizeGrip, self).__init__(parent)
 
@@ -384,7 +460,14 @@ class NodeBoxSizeGrip(QSizeGrip):
 class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, canvas, bNodeInfoEnabled=True, bGripsEnabled=True, bUseDragAndDrop=False):
+    def __init__(
+        self,
+        parent,
+        canvas,
+        bNodeInfoEnabled=True,
+        bGripsEnabled=True,
+        bUseDragAndDrop=False,
+    ):
         super(NodesBox, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -432,7 +515,9 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self, canvas, bNodeInfoEnabled, bUseDragAndDrop, bGripsEnabled)
+        self.treeWidget = NodeBoxTreeWidget(
+            self, canvas, bNodeInfoEnabled, bUseDragAndDrop, bGripsEnabled
+        )
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
@@ -466,7 +551,7 @@ class NodesBox(QFrame):
                 self.treeWidget.setExpanded(index, True)
 
     def leTextChanged(self):
-        if self.lineEdit.text() == '':
+        if self.lineEdit.text() == "":
             self.lineEdit.setPlaceholderText("enter node name..")
             self.treeWidget.refresh()
             return

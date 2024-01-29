@@ -18,6 +18,7 @@ from collections import OrderedDict
 
 class ContextMenuDataBuilder(object):
     """docstring for ContextMenuDataBuilder."""
+
     def __init__(self):
         super(ContextMenuDataBuilder, self).__init__()
         self._storage = OrderedDict()
@@ -30,10 +31,10 @@ class ContextMenuDataBuilder(object):
         if name not in self._menu:
 
             menu = OrderedDict()
-            menu['name'] = name
-            menu['title'] = title
-            menu['icon'] = icon
-            menu['callback'] = callback
+            menu["name"] = name
+            menu["title"] = title
+            menu["icon"] = icon
+            menu["callback"] = callback
             self._storage[name] = menu
 
             if parentEntry is not None and parentEntry in self._storage:

@@ -22,13 +22,13 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class doN(NodeBase):
     def __init__(self, name):
         super(doN, self).__init__(name)
-        self.enter = self.createInputPin('Enter', 'ExecPin', None, self.compute)
-        self._N = self.createInputPin('N', 'IntPin')
+        self.enter = self.createInputPin("Enter", "ExecPin", None, self.compute)
+        self._N = self.createInputPin("N", "IntPin")
         self._N.setData(10)
-        self.reset = self.createInputPin('Reset', 'ExecPin', None, self.OnReset)
+        self.reset = self.createInputPin("Reset", "ExecPin", None, self.OnReset)
 
-        self.completed = self.createOutputPin('Exit', 'ExecPin')
-        self.counter = self.createOutputPin('Counter', 'IntPin')
+        self.completed = self.createOutputPin("Exit", "ExecPin")
+        self.counter = self.createOutputPin("Counter", "IntPin")
         self.bClosed = False
         self._numCalls = 0
         self.headerColor = FLOW_CONTROL_COLOR
@@ -40,17 +40,17 @@ class doN(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('IntPin')
-        helper.addOutputDataType('ExecPin')
-        helper.addOutputDataType('IntPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("IntPin")
+        helper.addOutputDataType("ExecPin")
+        helper.addOutputDataType("IntPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
@@ -58,8 +58,8 @@ class doN(NodeBase):
 
     @staticmethod
     def description():
-        return 'The DoN node will fire off an execution pin N times. After the limit has been reached,\
-        it will cease all outgoing execution until a pulse is sent into its Reset input.'
+        return "The DoN node will fire off an execution pin N times. After the limit has been reached,\
+        it will cease all outgoing execution until a pulse is sent into its Reset input."
 
     def compute(self, *args, **kwargs):
         maxCalls = self._N.getData()

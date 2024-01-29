@@ -23,6 +23,7 @@ class NodeActionButtonBase(QGraphicsWidget):
 
     By default it calls action `triggered` signal. Have default svg 10x10 icon.
     """
+
     def __init__(self, svgFilePath, action, uiNode):
         super(NodeActionButtonBase, self).__init__(uiNode)
         self.setAcceptHoverEvents(True)

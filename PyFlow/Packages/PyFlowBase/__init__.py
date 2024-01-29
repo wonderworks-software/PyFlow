@@ -1,6 +1,6 @@
 """Base package
 """
-PACKAGE_NAME = 'PyFlowBase'
+PACKAGE_NAME = "PyFlowBase"
 from collections import OrderedDict
 
 from PyFlow.UI.UIInterfaces import IPackage
@@ -86,7 +86,9 @@ from PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
 from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
-from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import (
+    PythonScriptExporter,
+)
 
 # Factories
 from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
@@ -156,7 +158,7 @@ _NODES = {
     colorRamp.__name__: colorRamp,
     stringToArray.__name__: stringToArray,
     imageDisplay.__name__: imageDisplay,
-    cliexit.__name__: cliexit
+    cliexit.__name__: cliexit,
 }
 
 _PINS = {
@@ -196,6 +198,7 @@ _PREFS_WIDGETS["Theme"] = ThemePreferences
 class PyFlowBase(IPackage):
     """Base pyflow package
     """
+
     def __init__(self):
         super(PyFlowBase, self).__init__()
 

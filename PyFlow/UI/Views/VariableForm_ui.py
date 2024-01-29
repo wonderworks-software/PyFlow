@@ -24,7 +24,9 @@ class Ui_Form(object):
         self.labelName = QtWidgets.QLabel(Form)
         self.labelName.setObjectName("labelName")
         self.horizontalLayout.addWidget(self.labelName)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem)
         self.pbKill = QtWidgets.QPushButton(Form)
         self.pbKill.setMaximumSize(QtCore.QSize(40, 16777215))

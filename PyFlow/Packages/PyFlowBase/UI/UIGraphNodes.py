@@ -39,7 +39,8 @@ class UIGraphInputs(UINodeBase):
         oldName = self.getName()
         super(UIGraphInputs, self).setName(name)
         owningCompoundNode = self.canvasRef().graphManager.findNode(
-            self._rawNode.graph().name)
+            self._rawNode.graph().name
+        )
         if owningCompoundNode:
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["input"]:
@@ -48,7 +49,9 @@ class UIGraphInputs(UINodeBase):
             if oldName in owningCompoundNode.groups["input"]:
                 for inp in owningCompoundNode.groups["input"][oldName]:
                     inp.grop = name
-                owningCompoundNode.groups["input"][name] = owningCompoundNode.groups["input"].pop(oldName)
+                owningCompoundNode.groups["input"][name] = owningCompoundNode.groups[
+                    "input"
+                ].pop(oldName)
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
@@ -76,6 +79,7 @@ class UIGraphInputs(UINodeBase):
         if self.graph() == GraphManagerSingleton().get().findRootGraph():
             self.createOutputWidgets(inputsCategory, inGroup)
 
+
 class UIGraphOutputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
 
@@ -93,7 +97,8 @@ class UIGraphOutputs(UINodeBase):
         oldName = self.getName()
         super(UIGraphOutputs, self).setName(name)
         owningCompoundNode = self.canvasRef().graphManager.findNode(
-            self._rawNode.graph().name)
+            self._rawNode.graph().name
+        )
         if owningCompoundNode:
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["output"]:

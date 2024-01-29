@@ -17,7 +17,7 @@
 """
 
 # this line adds extension-packages not installed inside the PyFlow directory
-__path__ = __import__('pkgutil').extend_path(__path__, __name__)
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 import importlib
 import pkgutil
@@ -110,6 +110,7 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
 
 def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     from PyFlow.Core.NodeBase import NodeBase
+
     package = GET_PACKAGE_CHECKED(packageName)
     # try find function first
     if libName is not None:
@@ -144,7 +145,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
             for compoundNodeFileName in files:
                 compoundNodeName, _ = os.path.splitext(compoundNodeFileName)
                 compoundNodeFullPath = os.path.join(path, compoundNodeFileName)
-                with open(compoundNodeFullPath, 'r') as f:
+                with open(compoundNodeFullPath, "r") as f:
                     compoundData = json.load(f)
                     if compoundData["name"] == nodeClassName:
                         compoundNode = getRawNodeInstance("compound", "PyFlowBase")
@@ -188,7 +189,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
 
     # check for additional package locations
     if "PYFLOW_PACKAGES_PATHS" in os.environ:
-        delim = ';'
+        delim = ";"
         pathsString = os.environ["PYFLOW_PACKAGES_PATHS"]
         # remove delimiters from right
         pathsString = pathsString.rstrip(delim)
@@ -212,7 +213,9 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
                 __PACKAGES[modname] = package
                 __PACKAGE_PATHS[modname] = os.path.normpath(mod.__path__[0])
         except Exception as e:
-            QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e)))
+            QMessageBox.critical(
+                None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e))
+            )
             continue
 
     registeredInternalPinDataTypes = set()
@@ -227,7 +230,11 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
             if pin.IsValuePin():
                 internalType = pin.internalDataStructure()
                 if internalType in registeredInternalPinDataTypes:
-                    raise Exception("Pin with {0} internal data type already been registered".format(internalType))
+                    raise Exception(
+                        "Pin with {0} internal data type already been registered".format(
+                            internalType
+                        )
+                    )
                 registeredInternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()

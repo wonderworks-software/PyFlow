@@ -24,15 +24,31 @@ from PyFlow import CreateRawPin
 class setVar(NodeBase):
     def __init__(self, name, var=None):
         super(setVar, self).__init__(name)
-        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
+        self.inExec = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
+        self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, "ExecPin")
         self._var = var
         if var.structure == StructureType.Dict:
-            self.out = self.createOutputPin('out', self._var.value.valueType, structure=self._var.structure, constraint="2")
-            self.inp = self.createInputPin('inp', self._var.value.valueType, structure=self._var.structure, constraint="2")
+            self.out = self.createOutputPin(
+                "out",
+                self._var.value.valueType,
+                structure=self._var.structure,
+                constraint="2",
+            )
+            self.inp = self.createInputPin(
+                "inp",
+                self._var.value.valueType,
+                structure=self._var.structure,
+                constraint="2",
+            )
         else:
-            self.out = self.createOutputPin('out', self._var.dataType, structure=self._var.structure)
-            self.inp = self.createInputPin('inp', self._var.dataType, structure=self._var.structure)
+            self.out = self.createOutputPin(
+                "out", self._var.dataType, structure=self._var.structure
+            )
+            self.inp = self.createInputPin(
+                "inp", self._var.dataType, structure=self._var.structure
+            )
         self.inp.disableOptions(PinOptions.RenamingEnabled)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
@@ -103,7 +119,7 @@ class setVar(NodeBase):
         self.inp.kill()
         del self.inp
         self.inp = None
-        self.inp = CreateRawPin('inp', self, dataType, PinDirection.Input)
+        self.inp = CreateRawPin("inp", self, dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
         return self.inp
 
@@ -111,7 +127,7 @@ class setVar(NodeBase):
         self.out.kill()
         del self.out
         self.out = None
-        self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
+        self.out = CreateRawPin("out", self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
         return self.out
 
@@ -120,7 +136,7 @@ class setVar(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        default['varUid'] = str(self.var.uid)
+        default["varUid"] = str(self.var.uid)
         return default
 
     @staticmethod
@@ -133,7 +149,7 @@ class setVar(NodeBase):
 
     @staticmethod
     def description():
-        return 'Set variable value'
+        return "Set variable value"
 
     def compute(self, *args, **kwargs):
         newValue = self.inp.getData()

@@ -26,6 +26,7 @@ from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 
 class VariablesTool(DockTool):
     """docstring for Variables tool."""
+
     def __init__(self):
         super(VariablesTool, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))

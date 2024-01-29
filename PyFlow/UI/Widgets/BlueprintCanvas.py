@@ -21,6 +21,7 @@ import uuid
 import weakref
 from collections import Counter
 from functools import partial
+
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -47,10 +48,7 @@ from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Input import InputManager, InputAction, InputActionType
-from PyFlow.UI.Views.VariablesWidget import (
-    VARIABLE_TAG,
-    VARIABLE_DATA_TAG
-)
+from PyFlow.UI.Views.VariablesWidget import VARIABLE_TAG, VARIABLE_DATA_TAG
 
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
@@ -59,23 +57,29 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
-    nodeClassName = jsonTemplate['type']
-    nodeName = jsonTemplate['name']
-    packageName = jsonTemplate['package']
-    if 'lib' in jsonTemplate:
-        libName = jsonTemplate['lib']
+    nodeClassName = jsonTemplate["type"]
+    nodeName = jsonTemplate["name"]
+    packageName = jsonTemplate["package"]
+    if "lib" in jsonTemplate:
+        libName = jsonTemplate["lib"]
     else:
         libName = None
 
     kwargs = {}
 
     # if get var or set var, construct additional keyword arguments
-    if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
+    if jsonTemplate["type"] in ("getVar", "setVar"):
+        kwargs["var"] = canvas.graphManager.findVariableByUid(
+            uuid.UUID(jsonTemplate["varUid"])
+        )
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
-    raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
-    assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
+    raw_instance = getRawNodeInstance(
+        nodeClassName, packageName=packageName, libName=libName, **kwargs
+    )
+    raw_instance.uid = uuid.UUID(jsonTemplate["uuid"])
+    assert raw_instance is not None, "Node {0} not found in package {1}".format(
+        nodeClassName, packageName
+    )
     instance = getUINodeInstance(raw_instance)
     canvas.addNode(instance, jsonTemplate, parentGraph=parentGraph)
     return instance
@@ -115,10 +119,16 @@ class BlueprintCanvas(CanvasBase):
         self.hoveredReroutes = []
 
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
-        self.realTimeLine.name = 'RealTimeLine'
-        self.realTimeLineInvalidPen = QtGui.QPen(self._realTimeLineInvalidPen, 2.0, QtCore.Qt.SolidLine)
-        self.realTimeLineNormalPen = QtGui.QPen(self._realTimeLineNormalPen, 2.0, QtCore.Qt.DashLine)
-        self.realTimeLineValidPen = QtGui.QPen(self._realTimeLineValidPen, 2.0, QtCore.Qt.SolidLine)
+        self.realTimeLine.name = "RealTimeLine"
+        self.realTimeLineInvalidPen = QtGui.QPen(
+            self._realTimeLineInvalidPen, 2.0, QtCore.Qt.SolidLine
+        )
+        self.realTimeLineNormalPen = QtGui.QPen(
+            self._realTimeLineNormalPen, 2.0, QtCore.Qt.DashLine
+        )
+        self.realTimeLineValidPen = QtGui.QPen(
+            self._realTimeLineValidPen, 2.0, QtCore.Qt.SolidLine
+        )
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self._drawRealtimeLine = False
         self._sortcuts_enabled = True
@@ -160,6 +170,7 @@ class BlueprintCanvas(CanvasBase):
         def nodeShapeUpdater():
             for node in self.nodes.values():
                 node.updateNodeShape()
+
         QtCore.QTimer.singleShot(100, nodeShapeUpdater)
 
     def setSelectedNodesCollapsed(self, collapsed=True):
@@ -182,32 +193,46 @@ class BlueprintCanvas(CanvasBase):
         outputPins = list()
         outputConnectionList = dict()
         for wire in wires:
-            if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
+            if (
+                wire.source().owningNode().isSelected()
+                and not wire.destination().owningNode().isSelected()
+            ):
                 if wire.destination() not in outputPins:
                     outputPins.append(wire.destination())
-                    outputConnectionList[wire.destination()] = [[wire.source().owningNode().name, wire.source().name]]
+                    outputConnectionList[wire.destination()] = [
+                        [wire.source().owningNode().name, wire.source().name]
+                    ]
                 else:
-                    outputConnectionList[wire.destination()].append([wire.source().owningNode().name, wire.source().name])
+                    outputConnectionList[wire.destination()].append(
+                        [wire.source().owningNode().name, wire.source().name]
+                    )
 
-            if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
+            if (
+                not wire.source().owningNode().isSelected()
+                and wire.destination().owningNode().isSelected()
+            ):
                 if wire.source() not in inputPins:
                     inputPins.append(wire.source())
-                    inputConnectionList[wire.source()] = [[wire.destination().owningNode().name, wire.destination().name]]
+                    inputConnectionList[wire.source()] = [
+                        [wire.destination().owningNode().name, wire.destination().name]
+                    ]
                 else:
-                    inputConnectionList[wire.source()].append([wire.destination().owningNode().name, wire.destination().name])
+                    inputConnectionList[wire.source()].append(
+                        [wire.destination().owningNode().name, wire.destination().name]
+                    )
 
         nodes = self.copyNodes(toClipBoard=False)
         for node in selectedNodes:
             node._rawNode.kill()
 
         compoundTemplate = NodeBase.jsonTemplate()
-        compoundTemplate['package'] = 'PyFlowBase'
-        compoundTemplate['type'] = 'compound'
-        compoundTemplate['name'] = 'compound'
-        compoundTemplate['uuid'] = str(uuid.uuid4())
-        compoundTemplate['meta']['label'] = 'compound'
-        compoundTemplate['x'] = selectedNodesRect.center().x()
-        compoundTemplate['y'] = selectedNodesRect.center().y()
+        compoundTemplate["package"] = "PyFlowBase"
+        compoundTemplate["type"] = "compound"
+        compoundTemplate["name"] = "compound"
+        compoundTemplate["uuid"] = str(uuid.uuid4())
+        compoundTemplate["meta"]["label"] = "compound"
+        compoundTemplate["x"] = selectedNodesRect.center().x()
+        compoundTemplate["y"] = selectedNodesRect.center().y()
         uiCompoundNode = self._createNode(compoundTemplate)
         activeGraphName = self.graphManager.activeGraph().name
 
@@ -219,13 +244,13 @@ class BlueprintCanvas(CanvasBase):
 
         if len(inputPins) > 0:
             graphInputsTemplate = NodeBase.jsonTemplate()
-            graphInputsTemplate['package'] = 'PyFlowBase'
-            graphInputsTemplate['type'] = 'graphInputs'
-            graphInputsTemplate['name'] = 'graphInputs'
-            graphInputsTemplate['uuid'] = str(uuid.uuid4())
-            graphInputsTemplate['meta']['label'] = 'graphInputs'
-            graphInputsTemplate['x'] = selectedNodesRect.left() - 100
-            graphInputsTemplate['y'] = selectedNodesRect.center().y()
+            graphInputsTemplate["package"] = "PyFlowBase"
+            graphInputsTemplate["type"] = "graphInputs"
+            graphInputsTemplate["name"] = "graphInputs"
+            graphInputsTemplate["uuid"] = str(uuid.uuid4())
+            graphInputsTemplate["meta"]["label"] = "graphInputs"
+            graphInputsTemplate["x"] = selectedNodesRect.left() - 100
+            graphInputsTemplate["y"] = selectedNodesRect.center().y()
             graphInputs = self._createNode(graphInputsTemplate)
 
             for o in inputPins:
@@ -238,13 +263,13 @@ class BlueprintCanvas(CanvasBase):
 
         if len(outputPins) > 0:
             graphOutputsTemplate = NodeBase.jsonTemplate()
-            graphOutputsTemplate['package'] = 'PyFlowBase'
-            graphOutputsTemplate['type'] = 'graphOutputs'
-            graphOutputsTemplate['name'] = 'graphOutputs'
-            graphOutputsTemplate['uuid'] = str(uuid.uuid4())
-            graphOutputsTemplate['meta']['label'] = 'graphOutputs'
-            graphOutputsTemplate['x'] = selectedNodesRect.right() + 100
-            graphOutputsTemplate['y'] = selectedNodesRect.center().y()
+            graphOutputsTemplate["package"] = "PyFlowBase"
+            graphOutputsTemplate["type"] = "graphOutputs"
+            graphOutputsTemplate["name"] = "graphOutputs"
+            graphOutputsTemplate["uuid"] = str(uuid.uuid4())
+            graphOutputsTemplate["meta"]["label"] = "graphOutputs"
+            graphOutputsTemplate["x"] = selectedNodesRect.right() + 100
+            graphOutputsTemplate["y"] = selectedNodesRect.center().y()
             graphOutputs = self._createNode(graphOutputsTemplate)
 
             for i in outputPins:
@@ -267,18 +292,30 @@ class BlueprintCanvas(CanvasBase):
                     self.connectPinsInternal(i, exposedPin)
             EditorHistory().saveState("Collapse to compound", modify=True)
 
-        QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
+        QtCore.QTimer.singleShot(
+            1, lambda: connectPins(uiCompoundNode, inputPins, outputPins)
+        )
         self.graphManager.selectGraphByName(activeGraphName)
 
     def populateMenu(self):
-        self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
-        self.actionCollapseSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(True))
+        self.actionCollapseSelectedNodes = self.menu.addAction(
+            "Collapse selected nodes"
+        )
+        self.actionCollapseSelectedNodes.triggered.connect(
+            lambda: self.setSelectedNodesCollapsed(True)
+        )
 
         self.actionExpandSelectedNodes = self.menu.addAction("Expand selected nodes")
-        self.actionExpandSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(False))
+        self.actionExpandSelectedNodes.triggered.connect(
+            lambda: self.setSelectedNodesCollapsed(False)
+        )
 
-        self.actionCollapseSelectedNodesToCompound = self.menu.addAction("Collapse to compound")
-        self.actionCollapseSelectedNodesToCompound.triggered.connect(self.collapseSelectedNodesToCompound)
+        self.actionCollapseSelectedNodesToCompound = self.menu.addAction(
+            "Collapse to compound"
+        )
+        self.actionCollapseSelectedNodesToCompound.triggered.connect(
+            self.collapseSelectedNodesToCompound
+        )
 
     def plot(self):
         self.graphManager.plot()
@@ -286,8 +323,12 @@ class BlueprintCanvas(CanvasBase):
     def location(self):
         return self.graphManager.location()
 
-    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        return self.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+    def createVariable(
+        self, dataType="AnyPin", accessLevel=AccessLevel.public, uid=None
+    ):
+        return self.graphManager.activeGraph().createVariable(
+            dataType=dataType, accessLevel=accessLevel, uid=uid
+        )
 
     @property
     def nodes(self):
@@ -325,7 +366,7 @@ class BlueprintCanvas(CanvasBase):
     def showNodeBox(self, pinDirection=None, pinStructure=StructureType.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh('', pinDirection, pinStructure)
+        self.node_box.treeWidget.refresh("", pinDirection, pinStructure)
         self.node_box.lineEdit.blockSignals(True)
         self.node_box.lineEdit.setText("")
         self.node_box.lineEdit.blockSignals(False)
@@ -372,8 +413,8 @@ class BlueprintCanvas(CanvasBase):
         self.shoutDown()
 
     def getPinByFullName(self, full_name):
-        node_name = full_name.split('.')[0]
-        pinName = full_name.split('.')[1]
+        node_name = full_name.split(".")[0]
+        pinName = full_name.split(".")[1]
         node = self.findNode(node_name)
         if node:
             Pin = node.getPinSG(pinName)
@@ -397,11 +438,13 @@ class BlueprintCanvas(CanvasBase):
             self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False, activeGraphOnly=True):
-        return self.getItemsRect(cls=UINodeBase, bSelectedOnly=selected, bVisibleOnly=activeGraphOnly)
+        return self.getItemsRect(
+            cls=UINodeBase, bSelectedOnly=selected, bVisibleOnly=activeGraphOnly
+        )
 
     def selectedNodes(self):
         allNodes = self.getAllNodes()
-        assert(None not in allNodes), "Bad nodes!"
+        assert None not in allNodes, "Bad nodes!"
         return [i for i in allNodes if i.isSelected()]
 
     def selectedConnections(self):
@@ -426,7 +469,13 @@ class BlueprintCanvas(CanvasBase):
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
-        currentInputAction = InputAction("temp", InputActionType.Keyboard, "temp", key=event.key(), modifiers=modifiers)
+        currentInputAction = InputAction(
+            "temp",
+            InputActionType.Keyboard,
+            "temp",
+            key=event.key(),
+            modifiers=modifiers,
+        )
         self.currentPressedKey = event.key()
 
         if self.isShortcutsEnabled():
@@ -516,32 +565,34 @@ class BlueprintCanvas(CanvasBase):
         renameData = {}
         existingNames = self.graphManager.getAllNames() + extra
         for node in copiedNodes:
-            newName = getUniqNameFromList(existingNames, node['name'])
+            newName = getUniqNameFromList(existingNames, node["name"])
             existingNames.append(newName)
-            renameData[node['name']] = newName
+            renameData[node["name"]] = newName
             # rename old name in header data
-            node["wrapper"]["headerHtml"] = node["wrapper"]["headerHtml"].replace(node['name'], newName)
-            node['name'] = newName
-            node['uuid'] = str(uuid.uuid4())
-            for inp in node['inputs']:
-                inp['fullName'] = '{0}_{1}'.format(node['name'], inp['name'])
-                inp['uuid'] = str(uuid.uuid4())
-            for out in node['outputs']:
-                out['fullName'] = '{0}_{1}'.format(node['name'], out['name'])
-                out['uuid'] = str(uuid.uuid4())
+            node["wrapper"]["headerHtml"] = node["wrapper"]["headerHtml"].replace(
+                node["name"], newName
+            )
+            node["name"] = newName
+            node["uuid"] = str(uuid.uuid4())
+            for inp in node["inputs"]:
+                inp["fullName"] = "{0}_{1}".format(node["name"], inp["name"])
+                inp["uuid"] = str(uuid.uuid4())
+            for out in node["outputs"]:
+                out["fullName"] = "{0}_{1}".format(node["name"], out["name"])
+                out["uuid"] = str(uuid.uuid4())
 
         # update connections
         for node in copiedNodes:
-            for out in node['outputs']:
-                for linkedToData in out['linkedTo']:
+            for out in node["outputs"]:
+                for linkedToData in out["linkedTo"]:
                     lhsNodeName = linkedToData["lhsNodeName"]
                     rhsNodeName = linkedToData["rhsNodeName"]
                     if lhsNodeName in renameData:
                         linkedToData["lhsNodeName"] = renameData[lhsNodeName]
                     if rhsNodeName in renameData:
                         linkedToData["rhsNodeName"] = renameData[rhsNodeName]
-            for inp in node['inputs']:
-                for linkedToData in inp['linkedTo']:
+            for inp in node["inputs"]:
+                for linkedToData in inp["linkedTo"]:
                     lhsNodeName = linkedToData["lhsNodeName"]
                     rhsNodeName = linkedToData["rhsNodeName"]
                     if lhsNodeName in renameData:
@@ -550,8 +601,10 @@ class BlueprintCanvas(CanvasBase):
                         linkedToData["rhsNodeName"] = renameData[rhsNodeName]
 
         for node in copiedNodes:
-            if node['type'] == 'compound':
-                node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'], extra=existingNames)
+            if node["type"] == "compound":
+                node["graphData"]["nodes"] = self.makeSerializedNodesUnique(
+                    node["graphData"]["nodes"], extra=existingNames
+                )
         return copiedNodes
 
     def cutNodes(self):
@@ -579,7 +632,7 @@ class BlueprintCanvas(CanvasBase):
             for outJson in nodeJson["outputs"]:
                 outJson["linkedTo"] = []
             for inpJson in nodeJson["inputs"]:
-                for link in (inpJson["linkedTo"]):
+                for link in inpJson["linkedTo"]:
                     if inpJson["dataType"] == "ExecPin":
                         if link["lhsNodeName"] not in serializedNodeNames:
                             inpJson["linkedTo"].remove(link)
@@ -604,7 +657,9 @@ class BlueprintCanvas(CanvasBase):
         existingNames = self.graphManager.getAllNames()
         nodes = self.makeSerializedNodesUnique(nodes, extra=existingNames)
 
-        diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes[0]["x"], nodes[0]["y"])
+        diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(
+            nodes[0]["x"], nodes[0]["y"]
+        )
         self.clearSelection()
         newNodes = {}
 
@@ -626,8 +681,8 @@ class BlueprintCanvas(CanvasBase):
                 n.setPos(n.scenePos() + diff)
 
         for nodeJson in nodesData:
-            for inpPinJson in nodeJson['inputs']:
-                linkDatas = inpPinJson['linkedTo']
+            for inpPinJson in nodeJson["inputs"]:
+                linkDatas = inpPinJson["linkedTo"]
                 for linkData in linkDatas:
                     try:
                         lhsNode = self.findNode(linkData["lhsNodeName"])
@@ -639,9 +694,11 @@ class BlueprintCanvas(CanvasBase):
                         rhsPin = rhsNode.orderedInputs[rhsNodePinId]
                         connected = connectPins(lhsPin, rhsPin)
                         if connected:
-                            self.createUIConnectionForConnectedPins(lhsPin.getWrapper()(), rhsPin.getWrapper()())
+                            self.createUIConnectionForConnectedPins(
+                                lhsPin.getWrapper()(), rhsPin.getWrapper()()
+                            )
                     except Exception as e:
-                        print(inpPinJson['fullName'], "not found")
+                        print(inpPinJson["fullName"], "not found")
                         continue
 
         # Hacks here!!
@@ -717,7 +774,11 @@ class BlueprintCanvas(CanvasBase):
         if isinstance(instance, UINodeBase):
             return instance
         node = instance
-        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem():
+        while (
+            isinstance(node, QGraphicsItem)
+            or isinstance(node, QGraphicsWidget)
+            or isinstance(node, QGraphicsProxyWidget)
+        ) and node.parentItem():
             node = node.parentItem()
         if isinstance(node, UINodeBase):
             return node
@@ -726,39 +787,45 @@ class BlueprintCanvas(CanvasBase):
 
     def getRerouteNode(self, pos, connection=None):
         nodeClassName = "reroute"
-        if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
+        if (
+            connection
+            and connection.drawSource._rawPin.isExec()
+            and connection.drawDestination._rawPin.isExec()
+        ):
             nodeClassName = "rerouteExecs"
         else:
             if self.pressedPin and self.pressedPin.isExec():
                 nodeClassName = "rerouteExecs"
-        rerouteNode = self.spawnNode(nodeClassName, self.mapToScene(pos).x(), self.mapToScene(pos).y())
+        rerouteNode = self.spawnNode(
+            nodeClassName, self.mapToScene(pos).x(), self.mapToScene(pos).y()
+        )
         rerouteNode.translate(-rerouteNode.boundingRect().center().x(), -5)
         return rerouteNode
 
     def getInputNode(self):
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyFlowBase"
-        nodeTemplate['lib'] = None
-        nodeTemplate['type'] = "graphInputs"
-        nodeTemplate['name'] = "graphInputs"
-        nodeTemplate['x'] = self.boundingRect.left() + 50
-        nodeTemplate['y'] = self.boundingRect.center().y() + 50
-        nodeTemplate['uuid'] = str(uuid.uuid4())
-        nodeTemplate['meta']['label'] = "Inputs"
+        nodeTemplate["package"] = "PyFlowBase"
+        nodeTemplate["lib"] = None
+        nodeTemplate["type"] = "graphInputs"
+        nodeTemplate["name"] = "graphInputs"
+        nodeTemplate["x"] = self.boundingRect.left() + 50
+        nodeTemplate["y"] = self.boundingRect.center().y() + 50
+        nodeTemplate["uuid"] = str(uuid.uuid4())
+        nodeTemplate["meta"]["label"] = "Inputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
         return node
 
     def getOutputNode(self):
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyFlowBase"
-        nodeTemplate['lib'] = None
-        nodeTemplate['type'] = "graphOutputs"
-        nodeTemplate['name'] = "graphOutputs"
-        nodeTemplate['x'] = self.boundingRect.width() - 50
-        nodeTemplate['y'] = self.boundingRect.center().y() + 50
-        nodeTemplate['uuid'] = str(uuid.uuid4())
-        nodeTemplate['meta']['label'] = "Outputs"
+        nodeTemplate["package"] = "PyFlowBase"
+        nodeTemplate["lib"] = None
+        nodeTemplate["type"] = "graphOutputs"
+        nodeTemplate["name"] = "graphOutputs"
+        nodeTemplate["x"] = self.boundingRect.width() - 50
+        nodeTemplate["y"] = self.boundingRect.center().y() + 50
+        nodeTemplate["uuid"] = str(uuid.uuid4())
+        nodeTemplate["meta"]["label"] = "Outputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
         return node
@@ -779,20 +846,37 @@ class BlueprintCanvas(CanvasBase):
                     srcNode = connection.source().owningNode()
                     if srcNode.isUnderActiveGraph():
                         comment = srcNode.owningCommentNode
-                        if comment is not None and comment.collapsed and not srcNode.isVisible():
-                            connection.sourcePositionOverride = comment.getRightSideEdgesPoint
+                        if (
+                            comment is not None
+                            and comment.collapsed
+                            and not srcNode.isVisible()
+                        ):
+                            connection.sourcePositionOverride = (
+                                comment.getRightSideEdgesPoint
+                            )
 
                     # override dst endpoint to comment right side if connected
                     # node is hidden and under collapsed comment
                     dstNode = connection.destination().owningNode()
                     if dstNode.isUnderActiveGraph():
                         comment = dstNode.owningCommentNode
-                        if comment is not None and comment.collapsed and not dstNode.isVisible():
-                            connection.destinationPositionOverride = comment.getLeftSideEdgesPoint
+                        if (
+                            comment is not None
+                            and comment.collapsed
+                            and not dstNode.isVisible()
+                        ):
+                            connection.destinationPositionOverride = (
+                                comment.getLeftSideEdgesPoint
+                            )
 
                     if connection.isUnderCollapsedComment():
                         connection.hide()
-                    if not connection.source().owningNode().isUnderActiveGraph() or not connection.destination().owningNode().isUnderActiveGraph():
+                    if (
+                        not connection.source().owningNode().isUnderActiveGraph()
+                        or not connection.destination()
+                        .owningNode()
+                        .isUnderActiveGraph()
+                    ):
                         connection.hide()
 
                     checked.add(connection)
@@ -838,15 +922,31 @@ class BlueprintCanvas(CanvasBase):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         expandComments = False
-        currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
-        if any([not self.pressed_item,
-                isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
-                isinstance(self.pressed_item, UINodeBase) and node.isCommentNode and not node.collapsed,
-                isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
+        currentInputAction = InputAction(
+            "temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers
+        )
+        if any(
+            [
+                not self.pressed_item,
+                isinstance(self.pressed_item, UIConnection)
+                and modifiers != QtCore.Qt.AltModifier,
+                isinstance(self.pressed_item, UINodeBase)
+                and node.isCommentNode
+                and not node.collapsed,
+                isinstance(node, UINodeBase)
+                and (
+                    node.resizable
+                    and node.shouldResize(self.mapToScene(event.pos()))["resize"]
+                ),
+            ]
+        ):
             self.resizing = False
 
             # Create branch on B + LMB
-            if self.currentPressedKey is not None and event.button() == QtCore.Qt.LeftButton:
+            if (
+                self.currentPressedKey is not None
+                and event.button() == QtCore.Qt.LeftButton
+            ):
                 if self.currentPressedKey == QtCore.Qt.Key_B:
                     spawnPos = self.mapToScene(self.mousePressPose)
                     node = self.spawnNode("branch", spawnPos.x(), spawnPos.y())
@@ -857,27 +957,55 @@ class BlueprintCanvas(CanvasBase):
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
-                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier and event.button() == QtCore.Qt.LeftButton:
+                if (
+                    isinstance(self.pressed_item, UIConnection)
+                    and modifiers == QtCore.Qt.NoModifier
+                    and event.button() == QtCore.Qt.LeftButton
+                ):
                     closestPin = self.findPinNearPosition(event.pos(), 20)
                     if closestPin is not None:
                         if closestPin.direction == PinDirection.Input:
-                            self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                            self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(
+                                self.mousePos
+                            )
                         elif closestPin.direction == PinDirection.Output:
-                            self.pressed_item.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                            self.pressed_item.sourcePositionOverride = lambda: self.mapToScene(
+                                self.mousePos
+                            )
                         self.reconnectingWires.add(self.pressed_item)
-                elif event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+                elif event.button() == QtCore.Qt.LeftButton and modifiers in [
+                    QtCore.Qt.NoModifier,
+                    QtCore.Qt.ShiftModifier,
+                    QtCore.Qt.ControlModifier,
+                    QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier,
+                ]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
-                    self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
+                    self._selectionRect = SelectionRect(
+                        graph=self,
+                        mouseDownPos=self.mapToScene(event.pos()),
+                        modifiers=modifiers,
+                    )
                     self._selectionRect.selectFullyIntersectedItems = True
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
-                    self._mouseDownConnectionsSelection = [node for node in self.selectedConnections()]
-                    if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
+                    self._mouseDownConnectionsSelection = [
+                        node for node in self.selectedConnections()
+                    ]
+                    if modifiers not in [
+                        QtCore.Qt.ShiftModifier,
+                        QtCore.Qt.ControlModifier,
+                    ]:
                         self.clearSelection()
                 else:
-                    if hasattr(self, "_selectionRect") and self._selectionRect is not None:
+                    if (
+                        hasattr(self, "_selectionRect")
+                        and self._selectionRect is not None
+                    ):
                         self._selectionRect.destroy()
                         self._selectionRect = None
-                LeftPaning = event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.AltModifier
+                LeftPaning = (
+                    event.button() == QtCore.Qt.LeftButton
+                    and modifiers == QtCore.Qt.AltModifier
+                )
                 if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
@@ -887,35 +1015,62 @@ class BlueprintCanvas(CanvasBase):
                     self._lastSceneRect = self.sceneRect()
                     self._lastSceneCenter = self._lastSceneRect.center()
                     self._lastScenePos = self.mapToScene(event.pos())
-                    self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
+                    self._lastOffsetFromSceneCenter = (
+                        self._lastScenePos - self._lastSceneCenter
+                    )
             self.node_box.hide()
         else:
-            if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
+            if (
+                not isinstance(self.pressed_item, NodesBox)
+                and self.node_box.isVisible()
+            ):
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
-            if isinstance(self.pressed_item, UIPinBase) and not type(self.pressed_item) is PinGroup:
-                if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
-                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
-                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
+            if (
+                isinstance(self.pressed_item, UIPinBase)
+                and not type(self.pressed_item) is PinGroup
+            ):
+                if (
+                    event.button() == QtCore.Qt.LeftButton
+                    and modifiers == QtCore.Qt.NoModifier
+                ):
+                    self.pressed_item.topLevelItem().setFlag(
+                        QGraphicsItem.ItemIsMovable, False
+                    )
+                    self.pressed_item.topLevelItem().setFlag(
+                        QGraphicsItem.ItemIsSelectable, False
+                    )
                     self._drawRealtimeLine = True
                     self.autoPanController.start()
-                elif event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.ControlModifier:
+                elif (
+                    event.button() == QtCore.Qt.LeftButton
+                    and modifiers == QtCore.Qt.ControlModifier
+                ):
                     for wire in self.pressed_item.uiConnectionList:
                         if self.pressed_item.direction == PinDirection.Input:
-                            wire.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                            wire.destinationPositionOverride = lambda: self.mapToScene(
+                                self.mousePos
+                            )
                         elif self.pressed_item.direction == PinDirection.Output:
-                            wire.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                            wire.sourcePositionOverride = lambda: self.mapToScene(
+                                self.mousePos
+                            )
                         self.reconnectingWires.add(wire)
                 if currentInputAction in InputManager()["Canvas.DisconnectPin"]:
                     self.removeEdgeCmd(self.pressed_item.connections)
                     self._drawRealtimeLine = False
             else:
-                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
+                if (
+                    isinstance(self.pressed_item, UIConnection)
+                    and modifiers == QtCore.Qt.AltModifier
+                ):
                     rerouteNode = self.getRerouteNode(event.pos(), self.pressed_item)
                     self.clearSelection()
                     rerouteNode.setSelected(True)
                     for inp in rerouteNode.UIinputs.values():
-                        if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
+                        if canConnectPins(
+                            self.pressed_item.source()._rawPin, inp._rawPin
+                        ):
                             drawPin = self.pressed_item.drawSource
                             if self.pressed_item.source().isExec():
                                 self.pressed_item.kill()
@@ -925,7 +1080,9 @@ class BlueprintCanvas(CanvasBase):
                             break
                     for out in rerouteNode.UIoutputs.values():
                         drawPin = self.pressed_item.drawDestination
-                        if canConnectPins(out._rawPin, self.pressed_item.destination()._rawPin):
+                        if canConnectPins(
+                            out._rawPin, self.pressed_item.destination()._rawPin
+                        ):
                             self.connectPins(out, self.pressed_item.destination())
                             for connection in out.connections:
                                 connection.drawDestination = drawPin
@@ -959,15 +1116,22 @@ class BlueprintCanvas(CanvasBase):
                     else:
                         if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
                             super(BlueprintCanvas, self).mousePressEvent(event)
-                        if modifiers == QtCore.Qt.ControlModifier and event.button() == QtCore.Qt.LeftButton:
+                        if (
+                            modifiers == QtCore.Qt.ControlModifier
+                            and event.button() == QtCore.Qt.LeftButton
+                        ):
                             node.setSelected(not node.isSelected())
                         if modifiers == QtCore.Qt.ShiftModifier:
                             node.setSelected(True)
-                    if currentInputAction in InputManager()["Canvas.DragNodes"] and isinstance(self.pressed_item, UINodeBase):
+                    if currentInputAction in InputManager()[
+                        "Canvas.DragNodes"
+                    ] and isinstance(self.pressed_item, UINodeBase):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         if self.pressed_item.objectName() == "MouseLocked":
                             super(BlueprintCanvas, self).mousePressEvent(event)
-                    elif currentInputAction in InputManager()["Canvas.DragNodes"] and isinstance(self.pressed_item.topLevelItem(), UINodeBase):
+                    elif currentInputAction in InputManager()[
+                        "Canvas.DragNodes"
+                    ] and isinstance(self.pressed_item.topLevelItem(), UINodeBase):
                         isComment = self.pressed_item.topLevelItem().isCommentNode
                         if isComment:
                             self.manipulationMode = CanvasManipulationMode.MOVE
@@ -978,10 +1142,16 @@ class BlueprintCanvas(CanvasBase):
 
     def updateReroutes(self, event, showPins=False):
         tolerance = 9 * self.currentViewScale()
-        mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
-                                 QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
+        mouseRect = QtCore.QRect(
+            QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
+            QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance),
+        )
         hoverItems = self.items(mouseRect)
-        self.hoveredReroutes += [node for node in hoverItems if isinstance(node, UINodeBase) and node.isReroute()]
+        self.hoveredReroutes += [
+            node
+            for node in hoverItems
+            if isinstance(node, UINodeBase) and node.isReroute()
+        ]
         for node in self.hoveredReroutes:
             if showPins:
                 if node in hoverItems:
@@ -1028,16 +1198,26 @@ class BlueprintCanvas(CanvasBase):
             p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
 
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
-                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
+            mouseRect = QtCore.QRect(
+                QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
+                QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4),
+            )
             hoverItems = self.items(mouseRect)
 
             hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
             if len(hoveredPins) > 0:
                 item = hoveredPins[0]
-                if isinstance(item, UIPinBase) and isinstance(self.pressed_item, UIPinBase):
-                    canBeConnected = canConnectPins(self.pressed_item._rawPin, item._rawPin)
-                    self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+                if isinstance(item, UIPinBase) and isinstance(
+                    self.pressed_item, UIPinBase
+                ):
+                    canBeConnected = canConnectPins(
+                        self.pressed_item._rawPin, item._rawPin
+                    )
+                    self.realTimeLine.setPen(
+                        self.realTimeLineValidPen
+                        if canBeConnected
+                        else self.realTimeLineInvalidPen
+                    )
                     if canBeConnected:
                         p2 = item.scenePos() + item.pinCenter()
             else:
@@ -1047,13 +1227,16 @@ class BlueprintCanvas(CanvasBase):
             multiply = 3
             path = QtGui.QPainterPath()
             path.moveTo(p1)
-            path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
-                         QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
+            path.cubicTo(
+                QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
+                QtCore.QPoint(p2.x() - distance / 2, p2.y()),
+                p2,
+            )
             self.realTimeLine.setPath(path)
             if modifiers == QtCore.Qt.AltModifier:
                 self._drawRealtimeLine = False
                 if self.realTimeLine in self.scene().items():
-                    self.removeItemByName('RealTimeLine')
+                    self.removeItemByName("RealTimeLine")
                 rerouteNode = self.getRerouteNode(event.pos())
                 self.clearSelection()
                 rerouteNode.setSelected(True)
@@ -1082,43 +1265,67 @@ class BlueprintCanvas(CanvasBase):
                 # handle nodes
                 for node in nodes:
                     if node in self._mouseDownSelection:
-                        if node.isSelected() and self._selectionRect.collidesWithItem(node):
+                        if node.isSelected() and self._selectionRect.collidesWithItem(
+                            node
+                        ):
                             node.setSelected(False)
-                        elif not node.isSelected() and not self._selectionRect.collidesWithItem(node):
+                        elif not node.isSelected() and not self._selectionRect.collidesWithItem(
+                            node
+                        ):
                             node.setSelected(True)
                     else:
-                        if not node.isSelected() and self._selectionRect.collidesWithItem(node):
+                        if not node.isSelected() and self._selectionRect.collidesWithItem(
+                            node
+                        ):
                             node.setSelected(True)
-                        elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
+                        elif node.isSelected() and not self._selectionRect.collidesWithItem(
+                            node
+                        ):
                             if node not in self._mouseDownSelection:
                                 node.setSelected(False)
 
                 # handle connections
                 for wire in self.connections.values():
                     if wire in self._mouseDownConnectionsSelection:
-                        if wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        if wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(
+                            self._selectionRect, wire
+                        ):
                             wire.setSelected(False)
-                        elif not wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        elif not wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(
+                            self._selectionRect, wire
+                        ):
                             wire.setSelected(True)
                     else:
-                        if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(
+                            self._selectionRect, wire
+                        ):
                             wire.setSelected(True)
-                        elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(
+                            self._selectionRect, wire
+                        ):
                             if wire not in self._mouseDownConnectionsSelection:
                                 wire.setSelected(False)
 
             elif modifiers == QtCore.Qt.ShiftModifier:
                 for node in nodes:
-                    if not node.isSelected() and self._selectionRect.collidesWithItem(node):
+                    if not node.isSelected() and self._selectionRect.collidesWithItem(
+                        node
+                    ):
                         node.setSelected(True)
-                    elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
+                    elif node.isSelected() and not self._selectionRect.collidesWithItem(
+                        node
+                    ):
                         if node not in self._mouseDownSelection:
                             node.setSelected(False)
 
                 for wire in self.connections.values():
-                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(
+                        self._selectionRect, wire
+                    ):
                         wire.setSelected(True)
-                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(
+                        self._selectionRect, wire
+                    ):
                         if wire not in self._mouseDownConnectionsSelection:
                             wire.setSelected(False)
 
@@ -1128,21 +1335,31 @@ class BlueprintCanvas(CanvasBase):
                         node.setSelected(False)
 
                 for wire in self.connections.values():
-                    if QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                    if QtWidgets.QGraphicsWidget.collidesWithItem(
+                        self._selectionRect, wire
+                    ):
                         wire.setSelected(False)
             else:
                 self.clearSelection()
                 for node in nodes:
                     # if node not in [self.inputsItem,self.outputsItem]:
-                    if not node.isSelected() and self._selectionRect.collidesWithItem(node):
+                    if not node.isSelected() and self._selectionRect.collidesWithItem(
+                        node
+                    ):
                         node.setSelected(True)
-                    elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
+                    elif node.isSelected() and not self._selectionRect.collidesWithItem(
+                        node
+                    ):
                         node.setSelected(False)
 
                 for wire in self.connections.values():
-                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(
+                        self._selectionRect, wire
+                    ):
                         wire.setSelected(True)
-                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(
+                        self._selectionRect, wire
+                    ):
                         wire.setSelected(False)
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             # TODO: do not change object names. Rewrite with flag e.g. `bMovementLocked`
@@ -1158,17 +1375,34 @@ class BlueprintCanvas(CanvasBase):
                     node.translate(scaledDelta.x(), scaledDelta.y())
 
             if node.isReroute() and modifiers == QtCore.Qt.AltModifier:
-                mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
-                                         QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
+                mouseRect = QtCore.QRect(
+                    QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
+                    QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1),
+                )
                 hoverItems = self.items(mouseRect)
                 newOuts = []
                 newIns = []
                 for item in hoverItems:
                     if isinstance(item, UIConnection):
-                        if list(node.UIinputs.values())[0].connections and list(node.UIoutputs.values())[0].connections:
-                            if item.source() == list(node.UIinputs.values())[0].connections[0].source():
-                                newOuts.append([item.destination(), item.drawDestination])
-                            if item.destination() == list(node.UIoutputs.values())[0].connections[0].destination():
+                        if (
+                            list(node.UIinputs.values())[0].connections
+                            and list(node.UIoutputs.values())[0].connections
+                        ):
+                            if (
+                                item.source()
+                                == list(node.UIinputs.values())[0]
+                                .connections[0]
+                                .source()
+                            ):
+                                newOuts.append(
+                                    [item.destination(), item.drawDestination]
+                                )
+                            if (
+                                item.destination()
+                                == list(node.UIoutputs.values())[0]
+                                .connections[0]
+                                .destination()
+                            ):
                                 newIns.append([item.source(), item.drawSource])
                 for out in newOuts:
                     self.connectPins(list(node.UIoutputs.values())[0], out[0])
@@ -1201,10 +1435,14 @@ class BlueprintCanvas(CanvasBase):
 
     def findPinNearPosition(self, scenePos, tolerance=3):
         tolerance = tolerance * self.currentViewScale()
-        rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
-                            QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
+        rect = QtCore.QRect(
+            QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
+            QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance),
+        )
         items = self.items(rect)
-        pins = [i for i in items if isinstance(i, UIPinBase) and type(i) is not PinGroup]
+        pins = [
+            i for i in items if isinstance(i, UIPinBase) and type(i) is not PinGroup
+        ]
         if len(pins) > 0:
             return pins[0]
         return None
@@ -1219,7 +1457,10 @@ class BlueprintCanvas(CanvasBase):
         self.released_item = self.itemAt(event.pos())
         self.releasedPin = self.findPinNearPosition(event.pos())
 
-        if self.manipulationMode == CanvasManipulationMode.MOVE and len(self.selectedNodes()) > 0:
+        if (
+            self.manipulationMode == CanvasManipulationMode.MOVE
+            and len(self.selectedNodes()) > 0
+        ):
             EditorHistory().saveState("Move nodes", modify=True)
 
         if len(self.reconnectingWires) > 0:
@@ -1253,26 +1494,44 @@ class BlueprintCanvas(CanvasBase):
         if self._drawRealtimeLine:
             self._drawRealtimeLine = False
             if self.realTimeLine in self.scene().items():
-                self.removeItemByName('RealTimeLine')
+                self.removeItemByName("RealTimeLine")
 
         if self.manipulationMode == CanvasManipulationMode.SELECT:
             self._selectionRect.destroy()
             self._selectionRect = None
 
-        if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
+        if (
+            event.button() == QtCore.Qt.RightButton
+            and modifiers == QtCore.Qt.NoModifier
+        ):
             # show nodebox only if drag is small and no items under cursor
-            if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
+            if self.pressed_item is None or (
+                isinstance(self.pressed_item, UINodeBase)
+                and self.nodeFromInstance(self.pressed_item).isCommentNode
+            ):
                 if modifiers == QtCore.Qt.NoModifier:
-                    dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
+                    dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(
+                        event.pos()
+                    )
                     if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                         self.showNodeBox()
-        elif event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.ControlModifier:
+        elif (
+            event.button() == QtCore.Qt.RightButton
+            and modifiers == QtCore.Qt.ControlModifier
+        ):
             self.menu.exec_(QtGui.QCursor.pos())
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
-            if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
+            if (
+                isinstance(self.pressed_item, UIPinBase)
+                and not self.resizing
+                and modifiers == QtCore.Qt.NoModifier
+            ):
                 if not type(self.pressed_item) is PinGroup:
                     # suggest nodes that can be connected to pressed pin
-                    self.showNodeBox(self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
+                    self.showNodeBox(
+                        self.pressed_item.direction,
+                        self.pressed_item._rawPin.getCurrentStructure(),
+                    )
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin
@@ -1286,7 +1545,10 @@ class BlueprintCanvas(CanvasBase):
                     do_connect = False
                     break
             if p_itm and r_itm:
-                if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
+                if (
+                    p_itm.__class__.__name__ == UIPinBase.__name__
+                    and r_itm.__class__.__name__ == UIPinBase.__name__
+                ):
                     if cycleCheck(p_itm, r_itm):
                         # print('cycles are not allowed')
                         do_connect = False
@@ -1300,7 +1562,15 @@ class BlueprintCanvas(CanvasBase):
         releasedNode = self.nodeFromInstance(self.released_item)
         pressedNode = self.nodeFromInstance(self.pressed_item)
         manhattanLengthTest = (self.mousePressPose - event.pos()).manhattanLength() <= 2
-        if all([event.button() == QtCore.Qt.LeftButton, releasedNode is not None, pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
+        if all(
+            [
+                event.button() == QtCore.Qt.LeftButton,
+                releasedNode is not None,
+                pressedNode is not None,
+                pressedNode == releasedNode,
+                manhattanLengthTest,
+            ]
+        ):
             # check if clicking on node action button
             if self.released_item is not None:
                 if isinstance(self.released_item.parentItem(), NodeActionButtonBase):
@@ -1313,7 +1583,11 @@ class BlueprintCanvas(CanvasBase):
         self.updateReroutes(event, False)
 
     def removeItemByName(self, name):
-        [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
+        [
+            self.scene().removeItem(i)
+            for i in self.scene().items()
+            if hasattr(i, "name") and i.name == name
+        ]
 
     def tryFillPropertiesView(self, obj):
         if isinstance(obj, IPropertiesViewSupport):
@@ -1331,35 +1605,43 @@ class BlueprintCanvas(CanvasBase):
                 if url.isLocalFile():
                     filePath = url.toLocalFile()
                     if filePath.endswith(".pygraph"):
-                        with open(filePath, 'r') as f:
+                        with open(filePath, "r") as f:
                             data = json.load(f)
                             if "fileVersion" in data:
                                 event.accept()
-                                self.dropCallback = partial(self.getApp().loadFromFileChecked, filePath)
+                                self.dropCallback = partial(
+                                    self.getApp().loadFromFileChecked, filePath
+                                )
                                 return
                     elif filePath.endswith(".compound"):
-                        with open(filePath, 'r') as f:
+                        with open(filePath, "r") as f:
                             data = json.load(f)
 
                             def spawnCompoundFromData(data):
                                 mousePos = self.mapToScene(self.mousePos)
-                                compound = self.spawnNode("compound", mousePos.x(), mousePos.y())
+                                compound = self.spawnNode(
+                                    "compound", mousePos.x(), mousePos.y()
+                                )
                                 compound.assignData(data)
+
                             event.accept()
                             self.dropCallback = partial(spawnCompoundFromData, data)
                             return
                     elif filePath.endswith(".pynode"):
-                        with open(filePath, 'r') as f:
+                        with open(filePath, "r") as f:
                             data = f.read()
 
                             def spawnPyNodeFromData(data):
                                 mousePos = self.mapToScene(self.mousePos)
-                                compound = self.spawnNode("pythonNode", mousePos.x(), mousePos.y())
+                                compound = self.spawnNode(
+                                    "pythonNode", mousePos.x(), mousePos.y()
+                                )
                                 compound.tryApplyNodeData(data)
+
                             event.accept()
                             self.dropCallback = partial(spawnPyNodeFromData, data)
                             return
-        elif event.mimeData().hasFormat('text/plain'):
+        elif event.mimeData().hasFormat("text/plain"):
             scenePos = self.mapToScene(event.pos())
             event.accept()
             mime = str(event.mimeData().text())
@@ -1373,14 +1655,14 @@ class BlueprintCanvas(CanvasBase):
             name = nodeType
 
             nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = nodeType
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = scenePos.x()
-            nodeTemplate['y'] = scenePos.y()
-            nodeTemplate['meta']['label'] = nodeType
-            nodeTemplate['uuid'] = str(uuid.uuid4())
+            nodeTemplate["package"] = packageName
+            nodeTemplate["lib"] = libName
+            nodeTemplate["type"] = nodeType
+            nodeTemplate["name"] = name
+            nodeTemplate["x"] = scenePos.x()
+            nodeTemplate["y"] = scenePos.y()
+            nodeTemplate["meta"]["label"] = nodeType
+            nodeTemplate["uuid"] = str(uuid.uuid4())
             try:
                 self.tempnode.isTemp = False
                 self.tempnode = None
@@ -1398,13 +1680,17 @@ class BlueprintCanvas(CanvasBase):
         scenePos = self.mapToScene(self.mousePos)
         if self.dropCallback is not None:
             event.accept()
-        elif event.mimeData().hasFormat('text/plain'):
+        elif event.mimeData().hasFormat("text/plain"):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
             if self.tempnode:
-                self.tempnode.setPos((self.tempnode.w / -2) + scenePos.x()+5, scenePos.y()+5)
-                mouseRect = QtCore.QRect(QtCore.QPoint(scenePos.x() - 1, scenePos.y() - 1),
-                                         QtCore.QPoint(scenePos.x() + 1, scenePos.y() + 1))
+                self.tempnode.setPos(
+                    (self.tempnode.w / -2) + scenePos.x() + 5, scenePos.y() + 5
+                )
+                mouseRect = QtCore.QRect(
+                    QtCore.QPoint(scenePos.x() - 1, scenePos.y() - 1),
+                    QtCore.QPoint(scenePos.x() + 1, scenePos.y() + 1),
+                )
                 hoverItems = self.scene().items(mouseRect)
                 for item in hoverItems:
                     if isinstance(item, UIConnection):
@@ -1444,7 +1730,7 @@ class BlueprintCanvas(CanvasBase):
         x = scenePos.x()
         y = scenePos.y()
 
-        if event.mimeData().hasFormat('text/plain'):
+        if event.mimeData().hasFormat("text/plain"):
             jsonData = json.loads(event.mimeData().text())
 
             # try load mime data text as json
@@ -1458,17 +1744,21 @@ class BlueprintCanvas(CanvasBase):
                 varData = jsonData[VARIABLE_DATA_TAG]
 
                 def varGetterCreator():
-                    n = self.spawnNode("getVar", x, y, payload={"varUid": varData["uuid"]})
+                    n = self.spawnNode(
+                        "getVar", x, y, payload={"varUid": varData["uuid"]}
+                    )
                     n.updateNodeShape()
 
                 def varSetterCreator():
-                    n = self.spawnNode("setVar", x, y, payload={"varUid": varData["uuid"]})
+                    n = self.spawnNode(
+                        "setVar", x, y, payload={"varUid": varData["uuid"]}
+                    )
                     n.updateNodeShape()
 
                 if modifiers == QtCore.Qt.NoModifier:
                     m = QMenu()
-                    getterAction = m.addAction('Get')
-                    setterAction = m.addAction('Set')
+                    getterAction = m.addAction("Get")
+                    setterAction = m.addAction("Set")
                     getterAction.triggered.connect(varGetterCreator)
                     setterAction.triggered.connect(varSetterCreator)
                     m.exec_(QtGui.QCursor.pos(), None)
@@ -1481,10 +1771,10 @@ class BlueprintCanvas(CanvasBase):
             else:
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
-                libName = jsonData['lib']
+                libName = jsonData["lib"]
                 name = nodeType
                 dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
-                #if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                # if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                 #######################################################
                 # Drop from nodebox by R. Scharf-Wildenhain, 2022-07-22
                 # dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
@@ -1492,20 +1782,26 @@ class BlueprintCanvas(CanvasBase):
                 dropItem = self.itemAt(event.pos())
 
                 # if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
-                if dropNode or not dropNode or \
-                        (isinstance(dropItem, UINodeBase) and (dropItem.isCommentNode or dropItem.isTemp)) or \
-                        isinstance(dropItem, UIPinBase) or \
-                        isinstance(dropItem, UIConnection):
-                #######################################################                
+                if (
+                    dropNode
+                    or not dropNode
+                    or (
+                        isinstance(dropItem, UINodeBase)
+                        and (dropItem.isCommentNode or dropItem.isTemp)
+                    )
+                    or isinstance(dropItem, UIPinBase)
+                    or isinstance(dropItem, UIConnection)
+                ):
+                    #######################################################
                     nodeTemplate = NodeBase.jsonTemplate()
-                    nodeTemplate['package'] = packageName
-                    nodeTemplate['lib'] = libName
-                    nodeTemplate['type'] = nodeType
-                    nodeTemplate['name'] = name
-                    nodeTemplate['x'] = x
-                    nodeTemplate['y'] = y
-                    nodeTemplate['meta']['label'] = nodeType
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
+                    nodeTemplate["package"] = packageName
+                    nodeTemplate["lib"] = libName
+                    nodeTemplate["type"] = nodeType
+                    nodeTemplate["name"] = name
+                    nodeTemplate["x"] = x
+                    nodeTemplate["y"] = y
+                    nodeTemplate["meta"]["label"] = nodeType
+                    nodeTemplate["uuid"] = str(uuid.uuid4())
                     if self.tempnode:
                         self.tempnode.updateOwningCommentNode()
                         self.tempnode.isTemp = False
@@ -1520,7 +1816,9 @@ class BlueprintCanvas(CanvasBase):
                                 dropItem = it
                                 break
                         node.eventDropOnCanvas()
-                        EditorHistory().saveState("Create node {}".format(node.name), modify=True)
+                        EditorHistory().saveState(
+                            "Create node {}".format(node.name), modify=True
+                        )
                     else:
                         node = self.createNode(nodeTemplate)
 
@@ -1549,7 +1847,9 @@ class BlueprintCanvas(CanvasBase):
                                 self.connectPins(dropItem.source(), inp)
                                 break
                         for out in nodeOutputs.values():
-                            if canConnectPins(out._rawPin, dropItem.destination()._rawPin):
+                            if canConnectPins(
+                                out._rawPin, dropItem.destination()._rawPin
+                            ):
                                 self.connectPins(out, dropItem.destination())
                                 break
         super(BlueprintCanvas, self).dropEvent(event)
@@ -1557,8 +1857,8 @@ class BlueprintCanvas(CanvasBase):
     def _createNode(self, jsonTemplate):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Stop any attempt to disrupt variable scope. Even if we accidentally forgot this check, GraphBase.addNode will fail
-        if jsonTemplate['type'] in ['getVar', 'setVar']:
-            var = self.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
+        if jsonTemplate["type"] in ["getVar", "setVar"]:
+            var = self.graphManager.findVariableByUid(uuid.UUID(jsonTemplate["varUid"]))
             variableLocation = var.location()
             graphLocation = self.graphManager.location()
             if len(variableLocation) > len(graphLocation):
@@ -1568,25 +1868,29 @@ class BlueprintCanvas(CanvasBase):
                     return None
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
-        assert(nodeInstance is not None), "Node instance is not found!"
+        assert nodeInstance is not None, "Node instance is not found!"
         nodeInstance.setPos(jsonTemplate["x"], jsonTemplate["y"])
 
         # set pins data
-        for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPinSG(inpJson['name'], PinSelectionGroup.Inputs)
+        for inpJson in jsonTemplate["inputs"]:
+            pin = nodeInstance.getPinSG(inpJson["name"], PinSelectionGroup.Inputs)
             if pin:
-                pin.uid = uuid.UUID(inpJson['uuid'])
+                pin.uid = uuid.UUID(inpJson["uuid"])
                 try:
-                    pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                    pin.setData(
+                        json.loads(inpJson["value"], cls=pin.jsonDecoderClass())
+                    )
                 except:
                     pin.setData(pin.defaultValue())
 
-        for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance.getPinSG(outJson['name'], PinSelectionGroup.Outputs)
+        for outJson in jsonTemplate["outputs"]:
+            pin = nodeInstance.getPinSG(outJson["name"], PinSelectionGroup.Outputs)
             if pin:
-                pin.uid = uuid.UUID(outJson['uuid'])
+                pin.uid = uuid.UUID(outJson["uuid"])
                 try:
-                    pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+                    pin.setData(
+                        json.loads(outJson["value"], cls=pin.jsonDecoderClass())
+                    )
                 except:
                     pin.setData(pin.defaultValue())
 
@@ -1594,7 +1898,9 @@ class BlueprintCanvas(CanvasBase):
 
     def createNode(self, jsonTemplate, **kwargs):
         nodeInstance = self._createNode(jsonTemplate)
-        EditorHistory().saveState("Create node {}".format(nodeInstance.name), modify=True)
+        EditorHistory().saveState(
+            "Create node {}".format(nodeInstance.name), modify=True
+        )
         return nodeInstance
 
     def spawnNode(self, nodeClass, x, y, payload={}):
@@ -1665,7 +1971,7 @@ class BlueprintCanvas(CanvasBase):
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)
 
-        assert(jsonTemplate is not None)
+        assert jsonTemplate is not None
 
         if uiNode._rawNode.graph is None:
             # if added from node box
@@ -1673,14 +1979,14 @@ class BlueprintCanvas(CanvasBase):
         else:
             # When copy paste compound node. we are actually pasting a tree of graphs
             # So we need to put each node under correct graph
-            assert(parentGraph is not None), "Parent graph is invalid"
+            assert parentGraph is not None, "Parent graph is invalid"
             parentGraph.addNode(uiNode._rawNode, jsonTemplate)
 
         uiNode.postCreate(jsonTemplate)
 
     def createUIConnectionForConnectedPins(self, srcUiPin, dstUiPin):
-        assert(srcUiPin is not None)
-        assert(dstUiPin is not None)
+        assert srcUiPin is not None
+        assert dstUiPin is not None
         if srcUiPin.direction == PinDirection.Input:
             srcUiPin, dstUiPin = dstUiPin, srcUiPin
         uiConnection = UIConnection(srcUiPin, dstUiPin, self)
@@ -1738,6 +2044,7 @@ class BlueprintCanvas(CanvasBase):
 
 class BlueprintCanvasWidget(QWidget):
     """docstring for BlueprintCanvasWidget."""
+
     def __init__(self, graphManager, pyFlowInstance, parent=None):
         super(BlueprintCanvasWidget, self).__init__(parent)
         self.manager = graphManager
@@ -1778,8 +2085,12 @@ class BlueprintCanvasWidget(QWidget):
 
         self.manager.graphChanged.connect(self.updateGraphTreeLocation)
 
-        self.canvas.requestFillProperties.connect(self.pyFlowInstance.onRequestFillProperties)
-        self.canvas.requestClearProperties.connect(self.pyFlowInstance.onRequestClearProperties)
+        self.canvas.requestFillProperties.connect(
+            self.pyFlowInstance.onRequestFillProperties
+        )
+        self.canvas.requestClearProperties.connect(
+            self.pyFlowInstance.onRequestClearProperties
+        )
 
         rxLettersAndNumbers = QtCore.QRegularExpression('^[a-zA-Z0-9]*$')
         nameValidator = QtGui.QRegularExpressionValidator(rxLettersAndNumbers, self.leCompoundName)
@@ -1789,7 +2100,9 @@ class BlueprintCanvasWidget(QWidget):
         rxLetters = QtCore.QRegularExpression('[a-zA-Z]+(\|[a-zA-Z]+)*')
         categoryValidator = QtGui.QRegularExpressionValidator(rxLetters, self.leCompoundCategory)
         self.leCompoundCategory.setValidator(categoryValidator)
-        self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
+        self.leCompoundCategory.returnPressed.connect(
+            self.onActiveCompoundCategoryAccepted
+        )
 
         self.updateGraphTreeLocation()
 
