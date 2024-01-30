@@ -77,9 +77,8 @@ class GraphBase(ISerializable):
     """
 
     def __init__(
-        self, name, manager, parentGraph=None, category="", uid=None
-    ):
-        super(GraphBase, self).__init__()
+        self, name, manager, parentGraph=None, category="", uid=None, *args, **kwargs):
+        super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
         self._isRoot = False
 

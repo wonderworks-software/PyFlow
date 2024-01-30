@@ -108,7 +108,7 @@ class getVar(NodeBase):
     def variableUid(self):
         return self.var.uid
 
-    def onVarValueChanged(self):
+    def onVarValueChanged(self, *args, **kwargs):
         push(self.out)
 
     def serialize(self):

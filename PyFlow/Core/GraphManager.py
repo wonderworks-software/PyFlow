@@ -115,7 +115,7 @@ class GraphManager(object):
         self._activeGraph.setIsRoot(True)
         self.selectGraph(self._activeGraph)
 
-    def clear(self, keepRoot=True):
+    def clear(self, keepRoot=True, *args, **kwargs):
         """Wipes everything.
 
         :param keepRoot: Whether to remove root graph or not
