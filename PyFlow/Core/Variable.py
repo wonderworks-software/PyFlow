@@ -226,7 +226,7 @@ class Variable(IItemBase):
 
         template = Variable.jsonTemplate()
 
-        uidString = self.uid
+        uidString = str(self.uid)
 
         template["name"] = self.name
         if self.dataType == "AnyPin":
