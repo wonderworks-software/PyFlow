@@ -25,6 +25,23 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         super(DefaultEvaluationEngine_Impl, self).__init__()
 
     @staticmethod
+    def old_getPinData(pin):
+        if not pin.hasConnections():
+            return pin.currentData()
+
+        bOwningNodeCallable = pin.owningNode().bCallable
+
+        if not bOwningNodeCallable:
+            return pin.currentData()
+
+        order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
+        [node.processNode() for node in order]
+
+        if not bOwningNodeCallable:
+            pin.owningNode().processNode()
+        return pin.currentData()
+
+    @staticmethod
     def getPinData(pin):
         if not pin.hasConnections():
             return pin.currentData()
@@ -37,8 +54,9 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
         [node.processNode() for node in order]
 
-        if not pin.dirty:
-            pin.owningNode().processNode()
+        #if pin.dirty:
+        #    pin.owningNode().processNode()
+
         return pin.currentData()
 
     @staticmethod
