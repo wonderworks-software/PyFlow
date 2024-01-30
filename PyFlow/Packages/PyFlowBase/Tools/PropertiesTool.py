@@ -44,7 +44,7 @@ class PropertiesTool(DockTool):
         self.fillDelegate = None
         self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
 
-    def onTearOffCopy(self):
+    def onTearOffCopy(self, *args, **kwargs):
         instance = self.pyFlowInstance.invokeDockToolByName("PyFlowBase", self.name())
         if self.fillDelegate is not None:
             instance.assignPropertiesWidget(self.fillDelegate)

@@ -47,7 +47,7 @@ class forLoopWithBreak(NodeBase):
         helper.addOutputStruct(StructureType.Single)
         return helper
 
-    def interrupt(self):
+    def interrupt(self, *args, **kwargs):
         self.stop = True
 
     @staticmethod

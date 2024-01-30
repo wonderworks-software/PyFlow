@@ -27,7 +27,7 @@ class backDrop(QGraphicsWidget):
         except:
             pass
 
-    def parentNodeKilled(self):
+    def parentNodeKilled(self, *args):
         scene = self.scene()
         if scene is not None:
             scene.removeItem(self)

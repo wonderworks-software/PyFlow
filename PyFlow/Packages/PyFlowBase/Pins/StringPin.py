@@ -20,8 +20,8 @@ from PyFlow.Core.Common import *
 class StringPin(PinBase):
     """doc string for StringPin"""
 
-    def __init__(self, name, parent, direction):
-        super(StringPin, self).__init__(name, parent, direction)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(StringPin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue("")
 
     @staticmethod
