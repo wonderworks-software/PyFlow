@@ -46,6 +46,8 @@ DEFAULT_OUT_EXEC_NAME = "outExec"
 DEFAULT_WIDGET_VARIANT = "DefaultWidget"
 REF = "Reference"
 
+global GlobalVariables
+GlobalVariables = {}
 
 def lerp(start, end, alpha):
     """Performs a linear interpolation
