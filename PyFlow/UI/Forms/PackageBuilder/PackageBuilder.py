@@ -2027,7 +2027,7 @@ class PackageBuilder(QMdiSubWindow):
                     if pinOptionsStart != -1:
                         pinOptions = phrase[1][pinOptionsStart:pinOptionEnd]
 
-                        '''def createInputPin(self, pinName, dataType, defaultValue=None, foo=None,
+                        '''def createInputPin(self, pinName, dataType, defaultValue=None, callback=None,
                                            structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):'''
 
                         '''createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None,

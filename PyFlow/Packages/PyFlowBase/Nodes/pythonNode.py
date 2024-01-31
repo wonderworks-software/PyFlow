@@ -92,7 +92,7 @@ class pythonNode(NodeBase):
                     pinName=inpJson["name"],
                     dataType=inpJson["dataType"],
                     defaultValue=getPinDefaultValueByType(inpJson["dataType"]),
-                    foo=self.compute,
+                    callback=self.compute,
                 )
             pin.deserialize(inpJson)
 

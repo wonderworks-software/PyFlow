@@ -252,7 +252,8 @@ class UIConnection(QGraphicsPathItem):
                 self._uid
             )
             self._uid = value
-
+    
+    # TODO: Check why this serialization sometimes fails
     def applyJsonData(self, data):
         hOffsetL = data["hOffsetL"]
         if hOffsetL is not None:

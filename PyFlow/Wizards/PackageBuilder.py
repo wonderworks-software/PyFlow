@@ -1765,7 +1765,7 @@ class PackageBuilder(QMdiSubWindow):
                     if pinOptionsStart != -1:
                         pinOptions = phrase[1][pinOptionsStart:pinOptionEnd]
 
-                        '''def createInputPin(self, pinName, dataType, defaultValue=None, foo=None,
+                        '''def createInputPin(self, pinName, dataType, defaultValue=None, callback=None,
                                            structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):'''
 
                         '''createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None,
@@ -1783,7 +1783,7 @@ class PackageBuilder(QMdiSubWindow):
                                     if row == 2:
                                         pinData["DefaultValue"] = options.replace("\"","").replace("\'","").strip()
                                     if row == 3:
-                                        pinData["foo"] = options.replace("\"","").replace("\'","").strip()
+                                        pinData["callback"] = options.replace("\"","").replace("\'","").strip()
                                 else:
                                     moreoptions = options.split("=")
                                     pinData[moreoptions[0]] = moreoptions[0]

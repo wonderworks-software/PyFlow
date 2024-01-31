@@ -25,7 +25,7 @@ class branch(NodeBase):
         self.trueExec = self.createOutputPin("True", "ExecPin")
         self.falseExec = self.createOutputPin("False", "ExecPin")
         self.inExec = self.createInputPin(
-            "In", "ExecPin", defaultValue=None, foo=self.compute
+            "In", "ExecPin", defaultValue=None, callback=self.compute
         )
         self.condition = self.createInputPin("Condition", "BoolPin")
         self.headerColor = FLOW_CONTROL_COLOR

@@ -14,6 +14,7 @@
 
 
 import logging
+import uuid
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtSvg

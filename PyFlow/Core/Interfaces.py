@@ -284,7 +284,7 @@ class INode(IItemBase):
         pinName,
         dataType,
         defaultValue=None,
-        foo=None,
+        callback=None,
         structure=StructureType.Single,
         constraint=None,
         structConstraint=None,
