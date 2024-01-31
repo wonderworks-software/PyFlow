@@ -18,7 +18,7 @@ from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
-
+import uuid
 
 class switch(NodeBase):
     def __init__(self, name):
@@ -28,9 +28,17 @@ class switch(NodeBase):
         self.defaultPin = self.createOutputPin('default', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
 
-    def addOutPin(self):
-        name = self.getUniqPinName("0")
-        
+    def postCreate(self, jsonTemplate=None):
+        super(switch, self).postCreate(jsonTemplate=jsonTemplate)
+        existingPins = self.namePinOutputsMap
+        if jsonTemplate is not None:
+            sortedOutputs = sorted(jsonTemplate['outputs'], key=lambda pinDict: pinDict["pinIndex"])
+            for pinJson in sortedOutputs:
+                if pinJson['name'] not in existingPins:
+                    inDyn = self.addOutPin(pinJson['name'])
+                    inDyn.uid = uuid.UUID(pinJson['uuid'])
+                    
+    def addOutPin(self, name):
         p = self.createOutputPin(name, 'ExecPin')
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)

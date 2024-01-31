@@ -524,7 +524,7 @@ class PackageBuilder(QMdiSubWindow):
             istyle = "kwarg"
             ikeywords = ["func", "returns", "meta"]
 
-            '''PinSpecifires = {PinSpecifires.List: PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported, PinSpecifires.Value: "1"}'''
+            '''PinSpecifiers = {PinSpecifiers.List: PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported, PinSpecifiers.Value: "1"}'''
             parseparameters = {"start":"{", "end": "}", "delimination": ","}
             valuetype = {"\"": "Value", "|": "List"}
 
@@ -676,25 +676,25 @@ class PackageBuilder(QMdiSubWindow):
                     pindata = {}
                     for y in curlystuff3.split(","):
                         itemdata = y.strip().split(":")
-                        if itemdata[0] == "PinSpecifires.SUPPORTED_DATA_TYPES":
+                        if itemdata[0] == "PinSpecifiers.SUPPORTED_DATA_TYPES":
                             pindata["SUPPORTED_DATA_TYPES"] = itemdata[1][1:].strip()
-                        if itemdata[0] == "PinSpecifires.CONSTRAINT":
+                        if itemdata[0] == "PinSpecifiers.CONSTRAINT":
                             pindata["CONSTRAINT"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.STRUCT_CONSTRAINT":
+                        if itemdata[0] == "PinSpecifiers.STRUCT_CONSTRAINT":
                             pindata["STRUCT_CONSTRAINT"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.ENABLED_OPTIONS":
+                        if itemdata[0] == "PinSpecifiers.ENABLED_OPTIONS":
                             pindata["ENABLED_OPTIONS"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.DISABLED_OPTIONS":
+                        if itemdata[0] == "PinSpecifiers.DISABLED_OPTIONS":
                             pindata["DISABLED_OPTIONS"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.INPUT_WIDGET_VARIANT":
+                        if itemdata[0] == "PinSpecifiers.INPUT_WIDGET_VARIANT":
                             pindata["INPUT_WIDGET_VARIANT"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.DESCRIPTION":
+                        if itemdata[0] == "PinSpecifiers.DESCRIPTION":
                             pindata["DESCRIPTION"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.VALUE_LIST":
+                        if itemdata[0] == "PinSpecifiers.VALUE_LIST":
                             pindata["VALUE_LIST"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.VALUE_RANGE":
+                        if itemdata[0] == "PinSpecifiers.VALUE_RANGE":
                             pindata["VALUE_RANGE"] = itemdata[1].strip()
-                        if itemdata[0] == "PinSpecifires.DRAGGER_STEPS":
+                        if itemdata[0] == "PinSpecifiers.DRAGGER_STEPS":
                             pindata["DRAGGER_STEPS"] = itemdata[1].strip()
 
                 listdata = data.split(",")
@@ -743,25 +743,25 @@ class PackageBuilder(QMdiSubWindow):
                     if curlystuff3 is not None:
                         for y in curlystuff3.split(","):
                             itemdata = y.strip().split(":")
-                            if itemdata[0] == "PinSpecifires.SUPPORTED_DATA_TYPES":
+                            if itemdata[0] == "PinSpecifiers.SUPPORTED_DATA_TYPES":
                                 pindata["SUPPORTED_DATA_TYPES"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.CONSTRAINT":
+                            if itemdata[0] == "PinSpecifiers.CONSTRAINT":
                                 pindata["CONSTRAINT"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.STRUCT_CONSTRAINT":
+                            if itemdata[0] == "PinSpecifiers.STRUCT_CONSTRAINT":
                                 pindata["STRUCT_CONSTRAINT"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.ENABLED_OPTIONS":
+                            if itemdata[0] == "PinSpecifiers.ENABLED_OPTIONS":
                                 pindata["ENABLED_OPTIONS"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.DISABLED_OPTIONS":
+                            if itemdata[0] == "PinSpecifiers.DISABLED_OPTIONS":
                                 pindata["DISABLED_OPTIONS"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.INPUT_WIDGET_VARIANT":
+                            if itemdata[0] == "PinSpecifiers.INPUT_WIDGET_VARIANT":
                                 pindata["INPUT_WIDGET_VARIANT"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.DESCRIPTION":
+                            if itemdata[0] == "PinSpecifiers.DESCRIPTION":
                                 pindata["DESCRIPTION"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.VALUE_LIST":
+                            if itemdata[0] == "PinSpecifiers.VALUE_LIST":
                                 pindata["VALUE_LIST"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.VALUE_RANGE":
+                            if itemdata[0] == "PinSpecifiers.VALUE_RANGE":
                                 pindata["VALUE_RANGE"] = itemdata[1].strip()
-                            if itemdata[0] == "PinSpecifires.DRAGGER_STEPS":
+                            if itemdata[0] == "PinSpecifiers.DRAGGER_STEPS":
                                 pindata["DRAGGER_STEPS"] = itemdata[1].strip()
 
                     pindefs["Inputs"][variable] = pindata
@@ -1374,25 +1374,25 @@ class PackageBuilder(QMdiSubWindow):
 
             pinspecifiers = ""
             if "SUPPORTED_DATA_TYPES" in data:
-                pinspecifiers += "PinSpecifires.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
+                pinspecifiers += "PinSpecifiers.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
             if "CONSTRAINT" in data:
-                pinspecifiers += "PinSpecifires.CONSTRAINT: " + data["CONSTRAINT"] + ", "
+                pinspecifiers += "PinSpecifiers.CONSTRAINT: " + data["CONSTRAINT"] + ", "
             if "STRUCT_CONSTRAINT" in data:
-                pinspecifiers += "PinSpecifires.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
+                pinspecifiers += "PinSpecifiers.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
             if "ENABLED_OPTIONS" in data:
-                pinspecifiers += "PinSpecifires.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
+                pinspecifiers += "PinSpecifiers.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
             if "DISABLED_OPTIONS" in data:
-                pinspecifiers += "PinSpecifires.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
+                pinspecifiers += "PinSpecifiers.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
             if "INPUT_WIDGET_VARIANT" in data:
-                pinspecifiers += "PinSpecifires.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
+                pinspecifiers += "PinSpecifiers.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
             if "DESCRIPTION" in data:
-                pinspecifiers += "PinSpecifires.DESCRIPTION: \'" + data["DESCRIPTION"] + "\', "
+                pinspecifiers += "PinSpecifiers.DESCRIPTION: \'" + data["DESCRIPTION"] + "\', "
             if "VALUE_LIST" in data:
-                pinspecifiers += "PinSpecifires.VALUE_LIST: " + data["VALUE_LIST"] + ", "
+                pinspecifiers += "PinSpecifiers.VALUE_LIST: " + data["VALUE_LIST"] + ", "
             if "VALUE_RANGE" in data:
-                pinspecifiers += "PinSpecifires.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
+                pinspecifiers += "PinSpecifiers.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
             if "DRAGGER_STEPS" in data:
-                pinspecifiers += "PinSpecifires.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
+                pinspecifiers += "PinSpecifiers.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
             if pinspecifiers != "":
                 idata += ", {" + pinspecifiers[:-2] + "})"
 
@@ -1420,25 +1420,25 @@ class PackageBuilder(QMdiSubWindow):
 
             pinspecifiers = ""
             if "SUPPORTED_DATA_TYPES" in data:
-                pinspecifiers += "PinSpecifires.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
+                pinspecifiers += "PinSpecifiers.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
             if "CONSTRAINT" in data:
-                pinspecifiers += "PinSpecifires.CONSTRAINT: " + data["CONSTRAINT"] + ", "
+                pinspecifiers += "PinSpecifiers.CONSTRAINT: " + data["CONSTRAINT"] + ", "
             if "STRUCT_CONSTRAINT" in data:
-                pinspecifiers += "PinSpecifires.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
+                pinspecifiers += "PinSpecifiers.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
             if "ENABLED_OPTIONS" in data:
-                pinspecifiers += "PinSpecifires.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
+                pinspecifiers += "PinSpecifiers.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
             if "DISABLED_OPTIONS" in data:
-                pinspecifiers += "PinSpecifires.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
+                pinspecifiers += "PinSpecifiers.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
             if "INPUT_WIDGET_VARIANT" in data:
-                pinspecifiers += "PinSpecifires.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
+                pinspecifiers += "PinSpecifiers.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
             if "DESCRIPTION" in data:
-                pinspecifiers += "PinSpecifires.DESCRIPTION: " + data["DESCRIPTION"] + ", "
+                pinspecifiers += "PinSpecifiers.DESCRIPTION: " + data["DESCRIPTION"] + ", "
             if "VALUE_LIST" in data:
-                pinspecifiers += "PinSpecifires.VALUE_LIST: " + data["VALUE_LIST"] + ", "
+                pinspecifiers += "PinSpecifiers.VALUE_LIST: " + data["VALUE_LIST"] + ", "
             if "VALUE_RANGE" in data:
-                pinspecifiers += "PinSpecifires.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
+                pinspecifiers += "PinSpecifiers.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
             if "DRAGGER_STEPS" in data:
-                pinspecifiers += "PinSpecifires.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
+                pinspecifiers += "PinSpecifiers.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
             if pinspecifiers != "":
                 didata += ", {" + pinspecifiers[:-2] + "}"
 
@@ -1461,25 +1461,25 @@ class PackageBuilder(QMdiSubWindow):
 
                 pinspecifiers = ""
                 if "SUPPORTED_DATA_TYPES" in data:
-                    pinspecifiers += "PinSpecifires.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
+                    pinspecifiers += "PinSpecifiers.SUPPORTED_DATA_TYPES: " + data["SUPPORTED_DATA_TYPES"] + ", "
                 if "CONSTRAINT" in data:
-                    pinspecifiers += "PinSpecifires.CONSTRAINT: " + data["CONSTRAINT"] + ", "
+                    pinspecifiers += "PinSpecifiers.CONSTRAINT: " + data["CONSTRAINT"] + ", "
                 if "STRUCT_CONSTRAINT" in data:
-                    pinspecifiers += "PinSpecifires.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
+                    pinspecifiers += "PinSpecifiers.STRUCT_CONSTRAINT: " + data["STRUCT_CONSTRAINT"] + ", "
                 if "ENABLED_OPTIONS" in data:
-                    pinspecifiers += "PinSpecifires.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
+                    pinspecifiers += "PinSpecifiers.ENABLED_OPTIONS: " + data["ENABLED_OPTIONS"] + ", "
                 if "DISABLED_OPTIONS" in data:
-                    pinspecifiers += "PinSpecifires.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
+                    pinspecifiers += "PinSpecifiers.DISABLED_OPTIONS: " + data["DISABLED_OPTIONS"] + ", "
                 if "INPUT_WIDGET_VARIANT" in data:
-                    pinspecifiers += "PinSpecifires.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
+                    pinspecifiers += "PinSpecifiers.INPUT_WIDGET_VARIANT: " + data["INPUT_WIDGET_VARIANT"] + ", "
                 if "DESCRIPTION" in data:
-                    pinspecifiers += "PinSpecifires.DESCRIPTION: " +  "\'" + data["DESCRIPTION"] + "\', "
+                    pinspecifiers += "PinSpecifiers.DESCRIPTION: " +  "\'" + data["DESCRIPTION"] + "\', "
                 if "VALUE_LIST" in data:
-                    pinspecifiers += "PinSpecifires.VALUE_LIST: " + data["VALUE_LIST"] + ", "
+                    pinspecifiers += "PinSpecifiers.VALUE_LIST: " + data["VALUE_LIST"] + ", "
                 if "VALUE_RANGE" in data:
-                    pinspecifiers += "PinSpecifires.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
+                    pinspecifiers += "PinSpecifiers.VALUE_RANGE: " + data["VALUE_RANGE"] + ", "
                 if "DRAGGER_STEPS" in data:
-                    pinspecifiers += "PinSpecifires.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
+                    pinspecifiers += "PinSpecifiers.DRAGGER_STEPS: " + data["DRAGGER_STEPS"] + ", "
                 if pinspecifiers != "":
                     ddata += ", {" + pinspecifiers[:-2] + "}"
 

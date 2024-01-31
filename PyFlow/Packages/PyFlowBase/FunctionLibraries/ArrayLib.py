@@ -183,6 +183,18 @@ class ArrayLib(FunctionLibraryBase):
     ):
         """Remove all items from the list."""
         return clearList(ls)
+    
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, meta={NodeMeta.CATEGORY: 'Array', NodeMeta.KEYWORDS: []})
+    def arraySize(ls=('AnyPin', [], {PinSpecifiers.CONSTRAINT: '1', PinSpecifiers.ENABLED_OPTIONS: PinOptions.ArraySupported | PinOptions.AllowAny}),
+                  size=(REF, ("BoolPin", 0)),
+                  is_empty=(REF, ("BoolPin", False)),
+                  not_empty=(REF, ("BoolPin", False))):
+        l = len(ls)
+        size(l)
+        is_empty(True if l > 0 else False)
+        not_empty(not is_empty)
+        return clearList(ls)
 
     @staticmethod
     @IMPLEMENT_NODE(

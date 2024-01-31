@@ -17,23 +17,27 @@ from PyFlow.UI.Canvas.UICommon import DEFAULT_IN_EXEC_NAME
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
+from PyFlow.UI.Utils.stylesheet import Colors
+from qtpy import QtCore
+from qtpy.QtWidgets import QInputDialog
 
 
-class UISwitch(UINodeBase):
+class UICombineArgs(UINodeBase):
+    pinCreated = QtCore.Signal(object)
+    
     def __init__(self, raw_node):
-        super(UISwitch, self).__init__(raw_node)
-        actionAddOut = self._menu.addAction("Add out pin")
-        actionAddOut.setToolTip("Adds an option")
+        super(UICombineArgs, self).__init__(raw_node)
+        actionAddOut = self._menu.addAction("Add arg")
+        actionAddOut.setToolTip("Add arg")
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
-        actionAddOut.triggered.connect(self.onAddOutPin)
+        actionAddOut.triggered.connect(self.onAddInPin)
 
-    def postCreate(self, jsonTemplate=None):
-        super(UISwitch, self).postCreate(jsonTemplate=jsonTemplate)
-        inExecPin = self.getPinSG(DEFAULT_IN_EXEC_NAME)
-        inExecPin.bLabelHidden = True
-
-    def onAddOutPin(self):
-        name = self._rawNode.getUniqPinName("0")
-        rawPin = self._rawNode.addOutPin(name)
-        uiPin = self._createUIPinWrapper(rawPin)
-        return uiPin
+    def onAddInPin(self):
+        name, confirmed = QInputDialog.getText(
+            None, "Rename", "Enter new pin name")
+        if confirmed and name != self.name and name != "":
+            name = self._rawNode.getUniqPinName(name)
+            rawPin = self._rawNode.addInPin(name, "StringPin")
+            uiPin = self._createUIPinWrapper(rawPin)
+            self.pinCreated.emit(uiPin)
+            self.updateNodeShape()

@@ -24,6 +24,7 @@ from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbs
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.StringLib import StringLib
+from PyFlow.Packages.PyFlowBase.FunctionLibraries.IOLib import IOLib
 
 # Class based nodes
 from PyFlow.Packages.PyFlowBase.Nodes.branch import branch
@@ -43,6 +44,9 @@ from PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
+from PyFlow.Packages.PyFlowBase.Nodes.subProcess import subProcess
+from PyFlow.Packages.PyFlowBase.Nodes.combineArgs import combineArgs
+from PyFlow.Packages.PyFlowBase.Nodes.storeArgs import storeArgs
 from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
 from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
@@ -117,6 +121,7 @@ _FOO_LIBS = {
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
     PathLib.__name__: PathLib(PACKAGE_NAME),
     StringLib.__name__: StringLib(PACKAGE_NAME),
+    IOLib.__name__: IOLib(PACKAGE_NAME),
 }
 
 
@@ -135,6 +140,9 @@ _NODES = {
     retriggerableDelay.__name__: retriggerableDelay,
     sequence.__name__: sequence,
     switch.__name__: switch,
+    subProcess.__name__: subProcess,
+    combineArgs.__name__: combineArgs,
+    storeArgs.__name__: storeArgs,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     whileLoopBegin.__name__: whileLoopBegin,

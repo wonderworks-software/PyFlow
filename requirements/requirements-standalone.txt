@@ -3,3 +3,4 @@ qtpy
 blinker
 docutils
 SQLAlchemy
+requests

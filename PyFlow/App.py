@@ -42,7 +42,9 @@ try:
     from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 except ImportError:
     pass
+import asyncio
 
+import PyFlow.UI.resources
 from PyFlow.Wizards.PackageWizard import PackageWizard
 
 from PyFlow import INITIALIZE
@@ -172,7 +174,7 @@ class PyFlow(QMainWindow):
         fileMenu = self.menuBar.addMenu("File")
         newFileAction = fileMenu.addAction("New file")
         newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
-        newFileAction.triggered.connect(self.newFile)
+        newFileAction.triggered.connect(self._clickNewFile)
 
         loadAction = fileMenu.addAction("Load")
         loadAction.setIcon(QtGui.QIcon(":/folder_open_icon.png"))
@@ -284,9 +286,9 @@ class PyFlow(QMainWindow):
 
         if currentInputAction in actionNewFileVariants:
             shouldSave = self.shouldSave()
-            if shouldSave == QMessageBox.Yes:
+            if shouldSave == QMessageBox.Save:
                 self.save()
-            elif shouldSave == QMessageBox.Discard:
+            elif shouldSave == QMessageBox.Cancel:
                 return
 
             EditorHistory().clear()
@@ -302,7 +304,7 @@ class PyFlow(QMainWindow):
             self.save()
         if currentInputAction in actionLoadVariants:
             shouldSave = self.shouldSave()
-            if shouldSave == QMessageBox.Yes:
+            if shouldSave == QMessageBox.Save:
                 self.save()
             elif shouldSave == QMessageBox.Discard:
                 return
@@ -312,7 +314,7 @@ class PyFlow(QMainWindow):
 
     def loadFromFileChecked(self, filePath):
         shouldSave = self.shouldSave()
-        if shouldSave == QMessageBox.Yes:
+        if shouldSave == QMessageBox.Save:
             self.save()
         elif shouldSave == QMessageBox.Discard:
             return
@@ -415,6 +417,24 @@ class PyFlow(QMainWindow):
             self.updateLabel()
             return True
 
+    def _clickNewFile(self):
+        shouldSave = self.shouldSave()
+        if shouldSave == QMessageBox.Save:
+            
+            self.save()
+        elif shouldSave == QMessageBox.Cancel:
+            return
+
+        EditorHistory().clear()
+        historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
+        for historyTools in historyTools:
+            historyTools.onClear()
+        self.newFile()
+        EditorHistory().saveState("New file")
+        self.currentFileName = None
+        self.modified = False
+        self.updateLabel()
+        
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
@@ -435,6 +455,8 @@ class PyFlow(QMainWindow):
         self.tick_timer.timeout.disconnect()
 
     def mainLoop(self):
+        asyncio.get_event_loop().run_until_complete(self._tick_asyncio())
+        
         deltaTime = currentProcessorTime() - self._lastClock
         ds = deltaTime * 1000.0
         if ds > 0:
@@ -449,6 +471,9 @@ class PyFlow(QMainWindow):
         self.canvasWidget.Tick(deltaTime)
 
         self._lastClock = currentProcessorTime()
+        
+    async def _tick_asyncio(self):
+        await asyncio.sleep(0.00001)
 
     def createPopupMenu(self):
         pass

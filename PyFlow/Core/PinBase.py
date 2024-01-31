@@ -813,7 +813,10 @@ class PinBase(IPin):
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
                 traversed.add(neighbor)
-                neighbor.setData(neighbor.defaultValue())
+                try:
+                    neighbor.setData(neighbor.getData())
+                except:
+                    neighbor.setData(neighbor.defaultValue())
                 neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
 
     def pinConnected(self, other):
