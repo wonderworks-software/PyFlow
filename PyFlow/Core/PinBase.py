@@ -820,13 +820,13 @@ class PinBase(IPin):
                 neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
 
     def pinConnected(self, other):
-        push(self)
+        #push(self)
         if self.isDict():
             self.updateConnectedDicts([], self._data.keyType)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
-        push(other)
+        #push(other)
 
     def canChangeTypeOnConnection(self, checked=None, can=True, extraPins=None, selfCheck=True):
         """Recursive function to determine if pin can change its dataType

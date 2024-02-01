@@ -530,7 +530,7 @@ def connectPins(src, dst):
 
     dst.pinConnected(src)
     src.pinConnected(dst)
-    push(dst)
+    #push(dst)
     return True
 
 
