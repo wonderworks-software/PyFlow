@@ -569,8 +569,8 @@ class PinBase(IPin):
                 for i in self.affects:
                     i.setData(self.currentData())
 
-            if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
-                push(self)
+            #if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
+            #    push(self)
             self.clearError()
             self.dataBeenSet.send(self)
         except Exception as exc:

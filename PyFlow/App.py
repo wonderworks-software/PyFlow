@@ -54,7 +54,7 @@ from PyFlow.ConfigManager import ConfigManager
 
 import PyFlow.UI.resources
 
-EDITOR_TARGET_FPS = 60
+EDITOR_TARGET_FPS = 30
 
 
 def generateRandomString(numbSymbols=5):

@@ -632,6 +632,7 @@ def push(start_from):
     :param start_from: pin from which recursion begins
     :type start_from: :py:class:`~PyFlow.Core.PinBase.PinBase`
     """
+    #print("push", start_from.name, start_from.owningNode().name)
     if not len(start_from.affects) == 0:
         start_from.setDirty()
         for i in start_from.affects:
