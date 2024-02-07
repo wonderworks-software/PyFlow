@@ -46,7 +46,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
     def modifiersToString(modifiers):
         if modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
             return "NoModifier"
-        return QtGui.QKeySequence(modifiers).toString()[:-1]
+        return QtGui.QKeySequence(modifiers).toString()[:-2]
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
