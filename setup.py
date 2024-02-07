@@ -25,10 +25,11 @@ setup(
     },
     classifiers=["License :: Appache-2.0"],
     install_requires=[
-        "enum ; python_version<'3.4'",
-        "Qt.py",
+        "qtpy",
         "blinker",
         "docutils",
+        "SQLAlchemy",
+        "requests",
     ],
-    extra_requires=["PySide2"],
+    extra_requires=["PySide6"],
 )
