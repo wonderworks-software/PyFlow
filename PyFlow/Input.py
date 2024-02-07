@@ -129,13 +129,14 @@ class InputAction(object):
     def toJson(self):
         saveData = {"name": self._name,
                     "group": self._group,
-                    "mouse": int(self.__data["mouse"]),
+                    "mouse": int(self.__data["mouse"].value),
                     "actionType": self.actionType.value}
         key = self.__data["key"]
         saveData["key"] = int(key) if key is not None else None
 
         modifiersList = self._modifiersToList(self.__data["modifiers"])
-        saveData["modifiers"] = [int(i) for i in modifiersList]
+
+        saveData["modifiers"] = [i.value for i in modifiersList]
         return saveData
 
     def fromJson(self, jsonData):
