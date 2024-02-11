@@ -113,7 +113,8 @@ class UIConnection(QGraphicsPathItem):
             self.bubble.setPos(point)
 
             self.bubble.hide()
-            self.source()._rawPin.onExecute.connect(self.performEvaluationFeedback)
+            
+            self.source().OnPinExecute.connect(self.performEvaluationFeedback)
             self.shouldAnimate = False
             self.timeline = QtCore.QTimeLine(2000)
             self.timeline.setFrameRange(0, 100)

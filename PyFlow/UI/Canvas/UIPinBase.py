@@ -43,6 +43,7 @@ class UIPinBase(QGraphicsWidget):
     displayNameChanged = QtCore.Signal(str)
     OnPinChanged = QtCore.Signal(object)
     OnPinDeleted = QtCore.Signal(object)
+    OnPinExecute = QtCore.Signal(object)
 
     def __init__(self, owningNode, raw_pin):
         """UI wrapper for :class:`PyFlow.Core.PinBase`
@@ -71,7 +72,7 @@ class UIPinBase(QGraphicsWidget):
             self._rawPin.setWrapper(self)
             self._rawPin.killed.connect(self.kill)
             self._rawPin.nameChanged.connect(self.setDisplayName)
-
+            self._rawPin.onExecute.connect(self.on_rawPin_executed)
             # Context menu for pin
             self.menu = QMenu()
             self.menu.addAction("Rename").triggered.connect(self.onRename)
@@ -119,6 +120,9 @@ class UIPinBase(QGraphicsWidget):
     @property
     def wrapperJsonData(self):
         return self._rawPin.wrapperJsonData
+    
+    def on_rawPin_executed(self, *args, **kwargs):
+        self.OnPinExecute.emit(self)
 
     def onCopyPathToClipboard(self):
         QApplication.clipboard().clear()
