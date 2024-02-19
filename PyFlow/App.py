@@ -26,10 +26,14 @@ from qtpy import QtGui
 from qtpy import QtCore
 from qtpy.QtWidgets import *
 
+from PyFlow import GET_PACKAGES
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.version import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton
-from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.Core.Common import currentProcessorTime
+from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.Core.Common import validateGraphDataPackages
+from PyFlow.UI.Canvas.UICommon import SessionDescriptor
 from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.UI.EditorHistory import EditorHistory
