@@ -726,6 +726,8 @@ class SingletonDecorator:
         self.allInstances.append(self)
 
     def destroy(self):
+        if ('destroy' in dir(self.instance)):
+            self.instance.destroy()
         del self.instance
         self.instance = None
 
