@@ -1,3 +1,16 @@
+v3.0.0 (February 20, 2024)
+-----------------------------------------------------
+
+* Moved to python 3
+* Moved to pyside6 and qtpy instead of Qt.py
+* Allow for evaluation of non callable dirty nodes 
+* Added new nodes
+* Added new examples
+* Merged stuff from some forked repositories
+
+Bug fixes
+
+
 v2.0.1 (September 21, 2019)
 -----------------------------------------------------
 
