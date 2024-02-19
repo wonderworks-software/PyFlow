@@ -31,7 +31,7 @@ from enum import IntEnum, Flag, auto
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
-
+from PyFlow import GET_PACKAGES
 
 maxint = 2 ** (struct.Struct("i").size * 8 - 1) - 1
 
@@ -48,6 +48,53 @@ REF = "Reference"
 
 global GlobalVariables
 GlobalVariables = {}
+
+
+def fetchPackageNames(graphJson):
+    """Parses serialized graph and returns all package names it uses
+
+    :param graphJson: Serialized graph
+    :type graphJson: dict
+    :rtyoe: list(str)
+    """
+    packages = set()
+
+    def worker(graphData):
+        for node in graphData["nodes"]:
+            packages.add(node["package"])
+
+            for inpJson in node["inputs"]:
+                packages.add(inpJson["package"])
+
+            for outJson in node["inputs"]:
+                packages.add(outJson["package"])
+
+            if "graphData" in node:
+                worker(node["graphData"])
+
+    worker(graphJson)
+    return packages
+
+
+def validateGraphDataPackages(graphData, missedPackages=None):
+    """Checks if packages used in serialized data accessible
+
+    Missed packages will be added to output set
+
+    :param graphData: Serialized graph
+    :type graphData: dict
+    :param missedPackages: Package names that missed
+    :type missedPackages: set
+    :rtype: bool
+    """
+    if missedPackages is None:
+        missedPackages = set()
+    existingPackages = GET_PACKAGES().keys()
+    graphPackages = fetchPackageNames(graphData)
+    for pkg in graphPackages:
+        if pkg not in existingPackages:
+            missedPackages.add(pkg)
+    return len(missedPackages) == 0
 
 def lerp(start, end, alpha):
     """Performs a linear interpolation
@@ -732,7 +779,8 @@ class SingletonDecorator:
     def __call__(self, *args, **kwds):
         if self.instance is None:
             self.instance = self.cls(*args, **kwds)
-
+        if hasattr(self.instance, 'instanceCount'):
+            self.instance.instanceCount += 1
         return self.instance
 
 
