@@ -21,54 +21,76 @@ from random import choice
 from PyFlow import Wizards
 
 
-def generatePackageInit(packageName,
-                        bIncludeClassNode=True,
-                        bIncludeFooLib=True,
-                        bIncludeUINodeFactory=True,
-                        bIncludePin=True,
-                        bIncludeUIPinFactory=True,
-                        bIncludeTool=True,
-                        bIncludeExporter=True,
-                        bIncludePinInputWidgetFactory=True,
-                        bIncludePrefsWindget=False):
+def generatePackageInit(
+    packageName,
+    bIncludeClassNode=True,
+    bIncludeFooLib=True,
+    bIncludeUINodeFactory=True,
+    bIncludePin=True,
+    bIncludeUIPinFactory=True,
+    bIncludeTool=True,
+    bIncludeExporter=True,
+    bIncludePinInputWidgetFactory=True,
+    bIncludePrefsWindget=False,
+):
     result = "PACKAGE_NAME = '{0}'\n\n".format(packageName)
     result += "from collections import OrderedDict\n"
     result += "from PyFlow.UI.UIInterfaces import IPackage\n\n"
 
     if bIncludePin:
         result += "# Pins\n"
-        result += "from PyFlow.Packages.{0}.Pins.DemoPin import DemoPin\n\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Pins.DemoPin import DemoPin\n\n".format(
+            packageName
+        )
 
     if bIncludeFooLib:
         result += "# Function based nodes\n"
-        result += "from PyFlow.Packages.{0}.FunctionLibraries.DemoLib import DemoLib\n\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.FunctionLibraries.DemoLib import DemoLib\n\n".format(
+            packageName
+        )
 
     if bIncludeClassNode:
         result += "# Class based nodes\n"
-        result += "from PyFlow.Packages.{0}.Nodes.DemoNode import DemoNode\n\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Nodes.DemoNode import DemoNode\n\n".format(
+            packageName
+        )
 
     if bIncludeTool:
         result += "# Tools\n"
-        result += "from PyFlow.Packages.{0}.Tools.DemoShelfTool import DemoShelfTool\n".format(packageName)
-        result += "from PyFlow.Packages.{0}.Tools.DemoDockTool import DemoDockTool\n\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Tools.DemoShelfTool import DemoShelfTool\n".format(
+            packageName
+        )
+        result += "from PyFlow.Packages.{0}.Tools.DemoDockTool import DemoDockTool\n\n".format(
+            packageName
+        )
 
     if bIncludeExporter:
         result += "# Exporters\n"
-        result += "from PyFlow.Packages.{0}.Exporters.DemoExporter import DemoExporter\n\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Exporters.DemoExporter import DemoExporter\n\n".format(
+            packageName
+        )
 
     result += "# Factories\n"
     if bIncludeUIPinFactory:
-        result += "from PyFlow.Packages.{0}.Factories.UIPinFactory import createUIPin\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Factories.UIPinFactory import createUIPin\n".format(
+            packageName
+        )
 
     if bIncludeUINodeFactory:
-        result += "from PyFlow.Packages.{0}.Factories.UINodeFactory import createUINode\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Factories.UINodeFactory import createUINode\n".format(
+            packageName
+        )
 
     if bIncludePinInputWidgetFactory:
-        result += "from PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(
+            packageName
+        )
 
     if bIncludePrefsWindget:
         result += "# Prefs widgets\n"
-        result += "from PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(packageName)
+        result += "from PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(
+            packageName
+        )
 
     result += "\n"
 
@@ -99,39 +121,51 @@ def generatePackageInit(packageName,
     if bIncludePrefsWindget:
         result += """_PREFS_WIDGETS["Demo"] = DemoPrefs\n\n"""
 
-    result += "\nclass {0}(IPackage):\n\tdef __init__(self):\n\t\tsuper({0}, self).__init__()\n\n".format(packageName)
+    result += "\nclass {0}(IPackage):\n\tdef __init__(self):\n\t\tsuper({0}, self).__init__()\n\n".format(
+        packageName
+    )
     result += """\t@staticmethod\n\tdef GetExporters():\n\t\treturn _EXPORTERS\n\n"""
-    result += """\t@staticmethod\n\tdef GetFunctionLibraries():\n\t\treturn _FOO_LIBS\n\n"""
+    result += (
+        """\t@staticmethod\n\tdef GetFunctionLibraries():\n\t\treturn _FOO_LIBS\n\n"""
+    )
     result += """\t@staticmethod\n\tdef GetNodeClasses():\n\t\treturn _NODES\n\n"""
     result += """\t@staticmethod\n\tdef GetPinClasses():\n\t\treturn _PINS\n\n"""
     result += """\t@staticmethod\n\tdef GetToolClasses():\n\t\treturn _TOOLS\n\n"""
 
     if bIncludeUIPinFactory:
-        result += """\t@staticmethod\n\tdef UIPinsFactory():\n\t\treturn createUIPin\n\n"""
+        result += (
+            """\t@staticmethod\n\tdef UIPinsFactory():\n\t\treturn createUIPin\n\n"""
+        )
 
     if bIncludeUINodeFactory:
-        result += """\t@staticmethod\n\tdef UINodesFactory():\n\t\treturn createUINode\n\n"""
+        result += (
+            """\t@staticmethod\n\tdef UINodesFactory():\n\t\treturn createUINode\n\n"""
+        )
 
     if bIncludePinInputWidgetFactory:
         result += """\t@staticmethod\n\tdef PinsInputWidgetFactory():\n\t\treturn getInputWidget\n\n"""
 
     if bIncludePrefsWindget:
-        result += """\t@staticmethod\n\tdef PrefsWidgets():\n\t\treturn _PREFS_WIDGETS\n\n"""
+        result += (
+            """\t@staticmethod\n\tdef PrefsWidgets():\n\t\treturn _PREFS_WIDGETS\n\n"""
+        )
 
     return result
 
 
-def generatePackage(packageName,
-                    newPackageRoot,
-                    bIncludeClassNode=True,
-                    bIncludeFooLib=True,
-                    bIncludeUINodeFactory=True,
-                    bIncludePin=True,
-                    bIncludeUIPinFactory=True,
-                    bIncludeTool=True,
-                    bIncludeExporter=True,
-                    bIncludePinInputWidgetFactory=True,
-                    bIncludePrefsWindget=False):
+def generatePackage(
+    packageName,
+    newPackageRoot,
+    bIncludeClassNode=True,
+    bIncludeFooLib=True,
+    bIncludeUINodeFactory=True,
+    bIncludePin=True,
+    bIncludeUIPinFactory=True,
+    bIncludeTool=True,
+    bIncludeExporter=True,
+    bIncludePinInputWidgetFactory=True,
+    bIncludePrefsWindget=False,
+):
     wizardsRoot = Wizards.__path__[0]
     templatesRoot = os.path.join(wizardsRoot, "Templates")
     packageTemplateDirPath = os.path.join(templatesRoot, "PackageTemplate")
@@ -149,22 +183,29 @@ def generatePackage(packageName,
             with open(txtFilePath, "r") as f:
                 txtContent = f.read()
                 pyContent = txtContent.replace("@PACKAGE_NAME", packageName)
-                pyContent = pyContent.replace("@RAND", "".join([choice(ascii_uppercase) for i in range(5)]))
+                pyContent = pyContent.replace(
+                    "@RAND", "".join([choice(ascii_uppercase) for i in range(5)])
+                )
                 with open(pyFilePath, "w") as pf:
                     pf.write(pyContent)
             os.remove(txtFilePath)
 
     moduleInitFilePath = os.path.join(newPackagePath, "__init__.py")
     with open(moduleInitFilePath, "w") as f:
-        f.write(generatePackageInit(packageName, bIncludeClassNode=bIncludeClassNode,
-                                    bIncludeFooLib=bIncludeFooLib,
-                                    bIncludeUINodeFactory=bIncludeUINodeFactory,
-                                    bIncludePin=bIncludePin,
-                                    bIncludeUIPinFactory=bIncludeUIPinFactory,
-                                    bIncludeTool=bIncludeTool,
-                                    bIncludeExporter=bIncludeExporter,
-                                    bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory,
-                                    bIncludePrefsWindget=bIncludePrefsWindget))
+        f.write(
+            generatePackageInit(
+                packageName,
+                bIncludeClassNode=bIncludeClassNode,
+                bIncludeFooLib=bIncludeFooLib,
+                bIncludeUINodeFactory=bIncludeUINodeFactory,
+                bIncludePin=bIncludePin,
+                bIncludeUIPinFactory=bIncludeUIPinFactory,
+                bIncludeTool=bIncludeTool,
+                bIncludeExporter=bIncludeExporter,
+                bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory,
+                bIncludePrefsWindget=bIncludePrefsWindget,
+            )
+        )
 
     # remove unneeded directories
     for path, dirs, files in os.walk(newPackagePath):
@@ -182,19 +223,19 @@ def generatePackage(packageName,
         if dirName == "PrefsWidgets" and not bIncludePrefsWindget:
             shutil.rmtree(path)
         if dirName == "Factories":
-            removedFactoresCount = 0
+            removedFactoriesCount = 0
 
             if not bIncludeUINodeFactory:
                 os.remove(os.path.join(path, "UINodeFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
             if not bIncludeUIPinFactory:
                 os.remove(os.path.join(path, "UIPinFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
             if not bIncludePinInputWidgetFactory:
                 os.remove(os.path.join(path, "PinInputWidgetFactory.py"))
-                removedFactoresCount += 1
+                removedFactoriesCount += 1
 
-            if removedFactoresCount == 3:
+            if removedFactoriesCount == 3:
                 shutil.rmtree(path)
 
         if dirName == "UI":

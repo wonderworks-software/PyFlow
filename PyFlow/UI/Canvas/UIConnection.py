@@ -16,12 +16,12 @@
 import weakref
 from uuid import UUID, uuid4
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QGraphicsPathItem
-from Qt.QtWidgets import QGraphicsEllipseItem
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QStyle
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QGraphicsPathItem
+from qtpy.QtWidgets import QGraphicsEllipseItem
+from qtpy.QtWidgets import QMenu
+from qtpy.QtWidgets import QStyle
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet, Colors, ConnectionTypes
 from PyFlow.UI.Canvas.UICommon import NodeDefaults
@@ -29,11 +29,11 @@ from PyFlow.UI.Canvas.Painters import ConnectionPainter
 from PyFlow.Core.Common import *
 
 
-
 # UIConnection between pins
 class UIConnection(QGraphicsPathItem):
     """UIConnection is a cubic spline curve. It represents connection between two pins.
     """
+
     def __init__(self, source, destination, canvas):
         QGraphicsPathItem.__init__(self)
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
@@ -69,7 +69,13 @@ class UIConnection(QGraphicsPathItem):
         if source.isExec():
             self.thickness = 2
 
-        self.pen = QtGui.QPen(self.color, self.thickness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self.pen = QtGui.QPen(
+            self.color,
+            self.thickness,
+            QtCore.Qt.SolidLine,
+            QtCore.Qt.RoundCap,
+            QtCore.Qt.RoundJoin,
+        )
 
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
@@ -107,7 +113,8 @@ class UIConnection(QGraphicsPathItem):
             self.bubble.setPos(point)
 
             self.bubble.hide()
-            self.source()._rawPin.onExecute.connect(self.performEvaluationFeedback)
+            
+            self.source().OnPinExecute.connect(self.performEvaluationFeedback)
             self.shouldAnimate = False
             self.timeline = QtCore.QTimeLine(2000)
             self.timeline.setFrameRange(0, 100)
@@ -122,9 +129,13 @@ class UIConnection(QGraphicsPathItem):
             self.timeline.start()
 
     def timelineFrameChanged(self, frameNum):
-        percentage = currentProcessorTime() - self.source()._rawPin.getLastExecutionTime()
+        percentage = (
+            currentProcessorTime() - self.source()._rawPin.getLastExecutionTime()
+        )
         self.shouldAnimate = percentage < 0.5
-        point = self.mPath.pointAtPercent(float(frameNum) / float(self.timeline.endFrame()))
+        point = self.mPath.pointAtPercent(
+            float(frameNum) / float(self.timeline.endFrame())
+        )
         self.bubble.setPos(point)
         if not self.shouldAnimate:
             self.timeline.stop()
@@ -138,15 +149,25 @@ class UIConnection(QGraphicsPathItem):
         dstNode = self.destination().owningNode()
         srcComment = srcNode.owningCommentNode
         dstComment = dstNode.owningCommentNode
-        if srcComment is not None and dstComment is not None and srcComment == dstComment and srcComment.collapsed:
+        if (
+            srcComment is not None
+            and dstComment is not None
+            and srcComment == dstComment
+            and srcComment.collapsed
+        ):
             return True
         return False
 
     def isUnderActiveGraph(self):
-        return self.canvasRef().graphManager.activeGraph() == self.source()._rawPin.owningNode().graph()
+        return (
+            self.canvasRef().graphManager.activeGraph()
+            == self.source()._rawPin.owningNode().graph()
+        )
 
     def __repr__(self):
-        return "{0} -> {1}".format(self.source().getFullName(), self.destination().getFullName())
+        return "{0} -> {1}".format(
+            self.source().getFullName(), self.destination().getFullName()
+        )
 
     def setColor(self, color):
         self.pen.setColor(color)
@@ -164,11 +185,15 @@ class UIConnection(QGraphicsPathItem):
             if srcComment.collapsed:
                 rightSideEndpointGetter = srcComment.getRightSideEdgesPoint
                 if srcNodeUnderCollapsedComment:
-                    rightSideEndpointGetter = topMostCollapsedComment.getRightSideEdgesPoint
+                    rightSideEndpointGetter = (
+                        topMostCollapsedComment.getRightSideEdgesPoint
+                    )
                 self.sourcePositionOverride = rightSideEndpointGetter
             else:
                 if srcNodeUnderCollapsedComment:
-                    self.sourcePositionOverride = topMostCollapsedComment.getRightSideEdgesPoint
+                    self.sourcePositionOverride = (
+                        topMostCollapsedComment.getRightSideEdgesPoint
+                    )
                 else:
                     self.sourcePositionOverride = None
         else:
@@ -183,11 +208,15 @@ class UIConnection(QGraphicsPathItem):
             if dstComment.collapsed:
                 rightSideEndpointGetter = dstComment.getLeftSideEdgesPoint
                 if dstNodeUnderCollapsedComment:
-                    rightSideEndpointGetter = topMostCollapsedComment.getLeftSideEdgesPoint
+                    rightSideEndpointGetter = (
+                        topMostCollapsedComment.getLeftSideEdgesPoint
+                    )
                 self.destinationPositionOverride = rightSideEndpointGetter
             else:
                 if dstNodeUnderCollapsedComment:
-                    self.destinationPositionOverride = topMostCollapsedComment.getLeftSideEdgesPoint
+                    self.destinationPositionOverride = (
+                        topMostCollapsedComment.getLeftSideEdgesPoint
+                    )
                 else:
                     self.destinationPositionOverride = None
         else:
@@ -220,57 +249,64 @@ class UIConnection(QGraphicsPathItem):
     @uid.setter
     def uid(self, value):
         if self._uid in self.canvasRef().connections:
-            self.canvasRef().connections[value] = self.canvasRef().connections.pop(self._uid)
+            self.canvasRef().connections[value] = self.canvasRef().connections.pop(
+                self._uid
+            )
             self._uid = value
-
+    
+    # TODO: Check why this serialization sometimes fails
     def applyJsonData(self, data):
-        hOffsetL = data['hOffsetL']
+        hOffsetL = data["hOffsetL"]
         if hOffsetL is not None:
             self.hOffsetL = float(hOffsetL)
-        hOffsetR = data['hOffsetR']
+        hOffsetR = data["hOffsetR"]
         if hOffsetR is not None:
             self.hOffsetR = float(hOffsetR)
-        hOffsetLSShape = data['hOffsetLSShape']
+        hOffsetLSShape = data["hOffsetLSShape"]
         if hOffsetLSShape is not None:
             self.hOffsetLSShape = float(hOffsetLSShape)
-        hOffsetRSShape = data['hOffsetRSShape']
+        hOffsetRSShape = data["hOffsetRSShape"]
         if hOffsetRSShape is not None:
             self.hOffsetRSShape = float(hOffsetRSShape)
-        vOffset = data['vOffset']
+        vOffset = data["vOffset"]
         if vOffset is not None:
             self.vOffset = float(vOffset)
-        vOffsetSShape = data['vOffsetSShape']
+        vOffsetSShape = data["vOffsetSShape"]
         if vOffsetSShape is not None:
             self.vOffsetSShape = float(vOffsetSShape)
-        snapVToFirst = data['snapVToFirst']
+        snapVToFirst = data["snapVToFirst"]
         if snapVToFirst is not None:
             self.snapVToFirst = bool(snapVToFirst)
-        snapVToSecond = data['snapVToSecond']
+        snapVToSecond = data["snapVToSecond"]
         if snapVToSecond is not None:
             self.snapVToSecond = bool(snapVToSecond)
 
         self.getEndPoints()
 
     def serialize(self):
-        script = {'sourceUUID': str(self.source().uid),
-                  'destinationUUID': str(self.destination().uid),
-                  'sourceName': self.source()._rawPin.getFullName(),
-                  'destinationName': self.destination()._rawPin.getFullName(),
-                  'uuid': str(self.uid),
-                  'hOffsetL': str(self.hOffsetL),
-                  'hOffsetR': str(self.hOffsetR),
-                  'hOffsetLSShape': str(self.hOffsetLSShape),
-                  'hOffsetRSShape': str(self.hOffsetRSShape),
-                  'vOffset': str(self.vOffset),
-                  'vOffsetSShape': str(self.vOffsetSShape),
-                  'snapVToFirst': int(self.snapVToFirst),
-                  'snapVToSecond': int(self.snapVToSecond),
-                  }
+        script = {
+            "sourceUUID": str(self.source().uid),
+            "destinationUUID": str(self.destination().uid),
+            "sourceName": self.source()._rawPin.getFullName(),
+            "destinationName": self.destination()._rawPin.getFullName(),
+            "uuid": str(self.uid),
+            "hOffsetL": str(self.hOffsetL),
+            "hOffsetR": str(self.hOffsetR),
+            "hOffsetLSShape": str(self.hOffsetLSShape),
+            "hOffsetRSShape": str(self.hOffsetRSShape),
+            "vOffset": str(self.vOffset),
+            "vOffsetSShape": str(self.vOffsetSShape),
+            "snapVToFirst": int(self.snapVToFirst),
+            "snapVToSecond": int(self.snapVToSecond),
+        }
 
         return script
 
     def __str__(self):
-        return '{0} >>> {1}'.format(self.source()._rawPin.getFullName(), self.destination()._rawPin.getFullName())
+        return "{0} >>> {1}".format(
+            self.source()._rawPin.getFullName(),
+            self.destination()._rawPin.getFullName(),
+        )
 
     def drawThick(self):
         self.pen.setWidthF(self.thickness + (self.thickness / 1.5))
@@ -332,15 +368,24 @@ class UIConnection(QGraphicsPathItem):
         if self.destinationPositionOverride is not None:
             p2 = self.destinationPositionOverride()
 
-        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
+        if editableStyleSheet().ConnectionMode[0] in [
+            ConnectionTypes.Circuit,
+            ConnectionTypes.ComplexCircuit,
+        ]:
             self.sameSide = 0
             p1n, p2n = p1, p2
             xDistance = p2.x() - p1.x()
-            if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+            if self.destination().owningNode()._rawNode.__class__.__name__ in [
+                "reroute",
+                "rerouteExecs",
+            ]:
                 if xDistance < 0:
                     p2n, p1n = p1, p2
                     self.sameSide = 1
-            if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+            if self.source().owningNode()._rawNode.__class__.__name__ in [
+                "reroute",
+                "rerouteExecs",
+            ]:
                 if xDistance < 0:
                     p1n, p2n = p1, p2
                     self.sameSide = -1
@@ -437,7 +482,7 @@ class UIConnection(QGraphicsPathItem):
                             self.pressedSegment = 0
                         else:
                             self.snapVToFirst = False
-                        if p1.y() + self.vOffset > p2.y() - 3 and p1.y() + self.vOffset < p2.y() + 3:
+                        if p2.y() - 3 < p1.y() + self.vOffset < p2.y() + 3:
                             self.snapVToSecond = True
                             self.pressedSegment = 2
                         else:
@@ -484,11 +529,17 @@ class UIConnection(QGraphicsPathItem):
 
         self.mPath.moveTo(p1)
         if xDistance < 0:
-            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()),
-                               QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()), p2)
+            self.mPath.cubicTo(
+                QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()),
+                QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()),
+                p2,
+            )
         else:
-            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / multiply,
-                                             p1.y()), QtCore.QPoint(p2.x() - xDistance / 2, p2.y()), p2)
+            self.mPath.cubicTo(
+                QtCore.QPoint(p1.x() + xDistance / multiply, p1.y()),
+                QtCore.QPoint(p2.x() - xDistance / 2, p2.y()),
+                p2,
+            )
 
         self.setPath(self.mPath)
 
@@ -514,10 +565,35 @@ class UIConnection(QGraphicsPathItem):
         self.sShape = xDistance < 0
         sectionPath = None
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Circuit:
-            seg = self.hoverSegment if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1 else self.pressedSegment
-            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, False, self.vOffset, self.hOffsetL, self.vOffsetSShape, self.hOffsetR, self.hOffsetRSShape, self.hOffsetLSShape, self.snapVToFirst, self.snapVToSecond, seg)
+            seg = (
+                self.hoverSegment
+                if self.hoverSegment != -1
+                and self.linPath
+                and self.pressedSegment == -1
+                else self.pressedSegment
+            )
+            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(
+                p1,
+                p2,
+                offset,
+                roundness,
+                self.sameSide,
+                lod,
+                False,
+                self.vOffset,
+                self.hOffsetL,
+                self.vOffsetSShape,
+                self.hOffsetR,
+                self.hOffsetRSShape,
+                self.hOffsetLSShape,
+                self.snapVToFirst,
+                self.snapVToSecond,
+                seg,
+            )
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
-            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, True)
+            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(
+                p1, p2, offset, roundness, self.sameSide, lod, True
+            )
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
             self.linPath = None

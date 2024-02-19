@@ -13,9 +13,7 @@
 ## limitations under the License.
 
 
-from nine import str
-from Qt import QtCore
-from Qt import QtGui
+from qtpy import QtCore
 
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
@@ -23,13 +21,17 @@ from PyFlow.UI.Views.NodeBox import NodesBox
 
 class NodeBoxTool(DockTool):
     """docstring for NodeBox tool."""
+
     def __init__(self):
         super(NodeBoxTool, self).__init__()
+        self.content = None
 
     def onShow(self):
         super(NodeBoxTool, self).onShow()
         self.setMinimumSize(QtCore.QSize(200, 50))
-        self.content = NodesBox(self, self.pyFlowInstance.getCanvas(), False, False, bUseDragAndDrop=True)
+        self.content = NodesBox(
+            self, self.pyFlowInstance.getCanvas(), False, False, bUseDragAndDrop=True
+        )
         self.content.setObjectName("NodeBoxToolContent")
         self.setWidget(self.content)
 
@@ -50,4 +52,4 @@ class NodeBoxTool(DockTool):
 
     @staticmethod
     def name():
-        return str("NodeBox")
+        return "NodeBox"

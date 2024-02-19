@@ -19,10 +19,10 @@ import os
 import uuid
 import logging
 
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QInputDialog
-from Qt import QtCore
+from qtpy.QtWidgets import QAction
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QInputDialog
+from qtpy import QtCore
 
 from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
@@ -38,10 +38,10 @@ INITIAL_CODE = """
 from PyFlow.Core.Common import *
 
 def prepareNode(node):
-    node.createInputPin(pinName="inExec", dataType="ExecPin", foo=node.processNode)
+    node.createInputPin(pinName="inExec", dataType="ExecPin", callback=node.processNode)
     node.createOutputPin(pinName="outExec", dataType="ExecPin")
-    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
-    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, callback=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, callback=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
     node.createOutputPin(pinName="c", dataType="IntPin", defaultValue=0, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
 
 
@@ -63,7 +63,7 @@ class UIPythonNode(UINodeBase):
 
         self.actionEdit = self._menu.addAction("Edit")
         self.actionEdit.triggered.connect(self.onEdit)
-        self._filePath = ''
+        self._filePath = ""
 
         self.fileHandle = None
         self.currentEditorProcess = None
@@ -76,7 +76,9 @@ class UIPythonNode(UINodeBase):
 
     def onExportToPackage(self):
         packageNames = list(GET_PACKAGES().keys())
-        selectedPackageName, accepted = QInputDialog.getItem(None, "Select", "Select package", packageNames, editable=False)
+        selectedPackageName, accepted = QInputDialog.getItem(
+            None, "Select", "Select package", packageNames, editable=False
+        )
         if accepted:
             packagePath = GET_PACKAGE_PATH(selectedPackageName)
             pyNodesDir = os.path.join(packagePath, "PyNodes")
@@ -91,18 +93,24 @@ class UIPythonNode(UINodeBase):
 
     def onExport(self, root=None):
         try:
-            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)", dir=root)
+            savePath, selectedFilter = QFileDialog.getSaveFileName(
+                filter="Python node data (*.pynode)", dir=root
+            )
         except:
-            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)")
+            savePath, selectedFilter = QFileDialog.getSaveFileName(
+                filter="Python node data (*.pynode)"
+            )
         if savePath != "":
-            with open(savePath, 'w') as f:
+            with open(savePath, "w") as f:
                 f.write(self.nodeData)
             logger.info("{0} data successfully exported!".format(self.getName()))
 
     def onImport(self):
-        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Python node data (*.pynode)")
+        openPath, selectedFilter = QFileDialog.getOpenFileName(
+            filter="Python node data (*.pynode)"
+        )
         if openPath != "":
-            with open(openPath, 'r') as f:
+            with open(openPath, "r") as f:
                 dataString = f.read()
                 self.tryApplyNodeData(dataString)
             EditorHistory().saveState("Import python node data", modify=True)
@@ -144,7 +152,7 @@ class UIPythonNode(UINodeBase):
             return
 
         if not os.path.exists(path):
-            self._filePath = ''
+            self._filePath = ""
             if self.fileHandle is not None:
                 self.fileHandle.close()
                 self.fileHandle = None
@@ -152,7 +160,7 @@ class UIPythonNode(UINodeBase):
         else:
             # open file handle if needed
             if self.fileHandle is None:
-                self.fileHandle = open(path, 'r')
+                self.fileHandle = open(path, "r")
 
             # read code string
             self.fileHandle.seek(0)
@@ -195,7 +203,7 @@ class UIPythonNode(UINodeBase):
             self._filePath = os.path.join(tempFilesDir, "{}.py".format(uidStr))
 
         if not os.path.exists(self._filePath):
-            f = open(self._filePath, 'w')
+            f = open(self._filePath, "w")
             if self.nodeData == "":
                 f.write(INITIAL_CODE)
             else:
@@ -218,4 +226,4 @@ class UIPythonNode(UINodeBase):
 
         result = UIPythonNode.watcher.fileChanged.connect(self.onFileChanged)
         self.currentEditorProcess = subprocess.Popen(editCmd, shell=True)
-        self.fileHandle = open(self._filePath, 'r')
+        self.fileHandle = open(self._filePath, "r")

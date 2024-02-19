@@ -13,12 +13,9 @@
 ## limitations under the License.
 
 
-from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QUndoView
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QVBoxLayout
+from qtpy import QtCore
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QVBoxLayout
 
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
@@ -26,6 +23,7 @@ from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 
 class VariablesTool(DockTool):
     """docstring for Variables tool."""
+
     def __init__(self):
         super(VariablesTool, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))
@@ -60,4 +58,4 @@ class VariablesTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Variables")
+        return "Variables"

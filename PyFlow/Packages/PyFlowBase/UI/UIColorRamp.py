@@ -14,9 +14,9 @@
 
 
 import weakref
-from Qt import QtCore
-from Qt import QtGui
-from Qt import QtWidgets
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Widgets.QtSliders import pyf_RampColor, pyf_ColorSlider
@@ -33,7 +33,9 @@ class UIColorRamp(UINodeBase):
         self._rawNode._curveType = index
         for ramp in self.ramps:
             if ramp() is not None:
-                ramp().setBezier(self._rawNode._curveTypes[self._rawNode._curveType] == "bezier")
+                ramp().setBezier(
+                    self._rawNode._curveTypes[self._rawNode._curveType] == "bezier"
+                )
                 ramp().updateFromRaw()
         for selector in self.selectors:
             if selector() is not None:
@@ -64,7 +66,11 @@ class UIColorRamp(UINodeBase):
             if not self._rawNode.input.isArray():
                 inputVal.setMinimum(0.0)
                 inputVal.setMaximum(1.0)
-        ramp = pyf_RampColor(self._rawNode.ramp, bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier", parent=inputsCategory)
+        ramp = pyf_RampColor(
+            self._rawNode.ramp,
+            bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier",
+            parent=inputsCategory,
+        )
         ramp.tickClicked.connect(self.rampChanged)
         ramp.tickAdded.connect(self.rampChanged)
         ramp.tickRemoved.connect(self.rampChanged)
@@ -86,4 +92,6 @@ class UIColorRamp(UINodeBase):
         selector.activated.connect(self.changeCurveType)
         inputsCategory.insertWidget(preIndex, "CurveType", selector, group=inGroup)
         inputsCategory.insertWidget(preIndex + 1, "Ramp", ramp, group=inGroup)
-        inputsCategory.insertWidget(preIndex + 1, "Selected Color", colorChanger, group=inGroup)
+        inputsCategory.insertWidget(
+            preIndex + 1, "Selected Color", colorChanger, group=inGroup
+        )

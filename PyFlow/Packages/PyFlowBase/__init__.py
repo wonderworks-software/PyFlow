@@ -1,6 +1,6 @@
 """Base package
 """
-PACKAGE_NAME = 'PyFlowBase'
+PACKAGE_NAME = "PyFlowBase"
 from collections import OrderedDict
 
 from PyFlow.UI.UIInterfaces import IPackage
@@ -23,6 +23,8 @@ from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib import MathLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbstractLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
+from PyFlow.Packages.PyFlowBase.FunctionLibraries.StringLib import StringLib
+from PyFlow.Packages.PyFlowBase.FunctionLibraries.IOLib import IOLib
 
 # Class based nodes
 from PyFlow.Packages.PyFlowBase.Nodes.branch import branch
@@ -41,7 +43,10 @@ from PyFlow.Packages.PyFlowBase.Nodes.forEachLoop import forEachLoop
 from PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
+from PyFlow.Packages.PyFlowBase.Nodes.subProcess import subProcess
+from PyFlow.Packages.PyFlowBase.Nodes.combineArgs import combineArgs
+from PyFlow.Packages.PyFlowBase.Nodes.storeArgs import storeArgs
 from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
 from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
@@ -58,7 +63,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 from PyFlow.Packages.PyFlowBase.Nodes.stringToArray import stringToArray
 from PyFlow.Packages.PyFlowBase.Nodes.cliexit import cliexit
-
+from PyFlow.Packages.PyFlowBase.Nodes.singletonThreadSampleNode import singletonThreadSampleNode
 
 from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyFlowBase.Nodes.address import address
@@ -86,7 +91,9 @@ from PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
 from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
-from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import (
+    PythonScriptExporter,
+)
 
 # Factories
 from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
@@ -97,6 +104,10 @@ from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
+
+# [Forms]
+from PyFlow.Packages.PyFlowBase.Tools.PackageBuilder import PackageBuilder
+from PyFlow.UI.Forms.TextEditor import TextEditor
 
 
 _FOO_LIBS = {
@@ -109,6 +120,8 @@ _FOO_LIBS = {
     MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
     PathLib.__name__: PathLib(PACKAGE_NAME),
+    StringLib.__name__: StringLib(PACKAGE_NAME),
+    IOLib.__name__: IOLib(PACKAGE_NAME),
 }
 
 
@@ -126,7 +139,10 @@ _NODES = {
     forLoopWithBreak.__name__: forLoopWithBreak,
     retriggerableDelay.__name__: retriggerableDelay,
     sequence.__name__: sequence,
-    switchOnString.__name__: switchOnString,
+    switch.__name__: switch,
+    subProcess.__name__: subProcess,
+    combineArgs.__name__: combineArgs,
+    storeArgs.__name__: storeArgs,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     whileLoopBegin.__name__: whileLoopBegin,
@@ -156,7 +172,8 @@ _NODES = {
     colorRamp.__name__: colorRamp,
     stringToArray.__name__: stringToArray,
     imageDisplay.__name__: imageDisplay,
-    cliexit.__name__: cliexit
+    cliexit.__name__: cliexit,
+    singletonThreadSampleNode.__name__: singletonThreadSampleNode,
 }
 
 _PINS = {
@@ -176,12 +193,17 @@ _TOOLS[AlignLeftTool.__name__] = AlignLeftTool
 _TOOLS[AlignRightTool.__name__] = AlignRightTool
 _TOOLS[AlignTopTool.__name__] = AlignTopTool
 _TOOLS[AlignBottomTool.__name__] = AlignBottomTool
-_TOOLS[HistoryTool.__name__] = HistoryTool
+
 _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
-_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
-_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
+
+_TOOLS[PackageBuilder.__name__] = PackageBuilder
+#_TOOLS[TextEditor.__name__] = TextEditor
+
 _TOOLS[LoggerTool.__name__] = LoggerTool
+_TOOLS[HistoryTool.__name__] = HistoryTool
+_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
+_TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
@@ -196,6 +218,7 @@ _PREFS_WIDGETS["Theme"] = ThemePreferences
 class PyFlowBase(IPackage):
     """Base pyflow package
     """
+
     def __init__(self):
         super(PyFlowBase, self).__init__()
 

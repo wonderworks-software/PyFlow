@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt import QtCore
-from Qt.QtWidgets import QSizePolicy
+from qtpy import QtCore
+from qtpy.QtWidgets import QSizePolicy
 
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import NodePainter
@@ -90,8 +90,7 @@ class UIRerouteNodeSmall(UINodeBase):
         newOuts = []
         for i in self.UIoutputs.values():
             for connection in i.connections:
-                newOuts.append([connection.destination(),
-                                connection.drawDestination])
+                newOuts.append([connection.destination(), connection.drawDestination])
         if inp.connections:
             source = inp.connections[0].source()
             for out in newOuts:
@@ -117,6 +116,6 @@ class UIRerouteNodeSmall(UINodeBase):
         self.updateNodeShape()
 
     def paint(self, painter, option, widget):
-        #painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
+        # painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
         # painter.drawRect(self.boundingRect())
         NodePainter.asRerouteNode(self, painter, option, widget)

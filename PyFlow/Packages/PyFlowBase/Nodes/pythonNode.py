@@ -24,7 +24,7 @@ from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 class pythonNode(NodeBase):
     def __init__(self, name):
         super(pythonNode, self).__init__(name)
-        self._nodeData = ''
+        self._nodeData = ""
         self.bCacheEnabled = False
 
     @property
@@ -40,7 +40,7 @@ class pythonNode(NodeBase):
 
     @nodeData.setter
     def nodeData(self, codeString):
-        if codeString == '':
+        if codeString == "":
             return
         try:
             self._nodeData = codeString
@@ -73,7 +73,7 @@ class pythonNode(NodeBase):
 
     def serialize(self):
         default = super(pythonNode, self).serialize()
-        default['nodeData'] = self.nodeData
+        default["nodeData"] = self.nodeData
         return default
 
     def postCreate(self, jsonTemplate=None):
@@ -82,36 +82,40 @@ class pythonNode(NodeBase):
         if jsonTemplate is None:
             return
 
-        if 'nodeData' in jsonTemplate:
-            self.nodeData = jsonTemplate['nodeData']
+        if "nodeData" in jsonTemplate:
+            self.nodeData = jsonTemplate["nodeData"]
 
-        for inpJson in jsonTemplate['inputs']:
+        for inpJson in jsonTemplate["inputs"]:
             pin = self.getPinByName(inpJson["name"])
             if not pin:
-                pin = self.createInputPin(pinName=inpJson["name"],
-                                          dataType=inpJson["dataType"],
-                                          defaultValue=getPinDefaultValueByType(inpJson["dataType"]),
-                                          foo=self.compute)
+                pin = self.createInputPin(
+                    pinName=inpJson["name"],
+                    dataType=inpJson["dataType"],
+                    defaultValue=getPinDefaultValueByType(inpJson["dataType"]),
+                    callback=self.compute,
+                )
             pin.deserialize(inpJson)
 
-        for outJson in jsonTemplate['outputs']:
+        for outJson in jsonTemplate["outputs"]:
             pin = self.getPinByName(outJson["name"])
             if not pin:
-                pin = self.createOutputPin(pinName=inpJson["name"],
-                                           dataType=inpJson["dataType"],
-                                           defaultValue=getPinDefaultValueByType(inpJson["dataType"]))
+                pin = self.createOutputPin(
+                    pinName=inpJson["name"],
+                    dataType=inpJson["dataType"],
+                    defaultValue=getPinDefaultValueByType(inpJson["dataType"]),
+                )
             pin.deserialize(outJson)
 
         self.autoAffectPins()
 
     @staticmethod
     def category():
-        return 'Common'
+        return "Common"
 
     @staticmethod
     def keywords():
-        return ['Code', 'Expression', 'py']
+        return ["Code", "Expression", "py"]
 
     @staticmethod
     def description():
-        return 'Python script node'
+        return "Python script node"

@@ -15,24 +15,24 @@
 
 import json
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QInputDialog
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QLineEdit
+from qtpy.QtWidgets import QComboBox
+from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QLabel
+from qtpy.QtWidgets import QSpacerItem
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QInputDialog
 
 from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow import findPinClassByType
@@ -52,7 +52,9 @@ class TypeWidget(QWidget):
         painter = QtGui.QPainter()
         painter.begin(self)
 
-        keyColor = QtGui.QColor.fromRgb(*findPinClassByType(self.parent().dataType).color())
+        keyColor = QtGui.QColor.fromRgb(
+            *findPinClassByType(self.parent().dataType).color()
+        )
 
         structure = self.parent()._rawVariable.structure
         if structure == StructureType.Single:
@@ -84,8 +86,12 @@ class TypeWidget(QWidget):
         if structure == StructureType.Dict:
             dictObject = self.parent()._rawVariable.value
 
-            keyColor = QtGui.QColor.fromRgb(*findPinClassByType(dictObject.keyType).color())
-            valueColor = QtGui.QColor.fromRgb(*findPinClassByType(dictObject.valueType).color())
+            keyColor = QtGui.QColor.fromRgb(
+                *findPinClassByType(dictObject.keyType).color()
+            )
+            valueColor = QtGui.QColor.fromRgb(
+                *findPinClassByType(dictObject.valueType).color()
+            )
 
             gridSize = 3
             size = self.height()
@@ -114,7 +120,9 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(findPinClassByType(self._rawVariable.dataType).color(), self)
+        self.widget = TypeWidget(
+            findPinClassByType(self._rawVariable.dataType).color(), self
+        )
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
@@ -142,7 +150,9 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
     def onStructureChanged(self, name):
         self._rawVariable.structure = StructureType[name]
-        self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self.variablesWidget.pyFlowInstance.onRequestFillProperties(
+            self.createPropertiesWidget
+        )
         EditorHistory().saveState("Change variable struct", modify=True)
         self.widget.update()
 
@@ -172,13 +182,24 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         if self._rawVariable.structure == StructureType.Dict:
             dictObject = self._rawVariable.value
             keyTypeSelector = EnumComboBox(values=getHashableDataTypes())
-            valueTypeSelector = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
+            valueTypeSelector = EnumComboBox(
+                [
+                    pin.__name__
+                    for pin in getAllPinClasses()
+                    if pin.IsValuePin()
+                    if pin.__name__ != "AnyPin"
+                ]
+            )
 
             keyTypeSelector.setEditable(False)
             valueTypeSelector.setEditable(False)
 
-            keyTypeSelector.setCurrentIndex(keyTypeSelector.findText(dictObject.keyType))
-            valueTypeSelector.setCurrentIndex(valueTypeSelector.findText(dictObject.valueType))
+            keyTypeSelector.setCurrentIndex(
+                keyTypeSelector.findText(dictObject.keyType)
+            )
+            valueTypeSelector.setCurrentIndex(
+                valueTypeSelector.findText(dictObject.valueType)
+            )
 
             keyTypeSelector.changeCallback.connect(self.onDictKeyTypeChanged)
             valueTypeSelector.changeCallback.connect(self.onDictValueTypeChanged)
@@ -186,7 +207,14 @@ class UIVariable(QWidget, IPropertiesViewSupport):
             baseCategory.addWidget("Key type", keyTypeSelector)
             baseCategory.addWidget("Value type", valueTypeSelector)
         else:
-            cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
+            cbTypes = EnumComboBox(
+                [
+                    pin.__name__
+                    for pin in getAllPinClasses()
+                    if pin.IsValuePin()
+                    if pin.__name__ != "AnyPin"
+                ]
+            )
             cbTypes.setCurrentIndex(cbTypes.findText(self.dataType))
             cbTypes.changeCallback.connect(self.setDataType)
             cbTypes.setEditable(False)
@@ -194,9 +222,16 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(baseCategory)
 
         # structure type
-        cbStructure = EnumComboBox([i.name for i in (StructureType.Single, StructureType.Array, StructureType.Dict)])
+        cbStructure = EnumComboBox(
+            [
+                i.name
+                for i in (StructureType.Single, StructureType.Array, StructureType.Dict)
+            ]
+        )
         cbStructure.setEditable(False)
-        cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
+        cbStructure.setCurrentIndex(
+            cbStructure.findText(self._rawVariable.structure.name)
+        )
         cbStructure.changeCallback.connect(self.onStructureChanged)
         propertiesWidget.addWidget(baseCategory)
         baseCategory.addWidget("Structure", cbStructure)
@@ -206,9 +241,15 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         # current value
         if self._rawVariable.structure == StructureType.Single:
             if not type(self._rawVariable.value) in {list, set, dict, tuple}:
+
                 def valSetter(x):
                     self._rawVariable.value = x
-                w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
+
+                w = createInputWidget(
+                    self._rawVariable.dataType,
+                    valSetter,
+                    getPinDefaultValueByType(self._rawVariable.dataType),
+                )
                 if w:
                     w.setWidgetValue(self._rawVariable.value)
                     w.setObjectName(self._rawVariable.name)
@@ -216,37 +257,47 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         # access level
         cb = QComboBox()
-        cb.addItem('public', 0)
-        cb.addItem('private', 1)
-        cb.addItem('protected', 2)
+        cb.addItem("public", 0)
+        cb.addItem("private", 1)
+        cb.addItem("protected", 2)
 
         def accessLevelChanged(x):
             self._rawVariable.accessLevel = AccessLevel[x]
             EditorHistory().saveState("Change variable access level", modify=True)
+
         cb.currentTextChanged.connect(accessLevelChanged)
         cb.setCurrentIndex(self._rawVariable.accessLevel)
-        valueCategory.addWidget('Access level', cb)
+        valueCategory.addWidget("Access level", cb)
         propertiesWidget.addWidget(valueCategory)
 
     def onFindRefsClicked(self):
         from PyFlow.App import PyFlow
+
         refs = [n.getWrapper() for n in self._rawVariable.findRefs()]
         app = self.variablesWidget.pyFlowInstance
         if "Search results" not in [t.name() for t in app.getRegisteredTools()]:
             app.invokeDockToolByName("PyFlowBase", "Search results")
-        self.variablesWidget.pyFlowInstance.getCanvas().requestShowSearchResults.emit(refs)
+        self.variablesWidget.pyFlowInstance.getCanvas().requestShowSearchResults.emit(
+            refs
+        )
 
     def onKillClicked(self):
         # check refs and ask user what to do
         refs = self._rawVariable.findRefs()
         if len(refs) > 0:
-            item, accepted = QInputDialog.getItem(None, 'Decide!', 'What to do with getters and setters in canvas?', ['kill', 'leave'], editable=False)
+            item, accepted = QInputDialog.getItem(
+                None,
+                "Decide!",
+                "What to do with getters and setters in canvas?",
+                ["kill", "leave"],
+                editable=False,
+            )
             if accepted:
                 self.variablesWidget.killVar(self)
-                if item == 'kill':
+                if item == "kill":
                     for i in refs:
                         i.kill()
-                elif item == 'leave':
+                elif item == "leave":
                     for i in refs:
                         i.var = None
         else:
@@ -256,7 +307,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     def dataType(self):
         return self._rawVariable.dataType
 
-    @ dataType.setter
+    @dataType.setter
     def dataType(self, value):
         self._rawVariable.dataType = value
         self.widget.color = findPinClassByType(self._rawVariable.dataType).color()
@@ -289,12 +340,12 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     @staticmethod
     def jsonTemplate():
         template = {
-            'name': None,
-            'uuid': None,
-            'value': None,
-            'type': None,
-            'package': None,
-            'accessLevel': None
+            "name": None,
+            "uuid": None,
+            "value": None,
+            "type": None,
+            "package": None,
+            "accessLevel": None,
         }
         return template
 
@@ -302,35 +353,40 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         pinClass = findPinClassByType(self._rawVariable.dataType)
 
         template = UIVariable.jsonTemplate()
-        template['name'] = self._rawVariable.name
-        template['uuid'] = str(self._rawVariable.uid)
+        template["name"] = self._rawVariable.name
+        template["uuid"] = str(self._rawVariable.uid)
 
         if self._rawVariable.dataType == "AnyPin":
             # don't save any variables
             # value will be calculated for this type of variables
-            template['value'] = None
+            template["value"] = None
         else:
-            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass())
+            template["value"] = json.dumps(
+                self._rawVariable.value, cls=pinClass.jsonEncoderClass()
+            )
 
-        template['type'] = self._rawVariable.dataType
-        template['package'] = self._rawVariable.packageName
-        template['accessLevel'] = self._rawVariable.accessLevel.value
+        template["type"] = self._rawVariable.dataType
+        template["package"] = self._rawVariable.packageName
+        template["accessLevel"] = self._rawVariable.accessLevel.value
         return template
 
     @staticmethod
     def deserialize(data, graph):
-        pinClass = findPinClassByType(data['dataType'])
+        pinClass = findPinClassByType(data["dataType"])
 
-        varUid = uuid.UUID(data['uuid'])
+        varUid = uuid.UUID(data["uuid"])
         var = graph.getApp().variablesWidget.createVariable(
-            dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
-        var.setName(data['name'])
-        var.setDataType(data['dataType'])
+            dataType=data["dataType"],
+            accessLevel=AccessLevel(data["accessLevel"]),
+            uid=varUid,
+        )
+        var.setName(data["name"])
+        var.setDataType(data["dataType"])
 
-        if data['dataType'] == 'AnyPin':
-            var.value = getPinDefaultValueByType('AnyPin')
+        if data["dataType"] == "AnyPin":
+            var.value = getPinDefaultValueByType("AnyPin")
         else:
-            var.value = json.loads(data['value'], cls=pinClass.jsonDecoderClass())
+            var.value = json.loads(data["value"], cls=pinClass.jsonDecoderClass())
 
         return var
 

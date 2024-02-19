@@ -1,6 +1,6 @@
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
@@ -36,7 +36,9 @@ class CanvasBase(QGraphicsView):
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
 
-        self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
+        self.centerOn(
+            QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2)
+        )
 
     def createScene(self):
         scene = QGraphicsScene(self)
@@ -90,11 +92,7 @@ class CanvasBase(QGraphicsView):
             self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
     def wheelEvent(self, event):
-        (xfo, invRes) = self.transform().inverted()
-        topLeft = xfo.map(self.rect().topLeft())
-        bottomRight = xfo.map(self.rect().bottomRight())
-        center = (topLeft + bottomRight) * 0.5
-        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
+        zoomFactor = 1.0 + event.angleDelta().y() * self._mouseWheelZoomRate
 
         self.zoom(zoomFactor)
 
@@ -102,7 +100,7 @@ class CanvasBase(QGraphicsView):
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
         if futureScale <= self._minimum_scale:
-            scale_factor = (self._minimum_scale) / self.factor
+            scale_factor = self._minimum_scale / self.factor
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
@@ -120,7 +118,6 @@ class CanvasBase(QGraphicsView):
         # zoom to fit content
         ws = windowRect.size()
         rect += QtCore.QMargins(40, 40, 40, 40)
-        rs = rect.size()
         widthRef = ws.width()
         heightRef = ws.height()
         sx = widthRef / rect.width()
@@ -158,25 +155,31 @@ class CanvasBase(QGraphicsView):
         return self.transform().m22()
 
     def getLodValueFromScale(self, numLods=5, scale=1.0):
-        lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
+        lod = lerp(
+            numLods,
+            1,
+            GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale),
+        )
         return int(round(lod))
 
     def getLodValueFromCurrentScale(self, numLods=5):
         return self.getLodValueFromScale(numLods, self.currentViewScale())
 
     def getCanvasLodValueFromCurrentScale(self):
-        return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
+        return self.getLodValueFromScale(
+            editableStyleSheet().LOD_Number[0], self.currentViewScale()
+        )
 
     def drawBackground(self, painter, rect):
         super(CanvasBase, self).drawBackground(painter, rect)
         lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
 
-        polygon = self.mapToScene(self.viewport().rect())
-
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        left = int(rect.left()) - (
+            int(rect.left()) % editableStyleSheet().GridSizeFine[0]
+        )
         top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
         if editableStyleSheet().DrawGrid[0] >= 1:
@@ -200,8 +203,12 @@ class CanvasBase(QGraphicsView):
                 painter.drawLines(gridLines)
 
             # Draw thick grid
-            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
-            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
+            left = int(rect.left()) - (
+                int(rect.left()) % editableStyleSheet().GridSizeHuge[0]
+            )
+            top = int(rect.top()) - (
+                int(rect.top()) % editableStyleSheet().GridSizeHuge[0]
+            )
 
             # Draw vertical thick lines
             gridLines = []
@@ -234,7 +241,11 @@ class CanvasBase(QGraphicsView):
                 y += editableStyleSheet().GridSizeHuge[0]
                 inty = int(y)
                 if y > top + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.setPen(
+                        QtGui.QPen(
+                            editableStyleSheet().CanvasGridColorDarker.lighter(300)
+                        )
+                    )
                     painter.drawText(rect.left(), y - 1.0, str(inty))
 
             x = float(left)
@@ -242,5 +253,11 @@ class CanvasBase(QGraphicsView):
                 x += editableStyleSheet().GridSizeHuge[0]
                 intx = int(x)
                 if x > left + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
-                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(intx))
+                    painter.setPen(
+                        QtGui.QPen(
+                            editableStyleSheet().CanvasGridColorDarker.lighter(300)
+                        )
+                    )
+                    painter.drawText(
+                        x, rect.top() + painter.font().pointSize(), str(intx)
+                    )

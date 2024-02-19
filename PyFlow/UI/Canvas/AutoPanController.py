@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import QtGui
+from qtpy import QtGui
 from PyFlow.Core.Common import *
 
 
@@ -42,8 +42,7 @@ class AutoPanController(object):
             if pos.y() > rect.height():
                 self.autoPanDelta = QtGui.QVector2D(0.0, self.amount)
                 self.beenOutside = True
-                self.amount = clamp(
-                    abs(rect.height() - pos.y()) * 0.1, 0.0, 25.0)
+                self.amount = clamp(abs(rect.height() - pos.y()) * 0.1, 0.0, 25.0)
             if self.beenOutside and rect.contains(pos):
                 self.reset()
 

@@ -13,17 +13,19 @@
 ## limitations under the License.
 
 
-from Qt import QtCore, QtGui
-from Qt.QtWidgets import QComboBox, QCompleter
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QComboBox, QCompleter
 
 
 class EnumComboBox(QComboBox):
     changeCallback = QtCore.Signal(str)
     textChangedCallback = QtCore.Signal(str)
 
-    def __init__(self, values=[], parent=None):
+    def __init__(self, values=None, parent=None):
         super(EnumComboBox, self).__init__(parent)
 
+        if values is None:
+            values = []
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QCompleter(self)
@@ -33,7 +35,7 @@ class EnumComboBox(QComboBox):
         self.pFilterModel = QtCore.QSortFilterProxyModel(self)
         self.pFilterModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
-        self.setInsertPolicy(self.NoInsert)
+        #self.setInsertPolicy(self.NoInsert)
 
         self.completer.setPopup(self.view())
 
@@ -84,7 +86,7 @@ class EnumComboBox(QComboBox):
 
 if __name__ == "__main__":
     import sys
-    from Qt.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
     a = QApplication(sys.argv)
 
     def clb(string):

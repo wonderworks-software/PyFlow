@@ -43,11 +43,11 @@ class ExecPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ('ExecPin',)
+        return ("ExecPin",)
 
     @staticmethod
     def pinDataTypeHint():
-        return 'ExecPin', None
+        return "ExecPin", None
 
     @staticmethod
     def internalDataStructure():
@@ -55,7 +55,7 @@ class ExecPin(PinBase):
 
     @staticmethod
     def color():
-        return (200, 200, 200, 255)
+        return 200, 200, 200, 255
 
     def setData(self, data):
         pass

@@ -13,7 +13,10 @@
 ## limitations under the License.
 
 
-from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
+from PyFlow.Packages.PyFlowBase.Nodes.storeArgs import storeArgs
+from PyFlow.Packages.PyFlowBase.Nodes.combineArgs import combineArgs
+from PyFlow.Packages.PyFlowBase.Nodes.subProcess import subProcess
+from PyFlow.Packages.PyFlowBase.Nodes.switch import switch
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
@@ -22,10 +25,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
 from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
-from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
-    graphInputs,
-    graphOutputs
-)
+from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import graphInputs, graphOutputs
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 
@@ -41,7 +41,10 @@ from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 from PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
 
-from PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
+from PyFlow.Packages.PyFlowBase.UI.UIStoreArgsNode import UIStoreArgs
+from PyFlow.Packages.PyFlowBase.UI.UICombineArgsNode import UICombineArgs
+from PyFlow.Packages.PyFlowBase.UI.UISubProcessNode import UISubProcess
+from PyFlow.Packages.PyFlowBase.UI.UISwitchNode import UISwitch
 from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
@@ -49,10 +52,7 @@ from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
 from PyFlow.Packages.PyFlowBase.UI.UIStickyNote import UIStickyNote
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
 from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
-from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
-    UIGraphInputs,
-    UIGraphOutputs
-)
+from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import UIGraphInputs, UIGraphOutputs
 from PyFlow.Packages.PyFlowBase.UI.UIFloatRamp import UIFloatRamp
 from PyFlow.Packages.PyFlowBase.UI.UIColorRamp import UIColorRamp
 
@@ -71,8 +71,14 @@ def createUINode(raw_instance):
         return UIGetVarNode(raw_instance)
     if isinstance(raw_instance, setVar):
         return UISetVarNode(raw_instance)
-    if isinstance(raw_instance, switchOnString):
-        return UISwitchOnString(raw_instance)
+    if isinstance(raw_instance, subProcess):
+        return UISubProcess(raw_instance)
+    if isinstance(raw_instance, storeArgs):
+        return UIStoreArgs(raw_instance)
+    if isinstance(raw_instance, combineArgs):
+        return UICombineArgs(raw_instance)
+    if isinstance(raw_instance, switch):
+        return UISwitch(raw_instance)
     if isinstance(raw_instance, sequence):
         return UISequenceNode(raw_instance)
     if isinstance(raw_instance, commentNode):
@@ -103,8 +109,8 @@ def createUINode(raw_instance):
         return UIColorRamp(raw_instance)
     if isinstance(raw_instance, imageDisplay):
         return UIImageDisplayNode(raw_instance)
-    if isinstance(raw_instance,forLoopBegin):
+    if isinstance(raw_instance, forLoopBegin):
         return UIForLoopBeginNode(raw_instance)
-    if isinstance(raw_instance,whileLoopBegin):
+    if isinstance(raw_instance, whileLoopBegin):
         return UIWhileLoopBeginNode(raw_instance)
     return UINodeBase(raw_instance)

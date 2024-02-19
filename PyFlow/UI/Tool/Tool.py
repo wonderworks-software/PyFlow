@@ -13,10 +13,9 @@
 ## limitations under the License.
 
 
-from nine import str
 import uuid
-from Qt import QtWidgets
-from Qt import QtGui, QtCore
+from qtpy import QtWidgets
+from qtpy import QtGui, QtCore
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
@@ -129,6 +128,7 @@ class ToolBase(object):
 class ShelfTool(ToolBase):
     """Base class for shelf tools
     """
+
     def __init__(self):
         super(ShelfTool, self).__init__()
 
@@ -140,18 +140,64 @@ class ShelfTool(ToolBase):
         return QtGui.QIcon.fromTheme("go-home")
 
     def do(self):
-        print(self.name(), "called!", self.canvas)
+        print(self.name(), "called!", self.canvas)  # TODO: there is no 'canvas' yet
 
+class FormTool(QtWidgets.QMdiSubWindow, ToolBase):
+    """Base class for form tools
+    """
+    def __init__(self):
+        ToolBase.__init__(self)
+        QtWidgets.QMdiSubWindow.__init__(self)
+        self.setToolTip(self.toolTip())
+        self.setObjectName(self.uniqueName())
+
+    def supportedSoftwares():
+        """Under what software to work
+        """
+        return ["any"]
+
+    @staticmethod
+    def isSingleton():
+        return False
+
+    def onShow(self):
+        super(FormTool, self).onShow()
+        self.setWindowTitle(self.name())
+
+    def contextMenuBuilder(self):
+        return None
+
+    @staticmethod
+    def getIcon():
+        return None
+
+    def restoreState(self, settings):
+        super(FormTool, self).restoreState(settings)
+        self.setObjectName(self.uniqueName())
+
+    def closeEvent(self, event):
+        self.onDestroy()
+        self.parent().unregisterToolInstance(self)
+        event.accept()
+
+    def do(self):
+        print(self.name(), "called!", self.canvas)
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """Base class for dock tools
     """
+
     def __init__(self):
         ToolBase.__init__(self)
         QtWidgets.QDockWidget.__init__(self)
         self.setToolTip(self.toolTip())
-        self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
-        self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
+        #self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
+        self.setAllowedAreas(
+            QtCore.Qt.BottomDockWidgetArea
+            | QtCore.Qt.LeftDockWidgetArea
+            | QtCore.Qt.RightDockWidgetArea
+            | QtCore.Qt.TopDockWidgetArea
+        )
         self.setObjectName(self.uniqueName())
         self.setTitleBarWidget(DockTitleBar(self))
         self.setFloating(False)
@@ -184,7 +230,6 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
     def addButton(self, button):
         self.titleBarWidget().addButton(button)
 
-
 class DockTitleBar(QtWidgets.QWidget):
     def __init__(self, dockWidget, renamable=False):
         super(DockTitleBar, self).__init__(dockWidget)
@@ -193,7 +238,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.layout().setContentsMargins(0, 0, 0, 1)
         self.buttonsLay = QtWidgets.QHBoxLayout()
         self.buttonsLay.setSpacing(1)
-        self.buttonsLay.setMargin(1)
+        self.buttonsLay.setContentsMargins(1,1,1,1)
         self.box = QtWidgets.QGroupBox("")
         self.box.setLayout(self.buttonsLay)
         self.box.setObjectName("Docked")
@@ -213,7 +258,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.buttonSize = QtCore.QSize(14, 14)
 
         self.dockButton = QtWidgets.QToolButton(self)
-        self.dockButton.setIcon(QtGui.QIcon(':/split_window.png'))
+        self.dockButton.setIcon(QtGui.QIcon(":/split_window.png"))
         self.dockButton.setMaximumSize(self.buttonSize)
         self.dockButton.setAutoRaise(True)
         self.dockButton.clicked.connect(self.toggleFloating)
@@ -221,7 +266,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.closeButton = QtWidgets.QToolButton(self)
         self.closeButton.setMaximumSize(self.buttonSize)
         self.closeButton.setAutoRaise(True)
-        self.closeButton.setIcon(QtGui.QIcon(':/close_window.png'))
+        self.closeButton.setIcon(QtGui.QIcon(":/close_window.png"))
         self.closeButton.clicked.connect(self.closeParent)
 
         self.buttonsLay.addSpacing(2)
@@ -257,11 +302,11 @@ class DockTitleBar(QtWidgets.QWidget):
     def onFeaturesChanged(self, features):
         if not features & QtWidgets.QDockWidget.DockWidgetVerticalTitleBar:
             self.closeButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetClosable)
+                features & QtWidgets.QDockWidget.DockWidgetClosable == QtWidgets.QDockWidget.DockWidgetClosable)
             self.dockButton.setVisible(
-                features & QtWidgets.QDockWidget.DockWidgetFloatable)
+                features & QtWidgets.QDockWidget.DockWidgetFloatable == QtWidgets.QDockWidget.DockWidgetFloatable)
         else:
-            raise ValueError('vertical title bar not supported')
+            raise ValueError("vertical title bar not supported")
 
     def setTitle(self, title):
         self.titleLabel.setText(title)
@@ -271,13 +316,18 @@ class DockTitleBar(QtWidgets.QWidget):
         if not state:
             self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
         else:
-            self.box.setStyleSheet("""QGroupBox{
+            self.box.setStyleSheet(
+                """QGroupBox{
                                 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 %s,
                                 stop: 0.6 %s,
-                                stop: 1.0 %s);}""" % ("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
-                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
-                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
+                                stop: 1.0 %s);}"""
+                % (
+                    "rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
+                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                )
+            )
 
     def update(self, *args, **kwargs):
         self.ChangeFloatingStyle(self.parent().isFloating())

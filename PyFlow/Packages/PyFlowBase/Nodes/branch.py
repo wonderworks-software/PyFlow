@@ -22,10 +22,12 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class branch(NodeBase):
     def __init__(self, name):
         super(branch, self).__init__(name)
-        self.trueExec = self.createOutputPin("True", 'ExecPin')
-        self.falseExec = self.createOutputPin("False", 'ExecPin')
-        self.inExec = self.createInputPin("In", 'ExecPin', defaultValue=None, foo=self.compute)
-        self.condition = self.createInputPin("Condition", 'BoolPin')
+        self.trueExec = self.createOutputPin("True", "ExecPin")
+        self.falseExec = self.createOutputPin("False", "ExecPin")
+        self.inExec = self.createInputPin(
+            "In", "ExecPin", defaultValue=None, callback=self.compute
+        )
+        self.condition = self.createInputPin("Condition", "BoolPin")
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
@@ -35,16 +37,16 @@ class branch(NodeBase):
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('BoolPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("BoolPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     def compute(self, *args, **kwargs):
         data = self.condition.getData()

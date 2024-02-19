@@ -13,12 +13,13 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
 
 class KeyboardModifiersCaptureWidget(QPushButton):
     """docstring for KeyboardModifiersCaptureWidget."""
+
     captured = QtCore.Signal(object)
 
     def __init__(self, parent=None):
@@ -27,7 +28,9 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         self.setText("NoModifier")
         self.bCapturing = False
         self.setCheckable(True)
-        self.setToolTip("<b>Left click</b> to start capturing.<br><b>Enter</b> to accept.<br><b>Esc</b> to clear")
+        self.setToolTip(
+            "<b>Left click</b> to start capturing.<br><b>Enter</b> to accept.<br><b>Esc</b> to clear"
+        )
 
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.actionReset = QAction("Reset", None)
@@ -43,7 +46,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
     def modifiersToString(modifiers):
         if modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
             return "NoModifier"
-        return QtGui.QKeySequence(modifiers).toString()[:-1]
+        return QtGui.QKeySequence(modifiers).toString()[:-2]
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
@@ -82,6 +85,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
 if __name__ == "__main__":
     import sys
+
     a = QApplication(sys.argv)
 
     w = KeyboardModifiersCaptureWidget()

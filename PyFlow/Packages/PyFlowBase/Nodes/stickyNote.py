@@ -22,7 +22,7 @@ class stickyNote(NodeBase):
 
     @staticmethod
     def category():
-        return 'UI'
+        return "UI"
 
     @staticmethod
     def keywords():
@@ -30,4 +30,4 @@ class stickyNote(NodeBase):
 
     @staticmethod
     def description():
-        return 'Sticky Note to save info with the graph'
+        return "Sticky Note to save info with the graph"

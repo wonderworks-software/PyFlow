@@ -23,27 +23,17 @@
 import re
 import math
 import time
-import inspect
 import struct
 import weakref
-try:
-    from queue import Queue
-except:
-    from Queue import Queue
-import uuid
 import sys
 
-from nine import IS_PYTHON2, str
-if IS_PYTHON2:
-    from aenum import IntEnum, Flag, auto, Enum
-else:
-    from enum import IntEnum, Flag, auto, Enum
+from enum import IntEnum, Flag, auto
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
+from PyFlow import GET_PACKAGES
 
-
-maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
+maxint = 2 ** (struct.Struct("i").size * 8 - 1) - 1
 
 
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
@@ -51,11 +41,60 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-DEFAULT_IN_EXEC_NAME = str('inExec')
-DEFAULT_OUT_EXEC_NAME = str('outExec')
-DEFAULT_WIDGET_VARIANT = str('DefaultWidget')
-REF = str('Reference')
+DEFAULT_IN_EXEC_NAME = "inExec"
+DEFAULT_OUT_EXEC_NAME = "outExec"
+DEFAULT_WIDGET_VARIANT = "DefaultWidget"
+REF = "Reference"
 
+global GlobalVariables
+GlobalVariables = {}
+
+
+def fetchPackageNames(graphJson):
+    """Parses serialized graph and returns all package names it uses
+
+    :param graphJson: Serialized graph
+    :type graphJson: dict
+    :rtyoe: list(str)
+    """
+    packages = set()
+
+    def worker(graphData):
+        for node in graphData["nodes"]:
+            packages.add(node["package"])
+
+            for inpJson in node["inputs"]:
+                packages.add(inpJson["package"])
+
+            for outJson in node["inputs"]:
+                packages.add(outJson["package"])
+
+            if "graphData" in node:
+                worker(node["graphData"])
+
+    worker(graphJson)
+    return packages
+
+
+def validateGraphDataPackages(graphData, missedPackages=None):
+    """Checks if packages used in serialized data accessible
+
+    Missed packages will be added to output set
+
+    :param graphData: Serialized graph
+    :type graphData: dict
+    :param missedPackages: Package names that missed
+    :type missedPackages: set
+    :rtype: bool
+    """
+    if missedPackages is None:
+        missedPackages = set()
+    existingPackages = GET_PACKAGES().keys()
+    graphPackages = fetchPackageNames(graphData)
+    for pkg in graphPackages:
+        if pkg not in existingPackages:
+            missedPackages.add(pkg)
+    return len(missedPackages) == 0
 
 def lerp(start, end, alpha):
     """Performs a linear interpolation
@@ -67,7 +106,7 @@ def lerp(start, end, alpha):
     :param alpha: alpha how far to interpolate
     :returns: The result of the linear interpolation
     """
-    return (start + alpha * (end - start))
+    return start + alpha * (end - start)
 
 
 def GetRangePct(MinValue, MaxValue, Value):
@@ -80,6 +119,7 @@ def GetRangePct(MinValue, MaxValue, Value):
     """
     return (Value - MinValue) / (MaxValue - MinValue)
 
+
 def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
     (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
@@ -88,10 +128,12 @@ def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
     return lerp(OutRangeA, OutRangeB, ClampedPct)
 
+
 def mapRangeUnclamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
     """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
     (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
     return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
+
 
 def sign(x):
     """Returns sign of x. -1 if x is negative, 1 if positive and zero if 0.
@@ -102,10 +144,7 @@ def sign(x):
 
 
 def currentProcessorTime():
-    if IS_PYTHON2:
-        return time.clock()
-    else:
-        return time.process_time()
+    return time.process_time()
 
 
 def clamp(n, vmin, vmax):
@@ -140,6 +179,7 @@ def roundup(x, to):
 _currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
 python32 = Version(3, 2, 0)
 if _currentVersion <= python32:
+
     def clearList(list):
         """Clears python list
 
@@ -149,7 +189,10 @@ if _currentVersion <= python32:
         :rtype: list
         """
         del list[:]
+
+
 else:
+
     def clearList(list):
         """Clears python list
 
@@ -159,6 +202,7 @@ else:
         :rtype: list
         """
         list.clear()
+
 
 def findGoodId(ids):
     """
@@ -182,7 +226,6 @@ def findGoodId(ids):
         diff = ID - lastID
         if diff > 1:
             return lastID + 1
-            break
         lastID = ID
     else:
         return ID + 1
@@ -212,9 +255,9 @@ def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
 
     result = "def {0}({1}):\n".format(functionName, kwargsString)
 
-    for scriptLine in scriptString.split('\n'):
+    for scriptLine in scriptString.split("\n"):
         result += "\t{}".format(scriptLine)
-        result += '\n'
+        result += "\n"
     return result
 
 
@@ -222,9 +265,9 @@ def cycleCheck(src, dst):
     """Check for cycle connected nodes
 
     :param src: hand side pin
-    :type src: :class:`PyFlow.Core.PinBase`
+    :type src: :class:`PyFlow.Core.PinBase.PinBase`
     :param dst: hand side pin
-    :type dst: :class:`PyFlow.Core.PinBase`
+    :type dst: :class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if cycle deleted
     :rtype: bool
     """
@@ -245,9 +288,9 @@ def arePinsConnected(src, dst):
     .. note:: Pins can be passed in any order if **src** pin is :py:class:`PyFlow.Core.Common.PinDirection`, they will be swapped
 
     :param src: left hand side pin
-    :type src: :py:class:`PyFlow.Core.PinBase`
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param dst: right hand side pin
-    :type dst: :py:class:`PyFlow.Core.PinBase`
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
     :returns: True if Pins are connected
     :rtype: bool
     """
@@ -281,7 +324,7 @@ def getConnectedPins(pin):
 
 
 def pinAffects(lhs, rhs):
-    """This function for establish dependencies bitween pins
+    """This function for establish dependencies between pins
 
     .. warning:: Used internally, users will hardly need this
 
@@ -290,7 +333,7 @@ def pinAffects(lhs, rhs):
     :param rhs: Second Pin to connect
     :type rhs: :py:class:`PyFlow.Core.PinBase.PinBase`
     """
-    assert(lhs is not rhs), "pin can not affect itself"
+    assert lhs is not rhs, "pin can not affect itself"
     lhs.affects.add(rhs)
     rhs.affected_by.add(lhs)
 
@@ -334,39 +377,62 @@ def canConnectPins(src, dst):
 
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
-            if not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
+            if not (
+                src.canChangeStructure(dst._currStructure, [])
+                or dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+            ):
                 return False
-        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfCheck=False):
+        elif (
+            not src.supportDictElement(
+                [], src.optionEnabled(PinOptions.DictElementSupported)
+            )
+            and dst.optionEnabled(PinOptions.SupportsOnlyArrays)
+            and not dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+        ):
             return False
         else:
-            DictElement = src.getDictElementNode([])
+            DictElementNode = src.getDictElementNode([])
             dictNode = dst.getDictNode([])
             nodeFree = False
             if dictNode:
                 nodeFree = dictNode.KeyType.checkFree([])
-            if DictElement:
-                if not DictElement.key.checkFree([]) and not nodeFree:
-                    if dst._data.keyType != DictElement.key.dataType:
+            if DictElementNode:
+                if not DictElementNode.key.checkFree([]) and not nodeFree:
+                    if dst._data.keyType != DictElementNode.key.dataType:
                         return False
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanChangeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(
+            src._currStructure, [], selfCheck=False
+        )
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (
+            srcCanChangeStruct or dstCanChangeStruct
+        ):
             return False
 
     if src.isDict() and not dst.isDict():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanChangeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(
+            src._currStructure, [], selfCheck=False
+        )
+        if not dst.optionEnabled(PinOptions.DictSupported) and not (
+            srcCanChangeStruct or dstCanChangeStruct
+        ):
             return False
 
     if dst.hasConnections():
-        if not dst.optionEnabled(PinOptions.AllowMultipleConnections) and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+        if (
+            not dst.optionEnabled(PinOptions.AllowMultipleConnections)
+            and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection
+        ):
             return False
 
     if src.hasConnections():
-        if not src.optionEnabled(PinOptions.AllowMultipleConnections) and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+        if (
+            not src.optionEnabled(PinOptions.AllowMultipleConnections)
+            and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection
+        ):
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
@@ -386,25 +452,72 @@ def canConnectPins(src, dst):
         return False
 
     if src.IsValuePin() and dst.IsValuePin():
-        if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
-            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConnection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
-            b = dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
-            c = not dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+        if src.dataType in dst.allowedDataTypes(
+            [], dst._supportedDataTypes
+        ) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
+            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConnection(
+                [], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            )
+            b = dst.canChangeTypeOnConnection(
+                [], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            ) and not dst.optionEnabled(PinOptions.AllowAny)
+            c = not dst.canChangeTypeOnConnection(
+                [], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []
+            ) and not dst.optionEnabled(PinOptions.AllowAny)
             if all([a, b or c]):
                 return False
-            if not src.isDict() and dst.supportOnlyDictElement([], dst.isDict()) and not (dst.checkFree([], selfCheck=False) and dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
-                if not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.supportOnlyDictElement([], dst.isDict()):
+            if (
+                not src.isDict()
+                and dst.supportOnlyDictElement([], dst.isDict())
+                and not (
+                    dst.checkFree([], selfCheck=False)
+                    and dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+                )
+            ):
+                if not src.supportDictElement(
+                    [], src.optionEnabled(PinOptions.DictElementSupported)
+                ) and dst.supportOnlyDictElement([], dst.isDict()):
                     return False
             return True
         else:
             if src.dataType not in dst.supportedDataTypes():
                 return False
 
-            if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
-                   dst.checkFree([], selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
+            if all(
+                [
+                    src.dataType
+                    in list(
+                        dst.allowedDataTypes(
+                            [],
+                            dst._defaultSupportedDataTypes,
+                            selfCheck=dst.optionEnabled(
+                                PinOptions.AllowMultipleConnections
+                            ),
+                            defaults=True,
+                        )
+                    )
+                    + ["AnyPin"],
+                    dst.checkFree(
+                        [],
+                        selfCheck=dst.optionEnabled(
+                            PinOptions.AllowMultipleConnections
+                        ),
+                    ),
+                ]
+            ):
                 return True
-            if all([dst.dataType in list(src.allowedDataTypes([], src._defaultSupportedDataTypes, defaults=True)) + ["AnyPin"],
-                   src.checkFree([])]):
+            if all(
+                [
+                    dst.dataType
+                    in list(
+                        src.allowedDataTypes(
+                            [], src._defaultSupportedDataTypes, defaults=True
+                        )
+                    )
+                    + ["AnyPin"],
+                    src.checkFree([]),
+                ]
+            ):
                 return True
         return False
 
@@ -413,10 +526,11 @@ def canConnectPins(src, dst):
 
     return True
 
+
 def connectPins(src, dst):
     """**Connects two pins**
 
-    This are the rules how pins connect:
+    These are the rules how pins connect:
 
     * Input value pins can have one output connection if :py:class:`PyFlow.Core.Common.PinOptions.AllowMultipleConnections` flag is disabled
     * Output value pins can have any number of connections
@@ -463,7 +577,7 @@ def connectPins(src, dst):
 
     dst.pinConnected(src)
     src.pinConnected(dst)
-    push(dst)
+    #push(dst)
     return True
 
 
@@ -497,6 +611,7 @@ def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinI
     rhsPin = rhsNode.orderedInputs[rhsInPinIndex]
 
     return connectPins(lhsPin, rhsPin)
+
 
 def traverseConstrainedPins(startFrom, callback):
     """Iterate over constrained and connected pins
@@ -564,6 +679,7 @@ def push(start_from):
     :param start_from: pin from which recursion begins
     :type start_from: :py:class:`~PyFlow.Core.PinBase.PinBase`
     """
+    #print("push", start_from.name, start_from.owningNode().name)
     if not len(start_from.affects) == 0:
         start_from.setDirty()
         for i in start_from.affects:
@@ -585,7 +701,7 @@ def extractDigitsFromEndOfString(string):
     :returns: Numbers in the final of the string
     :rtype: int
     """
-    result = re.search('(\d+)$', string)
+    result = re.search("(\d+)$", string)
     if result is not None:
         return int(result.group(0))
 
@@ -600,7 +716,7 @@ def removeDigitsFromEndOfString(string):
     :returns: Modified string
     :rtype: string
     """
-    return re.sub(r'\d+$', '', string)
+    return re.sub(r"\d+$", "", string)
 
 
 def getUniqNameFromList(existingNames, name):
@@ -608,11 +724,11 @@ def getUniqNameFromList(existingNames, name):
 
     Iterates over **existingNames** and extracts the end digits to find a new unique id
 
-    :param existingNames: List of strings where to search for existing indexes
-    :type existingNames: list
+    :param existingNames: List or set of strings where to search for existing indexes
+    :type existingNames: list[str]|set[str]
     :param name: Name to obtain a unique version from
     :type name: str
-    :returns: New name non overlapin with any in existingNames
+    :returns: New name non overlapping with any in existingNames
     :rtype: str
     """
     if name not in existingNames:
@@ -643,6 +759,7 @@ def clearSignal(signal):
 class SingletonDecorator:
     """Decorator to make class unique, so each time called same object returned
     """
+
     allInstances = []
 
     @staticmethod
@@ -656,13 +773,16 @@ class SingletonDecorator:
         self.allInstances.append(self)
 
     def destroy(self):
+        if ('destroy' in dir(self.instance)):
+            self.instance.destroy()
         del self.instance
         self.instance = None
 
     def __call__(self, *args, **kwds):
         if self.instance is None:
             self.instance = self.cls(*args, **kwds)
-
+        if hasattr(self.instance, 'instanceCount'):
+            self.instance.instanceCount += 1
         return self.instance
 
 
@@ -671,17 +791,18 @@ class DictElement(tuple):
 
     This subclass of python's :class:`tuple` is to represent dict elements to construct typed dicts
     """
-    def __new__(self, a=None, b=None):
+
+    def __new__(cls, a=None, b=None):
         if a is None and b is None:
             new = ()
         elif b is None:
             if isinstance(a, tuple) and len(a) <= 2:
                 new = a
             else:
-                raise Exception("non Valid Input")
+                raise Exception("Invalid Input")
         else:
             new = (a, b)
-        return super(DictElement, self).__new__(self, new)
+        return super(DictElement, cls).__new__(cls, new)
 
 
 class PFDict(dict):
@@ -707,7 +828,7 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType='AnyPin', inp={}):
+    def __init__(self, keyType, valueType="AnyPin", inp=None):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
@@ -715,6 +836,8 @@ class PFDict(dict):
         :param inp: Construct from another dict, defaults to {}
         :type inp: dict, optional
         """
+        if inp is None:
+            inp = {}
         super(PFDict, self).__init__(inp)
         self.keyType = keyType
         self.valueType = valueType
@@ -722,15 +845,17 @@ class PFDict(dict):
     def __setitem__(self, key, item):
         """Re implements Python Dict __setitem__ to only allow Typed Keys.
 
-        Will throw an Exception if non Valid KeyType
+        Will throw an Exception if non-Valid KeyType
         """
         if type(key) == self.getClassFromType(self.keyType):
             super(PFDict, self).__setitem__(key, item)
         else:
             raise Exception(
-                "Valid key should be a {0}".format(self.getClassFromType(self.keyType)))
+                "Valid key should be a {0}".format(self.getClassFromType(self.keyType))
+            )
 
-    def getClassFromType(self, pinType):
+    @staticmethod
+    def getClassFromType(pinType):
         """
         Gets the internal data structure for a defined pin type
 
@@ -762,17 +887,29 @@ class PinOptions(Flag):
 
     ArraySupported = auto()  #: Pin can hold array data structure
     DictSupported = auto()  #: Pin can hold dict data structure
-    SupportsOnlyArrays = auto()  #: Pin will only support other pins with array data structure
+    SupportsOnlyArrays = (
+        auto()
+    )  #: Pin will only support other pins with array data structure
 
-    AllowMultipleConnections = auto()  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
+    AllowMultipleConnections = (
+        auto()
+    )  #: This enables pin to allow more than one input connection. See :func:`~PyFlow.Core.Common.connectPins`
 
-    ChangeTypeOnConnection = auto()  #: Used by :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its data type on new connection.
+    ChangeTypeOnConnection = (
+        auto()
+    )  #: Used by :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its data type on new connection.
     RenamingEnabled = auto()  #: Determines if pin can be renamed
-    Dynamic = auto()  #: Specifies if pin was created dynamically (during program runtime)
+    Dynamic = (
+        auto()
+    )  #: Specifies if pin was created dynamically (during program runtime)
     AlwaysPushDirty = auto()  #: Pin will always be seen as dirty (computation needed)
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
-    AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
-    DictElementSupported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
+    AllowAny = (
+        auto()
+    )  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default, a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    DictElementSupported = (
+        auto()
+    )  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
 
 
 class StructureType(IntEnum):
@@ -780,9 +917,13 @@ class StructureType(IntEnum):
     """
 
     Single = 0  #: Single data structure
-    Array = 1  #: Python list structure, represented as arrays -> typed and lists -> non typed
+    Array = (
+        1
+    )  #: Python list structure, represented as arrays -> typed and lists -> non typed
     Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
-    Multi = 3  #: This means it can became any of the previous ones on connection/user action
+    Multi = (
+        3
+    )  #: This means it can become any of the previous ones on connection/user action
 
 
 def findStructFromValue(value):
@@ -844,8 +985,8 @@ class Direction(IntEnum):
     Down = 3  #: Down
 
 
-class PinSpecifires:
-    """Pin specifires constants
+class PinSpecifiers:
+    """Pin specifiers constants
 
     :var SUPPORTED_DATA_TYPES: To specify supported data types list
     :var CONSTRAINT: To specify type constraint key
@@ -878,6 +1019,7 @@ class NodeMeta:
     :var KEYWORDS: To specify list of additional keywords, used in node box search field
     :var CACHE_ENABLED: To specify if node is cached or not
     """
+
     CATEGORY = "Category"
     KEYWORDS = "Keywords"
     CACHE_ENABLED = "CacheEnabled"

@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt import QtWidgets
-from Qt import QtGui, QtCore
+from qtpy import QtWidgets
+from qtpy import QtGui, QtCore
 
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import findPinClassByType, getAllPinClasses
@@ -30,6 +30,7 @@ class _FakeCanvas(object):
 
     def getLodValueFromCurrentScale(self, lod):
         return 1
+
     def getCanvasLodValueFromCurrentScale(self):
         return 1
 
@@ -57,6 +58,7 @@ class _FakePin(object):
 
 class _PinWidget(QtWidgets.QWidget):
     """docstring for _PinWidget."""
+
     def __init__(self, dataType, parent=None):
         super(_PinWidget, self).__init__(parent)
         self.dataType = dataType
@@ -77,7 +79,9 @@ class _PinWidget(QtWidgets.QWidget):
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
     def sizeHint(self):
-        textWidth = QtGui.QFontMetrics(self._font).horizontalAdvance(self.dataType) + _PIN_SIZE
+        textWidth = (
+            QtGui.QFontMetrics(self._font).horizontalAdvance(self.dataType) + _PIN_SIZE
+        )
         textHeight = max(QtGui.QFontMetrics(self._font).height(), _PIN_SIZE + 6)
         return QtCore.QSize(textWidth, textHeight)
 
@@ -125,11 +129,12 @@ class _PinWidget(QtWidgets.QWidget):
 
 class _PinsListWidget(QtWidgets.QListWidget):
     """docstring for _PinsListWidget."""
+
     returnPressed = QtCore.Signal()
 
-    def __init__(self, parent=None,validPins=None):
+    def __init__(self, parent=None, validPins=None):
         super(_PinsListWidget, self).__init__()
-        self.populate(pattern="",validPins=validPins)
+        self.populate(pattern="", validPins=validPins)
 
     def filterContent(self, pattern):
         self.clear()
@@ -145,7 +150,11 @@ class _PinsListWidget(QtWidgets.QListWidget):
             self.returnPressed.emit()
         super(_PinsListWidget, self).keyPressEvent(event)
 
-    def populate(self, pattern="", validPins=[pin.__name__ for pin in getAllPinClasses()]):
+    def populate(
+        self, pattern="", validPins=None
+    ):
+        if validPins is None:
+            validPins = [pin.__name__ for pin in getAllPinClasses()]
         for pinClass in getAllPinClasses():
             className = pinClass.__name__
             if className in validPins:
@@ -159,7 +168,8 @@ class _PinsListWidget(QtWidgets.QListWidget):
 
 class SelectPinDialog(QtWidgets.QDialog):
     """docstring for SelectPinDialog."""
-    def __init__(self, parent=None,validPins=None):
+
+    def __init__(self, parent=None, validPins=None):
         super(SelectPinDialog, self).__init__(None)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Select pin")

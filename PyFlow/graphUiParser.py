@@ -13,21 +13,17 @@
 ## limitations under the License.
 
 import os
-import sys
 import json
 import threading
-import time
 
-from Qt.QtWidgets import *
-from Qt import QtGui
-from Qt import QtCore
+from qtpy.QtWidgets import *
+from qtpy import QtGui
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-import PyFlow.UI.resources
 
 
 def run(filePath):
@@ -40,7 +36,7 @@ def run(filePath):
     msg.setIcon(QMessageBox.Critical)
 
     if os.path.exists(filePath):
-        with open(filePath, 'r') as f:
+        with open(filePath, "r") as f:
             data = json.load(f)
 
         # Window to display inputs
@@ -62,8 +58,8 @@ def run(filePath):
                     uiNodeJsonTemplate["wrapper"] = inp.wrapperJsonData
                     uiNode.postCreate(uiNodeJsonTemplate)
                     cat = CollapsibleFormWidget(headName=inp.name)
-                    prop.layout().addWidget(cat) 
-                    cat = uiNode.createOutputWidgets(cat)
+                    prop.layout().addWidget(cat)
+                    uiNode.createOutputWidgets(cat)
 
                 nodes = grph.getNodesList()
                 if len(nodes) > 0:
@@ -73,24 +69,29 @@ def run(filePath):
                         uiNodeJsonTemplate["wrapper"] = node.wrapperJsonData
                         uiNode.postCreate(uiNodeJsonTemplate)
                         if uiNode.bExposeInputsToCompound:
-                            cat = CollapsibleFormWidget(headName="{} inputs".format(node.name))
-                            prop.layout().addWidget(cat)                        
+                            cat = CollapsibleFormWidget(
+                                headName="{} inputs".format(node.name)
+                            )
+                            prop.layout().addWidget(cat)
                             uiNode.createInputWidgets(cat, pins=False)
                 prop.show()
+
                 def programLoop():
                     while True:
                         man.Tick(deltaTime=0.02)
                         time.sleep(0.02)
                         if man.terminationRequested:
                             break
+
                 t = threading.Thread(target=programLoop)
                 t.start()
 
                 def quitEvent():
                     man.terminationRequested = True
                     t.join()
+
                 app.aboutToQuit.connect(quitEvent)
-            # If no GraphInput Nodes Exit propgram   
+            # If no GraphInput Nodes Exit program
             else:
                 msg.setInformativeText(filePath)
                 msg.setDetailedText("The file doesn't contain graphInputs nodes")

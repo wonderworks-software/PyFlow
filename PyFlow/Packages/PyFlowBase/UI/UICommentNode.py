@@ -15,20 +15,20 @@
 
 from types import MethodType
 
-from Qt.QtWidgets import QGraphicsTextItem
-from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QGraphicsItemGroup
-from Qt.QtWidgets import QGraphicsProxyWidget
-from Qt.QtWidgets import QStyle
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QTextBrowser
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QMenu
-from Qt import QtGui
-from Qt import QtCore
+from qtpy.QtWidgets import QGraphicsTextItem
+from qtpy.QtWidgets import QGraphicsItem
+from qtpy.QtWidgets import QGraphicsWidget
+from qtpy.QtWidgets import QInputDialog
+from qtpy.QtWidgets import QGraphicsItemGroup
+from qtpy.QtWidgets import QGraphicsProxyWidget
+from qtpy.QtWidgets import QStyle
+from qtpy.QtWidgets import QLabel
+from qtpy.QtWidgets import QLineEdit
+from qtpy.QtWidgets import QTextBrowser
+from qtpy.QtWidgets import QPushButton
+from qtpy.QtWidgets import QMenu
+from qtpy import QtGui
+from qtpy import QtCore
 
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI import RESOURCES_DIR
@@ -78,7 +78,7 @@ class UICommentNode(UINodeBase):
         # Do not forget to remove collapsed nodes!
         if self.collapsed:
             for node in self.owningNodes:
-                assert(node is not None)
+                assert node is not None
                 node.kill()
         super(UICommentNode, self).kill(*args, **kwargs)
 
@@ -88,7 +88,9 @@ class UICommentNode(UINodeBase):
             # hide fully contained connections
             for pin in node.UIPins.values():
                 for connection in pin.uiConnectionList:
-                    if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                    if self.sceneBoundingRect().contains(
+                        connection.sceneBoundingRect()
+                    ):
                         connection.hide()
 
     def onVisibilityChanged(self, bVisible):
@@ -103,7 +105,9 @@ class UICommentNode(UINodeBase):
                                 connection.setVisible(True)
                         else:
                             # Hide connection only if fully contained
-                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                            if self.sceneBoundingRect().contains(
+                                connection.sceneBoundingRect()
+                            ):
                                 connection.setVisible(False)
         self.canvasRef().update()
 
@@ -182,10 +186,18 @@ class UICommentNode(UINodeBase):
     def intersectsOrContainsEndpointNodes(self, connection):
         srcOwningNode = connection.source().owningNode()
         dstOwningNode = connection.destination().owningNode()
-        intersectsSrcNode = self.sceneBoundingRect().intersects(srcOwningNode.sceneBoundingRect())
-        containsSrcNode = self.sceneBoundingRect().contains(srcOwningNode.sceneBoundingRect())
-        intersectsDstNode = self.sceneBoundingRect().intersects(dstOwningNode.sceneBoundingRect())
-        containsDstNode = self.sceneBoundingRect().contains(dstOwningNode.sceneBoundingRect())
+        intersectsSrcNode = self.sceneBoundingRect().intersects(
+            srcOwningNode.sceneBoundingRect()
+        )
+        containsSrcNode = self.sceneBoundingRect().contains(
+            srcOwningNode.sceneBoundingRect()
+        )
+        intersectsDstNode = self.sceneBoundingRect().intersects(
+            dstOwningNode.sceneBoundingRect()
+        )
+        containsDstNode = self.sceneBoundingRect().contains(
+            dstOwningNode.sceneBoundingRect()
+        )
         return intersectsSrcNode, containsSrcNode, intersectsDstNode, containsDstNode
 
     def contextMenuEvent(self, event):
@@ -202,7 +214,10 @@ class UICommentNode(UINodeBase):
 
             # save overrides information
             for connection in self.partiallyIntersectedConnections:
-                self.partiallyIntersectedConnectionsEndpointOverrides[connection] = (connection.sourcePositionOverride, connection.destinationPositionOverride)
+                self.partiallyIntersectedConnectionsEndpointOverrides[connection] = (
+                    connection.sourcePositionOverride,
+                    connection.destinationPositionOverride,
+                )
 
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
@@ -230,7 +245,10 @@ class UICommentNode(UINodeBase):
                             if pin.direction == PinDirection.Input:
                                 connection.destinationPositionOverride = None
             self.update()
-            for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
+            for (
+                connection,
+                overrides,
+            ) in self.partiallyIntersectedConnectionsEndpointOverrides.items():
                 connection.updateEndpointsPositions()
 
             self.partiallyIntersectedConnections.clear()
@@ -261,7 +279,9 @@ class UICommentNode(UINodeBase):
     def createPropertiesWidget(self, propertiesWidget):
         super(UICommentNode, self).createPropertiesWidget(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
-        pb = pyf_ColorSlider(type="int", alpha=True, startColor=list(self.color.getRgbF()))
+        pb = pyf_ColorSlider(
+            type="int", alpha=True, startColor=list(self.color.getRgbF())
+        )
         pb.valueChanged.connect(self.updateColor)
         appearanceCategory.addWidget("Color", pb)
         propertiesWidget.insertWidget(appearanceCategory, 1)

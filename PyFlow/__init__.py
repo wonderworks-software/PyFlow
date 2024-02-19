@@ -17,11 +17,11 @@
 """
 
 # this line adds extension-packages not installed inside the PyFlow directory
-__path__ = __import__('pkgutil').extend_path(__path__, __name__)
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 import importlib
 import pkgutil
-import collections.abc as collections
+import collections.abc
 from copy import copy
 import os
 import json
@@ -31,8 +31,9 @@ from PyFlow.Packages import *
 
 __all__ = [
     "INITIALIZE",
-    "GET_PACKAGES",
     "GET_PACKAGE_CHECKED",
+    "GET_PACKAGE_PATH",
+    "GET_PACKAGES",
     "CreateRawPin",
     "getPinDefaultValueByType",
     "findPinClassByType",
@@ -88,7 +89,7 @@ def getHashableDataTypes():
         for pin in getAllPinClasses():
             t = pin.internalDataStructure()
             if t is not type(None) and t is not None:
-                if isinstance(pin.pinDataTypeHint()[1], collections.Hashable):
+                if isinstance(pin.pinDataTypeHint()[1], collections.abc.Hashable):
                     __HASHABLE_TYPES.append(pin.__name__)
     return copy(__HASHABLE_TYPES)
 
@@ -110,15 +111,16 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
 
 def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     from PyFlow.Core.NodeBase import NodeBase
+
     package = GET_PACKAGE_CHECKED(packageName)
-    # try find function first
+    # try to find function first
     if libName is not None:
         for key, lib in package.GetFunctionLibraries().items():
             foos = lib.getFunctions()
             if libName == key and nodeClassName in foos:
                 return NodeBase.initializeFromFunction(foos[nodeClassName])
 
-    # try find node class
+    # try to find node class
     nodes = package.GetNodeClasses()
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName, **kwargs)
@@ -144,7 +146,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
             for compoundNodeFileName in files:
                 compoundNodeName, _ = os.path.splitext(compoundNodeFileName)
                 compoundNodeFullPath = os.path.join(path, compoundNodeFileName)
-                with open(compoundNodeFullPath, 'r') as f:
+                with open(compoundNodeFullPath, "r") as f:
                     compoundData = json.load(f)
                     if compoundData["name"] == nodeClassName:
                         compoundNode = getRawNodeInstance("compound", "PyFlowBase")
@@ -155,13 +157,15 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
                         return compoundNode
 
 
-def INITIALIZE(additionalPackageLocations=[], software=""):
+def INITIALIZE(additionalPackageLocations=None, software=""):
+    if additionalPackageLocations is None:
+        additionalPackageLocations = []
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
     from PyFlow import ConfigManager
-    from Qt.QtWidgets import QMessageBox
+    from qtpy.QtWidgets import QMessageBox
 
     packagePaths = Packages.__path__
 
@@ -188,7 +192,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
 
     # check for additional package locations
     if "PYFLOW_PACKAGES_PATHS" in os.environ:
-        delim = ';'
+        delim = ";"
         pathsString = os.environ["PYFLOW_PACKAGES_PATHS"]
         # remove delimiters from right
         pathsString = pathsString.rstrip(delim)
@@ -207,12 +211,14 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
         try:
             if ispkg:
-                mod = importer.find_module(modname).load_module(modname)
+                mod = importer.find_spec(modname).loader.load_module()
                 package = getattr(mod, modname)()
                 __PACKAGES[modname] = package
                 __PACKAGE_PATHS[modname] = os.path.normpath(mod.__path__[0])
         except Exception as e:
-            QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e)))
+            QMessageBox.critical(
+                None, "Fatal error", "Error On Module %s :\n%s" % (modname, str(e))
+            )
             continue
 
     registeredInternalPinDataTypes = set()
@@ -227,7 +233,11 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
             if pin.IsValuePin():
                 internalType = pin.internalDataStructure()
                 if internalType in registeredInternalPinDataTypes:
-                    raise Exception("Pin with {0} internal data type already been registered".format(internalType))
+                    raise Exception(
+                        "Pin with {0} internal data type already been registered".format(
+                            internalType
+                        )
+                    )
                 registeredInternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()

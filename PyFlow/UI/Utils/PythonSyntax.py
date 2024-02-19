@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt.QtCore import QRegExp
-from Qt.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+from qtpy.QtCore import QRegularExpression
+from qtpy.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 try:
     # python 2 support
     import __builtin__ as builtins
@@ -22,7 +22,7 @@ except:
     import builtins
 
 
-def format(color, style=''):
+def format(color, style=""):
     """Return a QTextCharFormat with the given attributes.
     """
     _color = QColor()
@@ -30,9 +30,9 @@ def format(color, style=''):
 
     _format = QTextCharFormat()
     _format.setForeground(_color)
-    if 'bold' in style:
+    if "bold" in style:
         _format.setFontWeight(QFont.Bold)
-    if 'italic' in style:
+    if "italic" in style:
         _format.setFontItalic(True)
 
     return _format
@@ -40,49 +40,94 @@ def format(color, style=''):
 
 # Syntax styles that can be shared by all languages
 STYLES = {
-    'keyword': format('darkMagenta'),
-    'operator': format('white', 'bold'),
-    'brace': format('darkGray'),
-    'defclass': format('cyan', 'bold'),
-    'string': format('yellow'),
-    'string2': format('yellow'),
-    'comment': format('gray', 'italic'),
-    'self': format('green', 'italic'),
-    'numbers': format('brown'),
-    'dataAccess': format('orange'),
-    'builtinFunction': format('cyan')
+    "keyword": format("darkMagenta"),
+    "operator": format("white", "bold"),
+    "brace": format("darkGray"),
+    "defclass": format("cyan", "bold"),
+    "string": format("yellow"),
+    "string2": format("yellow"),
+    "comment": format("gray", "italic"),
+    "self": format("green", "italic"),
+    "numbers": format("brown"),
+    "dataAccess": format("orange"),
+    "builtinFunction": format("cyan"),
 }
 
 
-class PythonHighlighter (QSyntaxHighlighter):
+class PythonHighlighter(QSyntaxHighlighter):
     """Syntax highlighter for the Python language.
     """
+
     # Python keywords
     keywords = [
-        'and', 'assert', 'break', 'class', 'continue', 'def',
-        'del', 'elif', 'else', 'except', 'exec', 'finally',
-        'for', 'from', 'global', 'if', 'import', 'in',
-        'is', 'lambda', 'not', 'or', 'pass', 'raise',
-        'return', 'try', 'while', 'yield', 'None', 'True', 'False',
+        "and",
+        "assert",
+        "break",
+        "class",
+        "continue",
+        "def",
+        "del",
+        "elif",
+        "else",
+        "except",
+        "exec",
+        "finally",
+        "for",
+        "from",
+        "global",
+        "if",
+        "import",
+        "in",
+        "is",
+        "lambda",
+        "not",
+        "or",
+        "pass",
+        "raise",
+        "return",
+        "try",
+        "while",
+        "yield",
+        "None",
+        "True",
+        "False",
     ]
 
     # Python operators
     operators = [
-        '=',
+        "=",
         # Comparison
-        '==', '!=', '<', '<=', '>', '>=',
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
         # Arithmetic
-        '\+', '-', '\*', '/', '//', '\%', '\*\*',
+        "\+",
+        "-",
+        "\*",
+        "/",
+        "//",
+        "\%",
+        "\*\*",
         # In-place
-        '\+=', '-=', '\*=', '/=', '\%=',
+        "\+=",
+        "-=",
+        "\*=",
+        "/=",
+        "\%=",
         # Bitwise
-        '\^', '\|', '\&', '\~', '>>', '<<',
+        "\^",
+        "\|",
+        "\&",
+        "\~",
+        ">>",
+        "<<",
     ]
 
     # Python braces
-    braces = [
-        '\{', '\}', '\(', '\)', '\[', '\]',
-    ]
+    braces = ["\{", "\}", "\(", "\)", "\[", "\]"]
 
     def __init__(self, document):
         QSyntaxHighlighter.__init__(self, document)
@@ -90,48 +135,48 @@ class PythonHighlighter (QSyntaxHighlighter):
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-        self.tri_single = (QRegExp("'''"), 1, STYLES['string2'])
-        self.tri_double = (QRegExp('"""'), 2, STYLES['string2'])
+        self.tri_single = (QRegularExpression("'''"), 1, STYLES['string2'])
+        self.tri_double = (QRegularExpression('"""'), 2, STYLES['string2'])
 
         rules = []
 
         # Keyword, operator, and brace rules
-        rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in PythonHighlighter.keywords]
-        rules += [(r'%s' % o, 0, STYLES['operator']) for o in PythonHighlighter.operators]
-        rules += [(r'%s' % b, 0, STYLES['brace']) for b in PythonHighlighter.braces]
-        rules += [(r'%s' % b, 0, STYLES['builtinFunction']) for b in dir(builtins)]
+        rules += [
+            (r"\b%s\b" % w, 0, STYLES["keyword"]) for w in PythonHighlighter.keywords
+        ]
+        rules += [
+            (r"%s" % o, 0, STYLES["operator"]) for o in PythonHighlighter.operators
+        ]
+        rules += [(r"%s" % b, 0, STYLES["brace"]) for b in PythonHighlighter.braces]
+        rules += [(r"%s" % b, 0, STYLES["builtinFunction"]) for b in dir(builtins)]
 
         # All other rules
         rules += [
             # 'self'
-            (r'\bself\b', 0, STYLES['self']),
-            (r'\bsetData\b', 0, STYLES['dataAccess']),
-            (r'\bgetData\b', 0, STYLES['dataAccess']),
-            (r'\bsetClean\b', 0, STYLES['dataAccess']),
-            (r'\bsetDirty\b', 0, STYLES['dataAccess']),
-            (r'\bcurrentData\b', 0, STYLES['dataAccess']),
-
+            (r"\bself\b", 0, STYLES["self"]),
+            (r"\bsetData\b", 0, STYLES["dataAccess"]),
+            (r"\bgetData\b", 0, STYLES["dataAccess"]),
+            (r"\bsetClean\b", 0, STYLES["dataAccess"]),
+            (r"\bsetDirty\b", 0, STYLES["dataAccess"]),
+            (r"\bcurrentData\b", 0, STYLES["dataAccess"]),
             # Double-quoted string, possibly containing escape sequences
-            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
+            (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES["string"]),
             # Single-quoted string, possibly containing escape sequences
-            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES['string']),
-
+            (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES["string"]),
             # 'def' followed by an identifier
-            (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
+            (r"\bdef\b\s*(\w+)", 1, STYLES["defclass"]),
             # 'class' followed by an identifier
-            (r'\bclass\b\s*(\w+)', 1, STYLES['defclass']),
-
+            (r"\bclass\b\s*(\w+)", 1, STYLES["defclass"]),
             # From '#' until a newline
-            (r'#[^\n]*', 0, STYLES['comment']),
-
+            (r"#[^\n]*", 0, STYLES["comment"]),
             # Numeric literals
-            (r'\b[+-]?[0-9]+[lL]?\b', 0, STYLES['numbers']),
-            (r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', 0, STYLES['numbers']),
-            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, STYLES['numbers']),
+            (r"\b[+-]?[0-9]+[lL]?\b", 0, STYLES["numbers"]),
+            (r"\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b", 0, STYLES["numbers"]),
+            (r"\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b", 0, STYLES["numbers"]),
         ]
 
-        # Build a QRegExp for each pattern
-        self.rules = [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+        # Build a QRegularExpression for each pattern
+        self.rules = [(QRegularExpression(pat), index, fmt) for (pat, index, fmt) in rules]
 
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
@@ -153,11 +198,11 @@ class PythonHighlighter (QSyntaxHighlighter):
         # Do multi-line strings
         in_multiline = self.match_multiline(text, *self.tri_single)
         if not in_multiline:
-            in_multiline = self.match_multiline(text, *self.tri_double)
+            self.match_multiline(text, *self.tri_double)
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a
-        ``QRegExp`` for triple-single-quotes or triple-double-quotes, and
+        ``QRegularExpression`` for triple-single-quotes or triple-double-quotes, and
         ``in_state`` should be a unique integer to represent the corresponding
         state changes when inside those strings. Returns True if we're still
         inside a multi-line string when this function is finished.

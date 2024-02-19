@@ -13,50 +13,66 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import(
-    FunctionLibraryBase,
-    IMPLEMENT_NODE
-)
+from PyFlow.Core import FunctionLibraryBase, IMPLEMENT_NODE
 from PyFlow.Core.Common import *
 
 
 class BoolLib(FunctionLibraryBase):
-    '''doc string for BoolLib'''
+    """doc string for BoolLib"""
+
     def __init__(self, packageName):
         super(BoolLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolAnd(a=('BoolPin', False), b=('BoolPin', False)):
-        '''Returns the logical `AND` of two values `(A AND B)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolAnd(a=("BoolPin", False), b=("BoolPin", False)):
+        """Returns the logical `AND` of two values `(A AND B)`."""
         return a and b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolNot(a=('BoolPin', False)):
-        '''Returns the logical complement of the Boolean value `(NOT A)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolNot(a=("BoolPin", False)):
+        """Returns the logical complement of the Boolean value `(NOT A)`."""
         return not a
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolNand(a=('BoolPin', False), b=('BoolPin', False)):
-        '''Returns the logical `NAND` of two values `(A AND B)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolNand(a=("BoolPin", False), b=("BoolPin", False)):
+        """Returns the logical `NAND` of two values `(A AND B)`."""
         return not (a and b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolNor(a=('BoolPin', False), b=('BoolPin', False)):
-        '''Returns the logical `Not OR` of two values `(A NOR B)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolNor(a=("BoolPin", False), b=("BoolPin", False)):
+        """Returns the logical `Not OR` of two values `(A NOR B)`."""
         return not (a or b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolOr(a=('BoolPin', False), b=('BoolPin', False)):
-        '''Returns the logical `OR` of two values `(A OR B)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolOr(a=("BoolPin", False), b=("BoolPin", False)):
+        """Returns the logical `OR` of two values `(A OR B)`."""
         return a or b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={NodeMeta.CATEGORY: 'Math|Bool', NodeMeta.KEYWORDS: []})
-    def boolXor(a=('BoolPin', False), b=('BoolPin', False)):
-        '''Returns the logical `eXclusive OR` of two values `(A XOR B)`.'''
+    @IMPLEMENT_NODE(
+        returns=("BoolPin", False),
+        meta={NodeMeta.CATEGORY: "Math|Bool", NodeMeta.KEYWORDS: []},
+    )
+    def boolXor(a=("BoolPin", False), b=("BoolPin", False)):
+        """Returns the logical `eXclusive OR` of two values `(A XOR B)`."""
         return a ^ b

@@ -13,13 +13,10 @@
 ## limitations under the License.
 
 
-from nine import str
 import json
-from types import MethodType
-import uuid
 
-from Qt import QtCore, QtGui
-from Qt.QtWidgets import (
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QWidget,
@@ -29,7 +26,6 @@ from Qt.QtWidgets import (
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
-from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.Common import *
 
 VARIABLE_TAG = "VAR"
@@ -38,6 +34,7 @@ VARIABLE_DATA_TAG = "VAR_DATA"
 
 class VariablesListWidget(QListWidget):
     """docstring for VariablesListWidget."""
+
     def __init__(self, parent=None):
         super(VariablesListWidget, self).__init__(parent)
         self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -83,7 +80,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.actualize()
 
     def clear(self):
-        """Does not removes any variable. UI only
+        """Does not remove any variable. UI only
         """
         self.listWidget.clear()
 
@@ -102,8 +99,14 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setItemWidget(item, uiVariable)
         return uiVariable
 
-    def createVariable(self, dataType=str('BoolPin'), accessLevel=AccessLevel.public, uid=None):
-        rawVariable = self.pyFlowInstance.graphManager.get().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+    def createVariable(
+        self, dataType="BoolPin", accessLevel=AccessLevel.public, uid=None
+    ):
+        rawVariable = (
+            self.pyFlowInstance.graphManager.get()
+            .activeGraph()
+            .createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        )
         uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         EditorHistory().saveState("Create variable", modify=True)
         return uiVariable

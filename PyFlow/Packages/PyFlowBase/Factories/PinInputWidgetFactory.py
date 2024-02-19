@@ -15,13 +15,11 @@
 
 # Input widgets for pins
 
-from copy import copy
-from Qt import QtCore
-from Qt.QtWidgets import *
+from qtpy import QtCore
+from qtpy.QtWidgets import *
 
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow import GET_PACKAGES
-from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
@@ -29,17 +27,16 @@ from PyFlow.UI.Widgets.QtSliders import *
 from PyFlow.UI.Widgets.FileDialog import FileDialog
 
 
-
 class ExecInputWidget(InputWidgetSingle):
     """docstring for ExecInputWidget"""
 
-    def __init__(self, parent=None, **kwds):
-        super(ExecInputWidget, self).__init__(parent=parent, **kwds)
-        self.pb = QPushButton('execute', self)
+    def __init__(self, parent=None, **kwargs):
+        super(ExecInputWidget, self).__init__(parent=parent, **kwargs)
+        self.pb = QPushButton("execute", self)
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
+    def blockWidgetSignals(self, bLock=False):
         pass
 
 
@@ -48,16 +45,16 @@ class FloatInputWidgetSimple(InputWidgetSingle):
     Floating point data input widget without enhancements
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwargs)
         self.sb = valueBox(type="float", buttons=True)
         self.sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
         self.sb.setSingleStep(0.01)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
@@ -74,26 +71,28 @@ class FloatInputWidget(InputWidgetSingle):
     Floating point data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(FloatInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(FloatInputWidget, self).__init__(parent=parent, **kwargs)
         valueRange = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-        if "pinAnnotations" in kwds:
-            if PinSpecifires.VALUE_RANGE in kwds["pinAnnotations"]:
-                valueRange = kwds["pinAnnotations"][PinSpecifires.VALUE_RANGE]
+        if "pinAnnotations" in kwargs:
+            if PinSpecifiers.VALUE_RANGE in kwargs["pinAnnotations"]:
+                valueRange = kwargs["pinAnnotations"][PinSpecifiers.VALUE_RANGE]
 
         steps = copy(FLOAT_SLIDER_DRAG_STEPS)
 
-        if "pinAnnotations" in kwds:
-            if PinSpecifires.DRAGGER_STEPS in kwds["pinAnnotations"]:
-                steps = kwds["pinAnnotations"][PinSpecifires.DRAGGER_STEPS]
+        if "pinAnnotations" in kwargs:
+            if PinSpecifiers.DRAGGER_STEPS in kwargs["pinAnnotations"]:
+                steps = kwargs["pinAnnotations"][PinSpecifiers.DRAGGER_STEPS]
 
-        self.sb = pyf_Slider(self, "float", style=0, sliderRange=valueRange, draggerSteps=steps)
+        self.sb = pyf_Slider(
+            self, "float", style=0, sliderRange=valueRange, draggerSteps=steps
+        )
         self.setWidget(self.sb)
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
@@ -110,15 +109,15 @@ class IntInputWidgetSimple(InputWidgetSingle):
     Decimal number input widget without enhancements
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(IntInputWidgetSimple, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(IntInputWidgetSimple, self).__init__(parent=parent, **kwargs)
         self.sb = valueBox(type="int", buttons=True)
         self.sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(int(val))
@@ -129,18 +128,18 @@ class IntInputWidget(InputWidgetSingle):
     Decimal number input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(IntInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(IntInputWidget, self).__init__(parent=parent, **kwargs)
         valueRange = (INT_RANGE_MIN, INT_RANGE_MAX)
-        if "pinAnnotations" in kwds:
-            if "ValueRange" in kwds["pinAnnotations"]:
-                valueRange = kwds["pinAnnotations"]["ValueRange"]
+        if "pinAnnotations" in kwargs:
+            if "ValueRange" in kwargs["pinAnnotations"]:
+                valueRange = kwargs["pinAnnotations"]["ValueRange"]
         self.sb = pyf_Slider(self, "int", style=1, sliderRange=valueRange)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
-    def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.sb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.sb.setValue(int(val))
@@ -151,15 +150,15 @@ class StringInputWidget(InputWidgetSingle):
     String data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(StringInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(StringInputWidget, self).__init__(parent=parent, **kwargs)
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)
         self.le.editingFinished.connect(lambda: self.dataSetCallback(self.le.text()))
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
@@ -167,15 +166,16 @@ class StringInputWidget(InputWidgetSingle):
 
 class EnumInputWidget(InputWidgetSingle):
     """docstring for EnumInputWidget."""
-    def __init__(self, parent=None, **kwds):
-        super(EnumInputWidget, self).__init__(parent=parent, **kwds)
+
+    def __init__(self, parent=None, **kwargs):
+        super(EnumInputWidget, self).__init__(parent=parent, **kwargs)
         values = []
-        if PinSpecifires.VALUE_LIST in kwds["pinAnnotations"]:
-            values = kwds["pinAnnotations"][PinSpecifires.VALUE_LIST]
+        if PinSpecifiers.VALUE_LIST in kwargs["pinAnnotations"]:
+            values = kwargs["pinAnnotations"][PinSpecifiers.VALUE_LIST]
         self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
-        if "editable" in kwds["pinAnnotations"]:
-            self.enumBox.setEditable(kwds["pinAnnotations"]["editable"])
+        if "editable" in kwargs["pinAnnotations"]:
+            self.enumBox.setEditable(kwargs["pinAnnotations"]["editable"])
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)
 
@@ -188,11 +188,11 @@ class EnumInputWidget(InputWidgetSingle):
             self.enumBox.setCurrentIndex(index)
 
 
-class ObjectPathWIdget(InputWidgetSingle):
-    """docstring for ObjectPathWIdget."""
-    def __init__(self, parent=None, **kwds):
-        super(ObjectPathWIdget, self).__init__(parent=parent, **kwds)
-        values = []
+class ObjectPathWidget(InputWidgetSingle):
+    """docstring for ObjectPathWidget."""
+
+    def __init__(self, parent=None, **kwargs):
+        super(ObjectPathWidget, self).__init__(parent=parent, **kwargs)
         self.enumBox = EnumComboBox(PathsRegistry().getAllPaths())
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)
@@ -209,8 +209,8 @@ class PathInputWidget(InputWidgetSingle):
     Path input widget
     """
 
-    def __init__(self, mode="all", parent=None, **kwds):
-        super(PathInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, mode="all", parent=None, **kwargs):
+        super(PathInputWidget, self).__init__(parent=parent, **kwargs)
         self.mode = mode
         self.content = QWidget()
         self.content.setContentsMargins(0, 0, 0, 0)
@@ -227,27 +227,27 @@ class PathInputWidget(InputWidgetSingle):
 
     def getPath(self):
         dlg = FileDialog(self.mode)
-        if dlg.exec_() == QFileDialog.Accepted and len(dlg.selectedFiles())>0:
+        if dlg.exec_() == QFileDialog.Accepted and len(dlg.selectedFiles()) > 0:
             self.le.setText(dlg.selectedFiles()[0])
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 
+
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
 
-    def __init__(self, parent=None, **kwds):
-        super(BoolInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(BoolInputWidget, self).__init__(parent=parent, **kwargs)
         self.cb = QCheckBox(self)
         self.setWidget(self.cb)
-        self.cb.stateChanged.connect(
-            lambda val: self.dataSetCallback(bool(val)))
+        self.cb.stateChanged.connect(lambda val: self.dataSetCallback(bool(val)))
 
-    def blockWidgetSignals(self, bLocked):
-        self.cb.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.cb.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         if bool(val):
@@ -261,25 +261,27 @@ class NoneInputWidget(InputWidgetSingle):
     String data input widget
     """
 
-    def __init__(self, parent=None, **kwds):
-        super(NoneInputWidget, self).__init__(parent=parent, **kwds)
+    def __init__(self, parent=None, **kwargs):
+        super(NoneInputWidget, self).__init__(parent=parent, **kwargs)
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)
         self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
         self.le.setEnabled(False)
 
-    def blockWidgetSignals(self, bLocked):
-        self.le.blockSignals(bLocked)
+    def blockWidgetSignals(self, bLock=False):
+        self.le.blockSignals(bLock)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 
 
-def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
-    '''
+def getInputWidget(
+    dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds
+):
+    """
     factory method
-    '''
+    """
 
     # try to find factory in other packages first
     for pkgName, pkg in GET_PACKAGES().items():
@@ -288,39 +290,83 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
             continue
 
         try:
-            widget = pkg.PinsInputWidgetFactory()(dataType, dataSetter, defaultValue, widgetVariant=widgetVariant, **kwds)
+            widget = pkg.PinsInputWidgetFactory()(
+                dataType, dataSetter, defaultValue, widgetVariant=widgetVariant, **kwds
+            )
             if widget is not None:
                 return widget
         except Exception as e:
-            print("Failed to override input widget.{0} Package - {1}".format(dataType,pkgName), e)
+            print(
+                "Failed to override input widget.{0} Package - {1}".format(
+                    dataType, pkgName
+                ),
+                e,
+            )
             continue
 
-    if dataType == 'FloatPin':
+    if dataType == "FloatPin":
         if kwds is not None and "pinAnnotations" in kwds:
-            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
-                return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'IntPin':
+            if (
+                kwds["pinAnnotations"] is not None
+                and "ValueRange" in kwds["pinAnnotations"]
+            ):
+                return FloatInputWidget(
+                    dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+                )
+        return FloatInputWidgetSimple(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "IntPin":
         if kwds is not None and "pinAnnotations" in kwds:
-            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
-                return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'StringPin':
+            if (
+                kwds["pinAnnotations"] is not None
+                and "ValueRange" in kwds["pinAnnotations"]
+            ):
+                return IntInputWidget(
+                    dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+                )
+        return IntInputWidgetSimple(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "StringPin":
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return StringInputWidget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
         elif widgetVariant == "PathWidget":
-            return PathInputWidget(mode="all", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return PathInputWidget(
+                mode="all",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "FilePathWidget":
-            return PathInputWidget(mode="file", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return PathInputWidget(
+                mode="file",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "FolderPathWidget":
-            return PathInputWidget(mode="directory", dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)            
+            return PathInputWidget(
+                mode="directory",
+                dataSetCallback=dataSetter,
+                defaultValue=defaultValue,
+                **kwds,
+            )
         elif widgetVariant == "EnumWidget":
-            return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        elif widgetVariant == "ObjectPathWIdget":
-            return ObjectPathWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'BoolPin':
-        return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-    if dataType == 'ExecPin':
+            return EnumInputWidget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
+        elif widgetVariant == "ObjectPathWidget":
+            return ObjectPathWidget(
+                dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+            )
+    if dataType == "BoolPin":
+        return BoolInputWidget(
+            dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds
+        )
+    if dataType == "ExecPin":
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)
-    if dataType == 'AnyPin':
+    if dataType == "AnyPin":
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)

@@ -1,5 +1,4 @@
-from nine import str
-from Qt import QtGui
+from qtpy import QtGui
 
 from PyFlow.UI.Tool.Tool import DockTool
 
@@ -19,4 +18,4 @@ class DemoDockTool(DockTool):
 
     @staticmethod
     def name():
-        return str("DemoDockTool")
+        return "DemoDockTool"

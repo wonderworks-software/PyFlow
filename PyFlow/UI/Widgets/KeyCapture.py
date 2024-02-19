@@ -13,12 +13,13 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
 
 class KeyCaptureWidget(QPushButton):
     """docstring for KeyCaptureWidget."""
+
     captured = QtCore.Signal(object)
 
     def __init__(self, parent=None):
@@ -27,7 +28,9 @@ class KeyCaptureWidget(QPushButton):
         self._currentKey = None
         self.setText("NoKey")
         self.setCheckable(True)
-        self.setToolTip("<b>Left mouse button</b> to start capture.<br>Modifiers will not be accepted.")
+        self.setToolTip(
+            "<b>Left mouse button</b> to start capture.<br>Modifiers will not be accepted."
+        )
 
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.actionReset = QAction("Reset", None)
@@ -75,6 +78,7 @@ class KeyCaptureWidget(QPushButton):
 
 if __name__ == "__main__":
     import sys
+
     a = QApplication(sys.argv)
 
     w = KeyCaptureWidget()

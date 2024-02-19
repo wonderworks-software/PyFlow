@@ -13,15 +13,14 @@
 ## limitations under the License.
 
 
-import weakref
+import uuid
+
 from blinker import Signal
 from collections import Counter
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import CreateRawPin
 from PyFlow import getRawNodeInstance
-from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
 from PyFlow.Core.Interfaces import ISerializable
@@ -42,8 +41,8 @@ class GraphBase(ISerializable):
     :var childGraphs: a set of child graphs
     :vartype childGraphs: :class:`set`
 
-    :var nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
-    :vartype nodes: :class:`dict`
+    :var _nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
+    :vartype _nodes: :class:`dict`
 
     :var uid: Unique identifier
     :vartype uid: :class:`uuid.UUID`
@@ -76,7 +75,9 @@ class GraphBase(ISerializable):
         :rtype: dict
 
     """
-    def __init__(self, name, manager, parentGraph=None, category='', uid=None, *args, **kwargs):
+
+    def __init__(
+        self, name, manager, parentGraph=None, category="", uid=None, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
         self._isRoot = False
@@ -173,13 +174,15 @@ class GraphBase(ISerializable):
         :rtype: dict
         """
         result = {
-            'name': self.name,
-            'category': self.category,
-            'vars': [v.serialize() for v in self._vars.values()],
-            'nodes': [n.serialize() for n in self._nodes.values()],
-            'depth': self.depth(),
-            'isRoot': self.isRoot(),
-            'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
+            "name": self.name,
+            "category": self.category,
+            "vars": [v.serialize() for v in self._vars.values()],
+            "nodes": [n.serialize() for n in self._nodes.values()],
+            "depth": self.depth(),
+            "isRoot": self.isRoot(),
+            "parentGraphName": str(self._parentGraph.name)
+            if self._parentGraph is not None
+            else str(None),
         }
         return result
 
@@ -190,30 +193,34 @@ class GraphBase(ISerializable):
         :type jsonData: dict
         """
         self.clear()
-        self.name = self.graphManager.getUniqGraphName(jsonData['name'])
-        self.category = jsonData['category']
-        self.setIsRoot(jsonData['isRoot'])
+        self.name = self.graphManager.getUniqGraphName(jsonData["name"])
+        self.category = jsonData["category"]
+        self.setIsRoot(jsonData["isRoot"])
         if self.isRoot():
             self.name = "root"
         # restore vars
-        for varJson in jsonData['vars']:
+        for varJson in jsonData["vars"]:
             var = Variable.deserialize(self, varJson)
             self._vars[var.uid] = var
         # restore nodes
-        for nodeJson in jsonData['nodes']:
+        for nodeJson in jsonData["nodes"]:
             # check if variable getter or setter and pass variable
-            nodeArgs = ()
             nodeKwargs = {}
-            if nodeJson['type'] in ('getVar', 'setVar'):
-                nodeKwargs['var'] = self._vars[uuid.UUID(nodeJson['varUid'])]
-            nodeJson['owningGraphName'] = self.name
-            node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
+            if nodeJson["type"] in ("getVar", "setVar"):
+                nodeKwargs["var"] = self._vars[uuid.UUID(nodeJson["varUid"])]
+            nodeJson["owningGraphName"] = self.name
+            node = getRawNodeInstance(
+                nodeJson["type"],
+                packageName=nodeJson["package"],
+                libName=nodeJson["lib"],
+                **nodeKwargs,
+            )
             self.addNode(node, nodeJson)
 
         # restore connection
-        for nodeJson in jsonData['nodes']:
-            for nodeOutputJson in nodeJson['outputs']:
-                for linkData in nodeOutputJson['linkedTo']:
+        for nodeJson in jsonData["nodes"]:
+            for nodeOutputJson in nodeJson["outputs"]:
+                for linkData in nodeOutputJson["linkedTo"]:
                     try:
                         lhsNode = self._nodes[uuid.UUID(linkData["lhsNodeUid"])]
                     except Exception as e:
@@ -304,7 +311,13 @@ class GraphBase(ISerializable):
                 result[pin.uid] = pin
         return result
 
-    def createVariable(self, dataType=str('AnyPin'), accessLevel=AccessLevel.public, uid=None, name=str("var")):
+    def createVariable(
+        self,
+        dataType=str("AnyPin"),
+        accessLevel=AccessLevel.public,
+        uid=None,
+        name=str("var"),
+    ):
         """Creates variable inside this graph scope
 
         :param dataType: Variable data type
@@ -317,7 +330,14 @@ class GraphBase(ISerializable):
         :type name: str
         """
         name = self.graphManager.getUniqVariableName(name)
-        var = Variable(self, getPinDefaultValueByType(dataType), name, dataType, accessLevel=accessLevel, uid=uid)
+        var = Variable(
+            self,
+            getPinDefaultValueByType(dataType),
+            name,
+            dataType,
+            accessLevel=accessLevel,
+            uid=uid,
+        )
         self._vars[var.uid] = var
         return var
 
@@ -329,7 +349,7 @@ class GraphBase(ISerializable):
         :param var: Variable to remove
         :type var: :class:`~PyFlow.Core.Variable.Variable`
         """
-        assert(isinstance(var, Variable))
+        assert isinstance(var, Variable)
         if var.uid in self._vars:
             popped = self._vars.pop(var.uid)
             popped.killed.send()
@@ -341,12 +361,18 @@ class GraphBase(ISerializable):
         """
         return self._nodes
 
-    def getNodesList(self, classNameFilters=[]):
+    def getNodesList(self, classNameFilters=None):
         """Returns this graph's nodes list
         :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
         """
+        if classNameFilters is None:
+            classNameFilters = []
         if len(classNameFilters) > 0:
-            return [n for n in self._nodes.values() if n.__class__.__name__ in classNameFilters]
+            return [
+                n
+                for n in self._nodes.values()
+                if n.__class__.__name__ in classNameFilters
+            ]
         else:
             return [n for n in self._nodes.values()]
 
@@ -430,13 +456,13 @@ class GraphBase(ISerializable):
         """
         from PyFlow.Core.PathsRegistry import PathsRegistry
 
-        assert(node is not None), "failed to add node, None is passed"
+        assert node is not None, "failed to add node, None is passed"
         if node.uid in self._nodes:
             return False
 
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Do not disrupt variable scope
-        if node.__class__.__name__ in ['getVar', 'setVar']:
+        if node.__class__.__name__ in ["getVar", "setVar"]:
             var = self.graphManager.findVariableByUid(node.variableUid())
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
@@ -447,7 +473,9 @@ class GraphBase(ISerializable):
 
         node.graph = weakref.ref(self)
         if jsonTemplate is not None:
-            jsonTemplate['name'] = self.graphManager.getUniqNodeName(jsonTemplate['name'])
+            jsonTemplate["name"] = self.graphManager.getUniqNodeName(
+                jsonTemplate["name"]
+            )
         else:
             node.setName(self.graphManager.getUniqNodeName(node.name))
 
@@ -489,11 +517,13 @@ class GraphBase(ISerializable):
         """Prints graph to console. May be useful for debugging
         """
         depth = self.depth()
-        prefix = "".join(['-'] * depth) if depth > 1 else ''
-        parentGraphString = str(None) if self.parentGraph is None else self.parentGraph.name
+        prefix = "".join(["-"] * depth) if depth > 1 else ""
+        parentGraphString = (
+            str(None) if self.parentGraph is None else self.parentGraph.name
+        )
         print(prefix + "GRAPH:" + self.name + ", parent:{0}".format(parentGraphString))
 
-        assert(self not in self.childGraphs)
+        assert self not in self.childGraphs
 
         for child in self.childGraphs:
             child.plot()

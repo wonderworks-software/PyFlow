@@ -13,19 +13,15 @@
 ## limitations under the License.
 
 
-from nine import str
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QAction, QTextBrowser
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy.QtWidgets import QAction, QTextBrowser
 from PyFlow.UI.Tool.Tool import DockTool
-from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
-import json
 import os
 import subprocess
 
@@ -33,6 +29,7 @@ import subprocess
 REDIRECT = ConfigManager().shouldRedirectOutput()
 
 logger = logging.getLogger(None)
+
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
     """
@@ -63,11 +60,11 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
         methodName = levelName.lower()
 
     if hasattr(logging, levelName):
-        raise AttributeError('{} already defined in logging module'.format(levelName))
+        raise AttributeError("{} already defined in logging module".format(levelName))
     if hasattr(logging, methodName):
-        raise AttributeError('{} already defined in logging module'.format(methodName))
+        raise AttributeError("{} already defined in logging module".format(methodName))
     if hasattr(logging.getLoggerClass(), methodName):
-        raise AttributeError('{} already defined in logger class'.format(methodName))
+        raise AttributeError("{} already defined in logger class".format(methodName))
 
     # This method was inspired by the answers to Stack Overflow post
     # http://stackoverflow.com/q/2183233/2988730, especially
@@ -84,7 +81,9 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
     setattr(logging.getLoggerClass(), methodName, logForLevel)
     setattr(logging, methodName, logToRoot)
 
-addLoggingLevel('CONSOLEOUTPUT', logging.ERROR + 5)
+
+addLoggingLevel("CONSOLEOUTPUT", logging.ERROR + 5)
+
 
 @SingletonDecorator
 class SignalHandler(QtCore.QObject):
@@ -102,13 +101,14 @@ class SignalHandler(QtCore.QObject):
         sys.stdout = self
 
     def write(self, msg):
-        if (not self.signalsBlocked()):
-            if msg != '\n':
+        if not self.signalsBlocked():
+            if msg != "\n":
                 self.text = msg
-                logger.info(str(msg))
+                logger.info(msg)
 
-    def flush(self):
-        print('flusing from handler')
+    @staticmethod
+    def flush():
+        print("flushing from handler")
 
 
 class QtHandler(logging.Handler):
@@ -119,25 +119,27 @@ class QtHandler(logging.Handler):
     def emit(self, record):
         if record:
             msj = self.format(record)
-            if 'flusing from handler' in msj:
+            if "flushing from handler" in msj:
                 self.messageHolder.flushSig.emit()
-            elif 'bytes Downloaded' in msj:
-                nb = int(float(msj.split('(')[-1][:-2]))
+            elif "bytes Downloaded" in msj:
+                nb = int(float(msj.split("(")[-1][:-2]))
                 self.messageHolder.progressSig.emit(nb)
-                self.messageHolder.messageWritten.emit('%s\n' % msj)
+                self.messageHolder.messageWritten.emit("%s\n" % msj)
             else:
-                if record.levelname in ['ERROR', 'CRITICAL']:
-                    self.messageHolder.errorWritten.emit('%s\n' % msj)
-                elif record.levelname == 'WARNING':
-                    self.messageHolder.warningWritten.emit('%s\n' % msj)
+                if record.levelname in ["ERROR", "CRITICAL"]:
+                    self.messageHolder.errorWritten.emit("%s\n" % msj)
+                elif record.levelname == "WARNING":
+                    self.messageHolder.warningWritten.emit("%s\n" % msj)
                 else:
-                    self.messageHolder.messageWritten.emit('%s\n' % msj)
+                    self.messageHolder.messageWritten.emit("%s\n" % msj)
 
 
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
 
-    formater = logging.Formatter("[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S")
+    formatter = logging.Formatter(
+        "[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S"
+    )
 
     def __init__(self):
         super(LoggerTool, self).__init__()
@@ -145,13 +147,16 @@ class LoggerTool(DockTool):
         self.logView.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.logView.setOpenLinks(False)
         self.logView.setReadOnly(True)
-        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'" %
-                                   "rgba%s" % str(editableStyleSheet().LoggerBgColor.getRgb()))
+        self.logView.setStyleSheet(
+            "background-color: %s; Font: 10pt 'Consolas'"
+            % "rgba%s"
+            % str(editableStyleSheet().LoggerBgColor.getRgb())
+        )
         self.clearAction = QAction("Clear", None)
         self.clearAction.triggered.connect(self.clearView)
         self.logView.addAction(self.clearAction)
         self.logView.anchorClicked.connect(self.anchorClickedMethod)
-        self.logView.setTextColor(QtGui.QColor('white'))
+        self.logView.setTextColor(QtGui.QColor("white"))
         self.setWidget(self.logView)
         #####################################################
         # Sys Output Redirection
@@ -165,15 +170,19 @@ class LoggerTool(DockTool):
         logger.setLevel(logging.DEBUG)
         sys.excepthook = LoggerTool.exceptHook
         if self.handler and REDIRECT:
-            self.handler.setFormatter(LoggerTool.formater)
+            self.handler.setFormatter(LoggerTool.formatter)
             logger.addHandler(self.handler)
             self.handler.messageHolder.messageWritten.connect(
-                lambda value: self.logPython(value, 0))
+                lambda value: self.logPython(value, 0)
+            )
             self.handler.messageHolder.warningWritten.connect(
-                lambda value: self.logPython(value, 1))
+                lambda value: self.logPython(value, 1)
+            )
             self.handler.messageHolder.errorWritten.connect(
-                lambda value: self.logPython(value, 2))
+                lambda value: self.logPython(value, 2)
+            )
             self.handler.messageHolder.flushSig.connect(self.flushPython)
+
     #####################################################
     # Logger
     #####################################################
@@ -205,39 +214,47 @@ class LoggerTool(DockTool):
                 pass
 
     def logPython(self, text, mode=0):
-        colorchart = {
-            0: 'white',
-            1: 'yellow',
-            2: 'red'
-        }
-        for l in text.split('\n'):
+        colorchart = {0: "white", 1: "yellow", 2: "red"}
+        for l in text.split("\n"):
             if len(l) > 0:
                 splitted = l.split(",")
                 if len(splitted) >= 3:
-                    if "File" in splitted[0] and "line" in splitted[1] and "in" in splitted[2]:
+                    if (
+                        "File" in splitted[0]
+                        and "line" in splitted[1]
+                        and "in" in splitted[2]
+                    ):
                         file = splitted[0].split('"')[1]
                         line = splitted[1].split("line ")[1]
                         if os.path.exists(file):
                             file = file.replace("\\", "//")
-                            errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>""" % (
-                                str(file + "::%s" % line), l)
+                            errorLink = (
+                                """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""
+                                % (file + "::%s" % line, l)
+                            )
                             self.logView.append(errorLink)
                     else:
                         self.logView.append(
-                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
+                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l)
+                        )
                 else:
                     self.logView.append(
-                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
+                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l)
+                    )
 
     def flushPython(self):
-        self.logView.moveCursor(QtWidgets.QTextCursor.End,
-                                QtWidgets.QTextCursor.MoveAnchor)
-        self.logView.moveCursor(QtWidgets.QTextCursor.Up,
-                                QtWidgets.QTextCursor.MoveAnchor)
         self.logView.moveCursor(
-            QtWidgets.QTextCursor.StartOfLine, QtWidgets.QTextCursor.MoveAnchor)
-        self.logView.moveCursor(QtWidgets.QTextCursor.End,
-                                QtWidgets.QTextCursor.KeepAnchor)
+            QtGui.QTextCursor.End, QtGui.QTextCursor.MoveAnchor
+        )
+        self.logView.moveCursor(
+            QtGui.QTextCursor.Up, QtGui.QTextCursor.MoveAnchor
+        )
+        self.logView.moveCursor(
+            QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.MoveAnchor
+        )
+        self.logView.moveCursor(
+            QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor
+        )
         self.logView.textCursor().removeSelectedText()
 
     def loglevelChanged(self, int):
@@ -251,15 +268,18 @@ class LoggerTool(DockTool):
             subprocess.Popen(editCmd)
         else:
             man = self.pyFlowInstance.graphManager
-            node = man.get().findNode(str(url.url()))
+            node = man.get().findNode(url.url())
             if node:
                 self.pyFlowInstance.getCanvas().clearSelection()
                 node.getWrapper().setSelected(True)
                 self.pyFlowInstance.getCanvas().frameSelectedNodes()
 
     def update(self):
-        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'" %
-                                   "rgba%s" % str(editableStyleSheet().LoggerBgColor.getRgb()))
+        self.logView.setStyleSheet(
+            "background-color: %s; Font: 10pt 'Consolas'"
+            % "rgba%s"
+            % str(editableStyleSheet().LoggerBgColor.getRgb())
+        )
         super(LoggerTool, self).update()
 
     def onShow(self):
@@ -282,4 +302,4 @@ class LoggerTool(DockTool):
 
     @staticmethod
     def name():
-        return str("Logger")
+        return "Logger"

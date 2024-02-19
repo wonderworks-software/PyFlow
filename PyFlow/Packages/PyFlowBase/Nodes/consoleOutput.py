@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-from nine import *
 import logging
 
 from PyFlow.Core import NodeBase
@@ -25,17 +24,21 @@ from PyFlow.Core.Common import *
 class consoleOutput(NodeBase):
     def __init__(self, name):
         super(consoleOutput, self).__init__(name)
-        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.entity = self.createInputPin('entity', 'AnyPin', structure=StructureType.Multi)
+        self.inExec = self.createInputPin(
+            DEFAULT_IN_EXEC_NAME, "ExecPin", None, self.compute
+        )
+        self.entity = self.createInputPin(
+            "entity", "AnyPin", structure=StructureType.Multi
+        )
         self.entity.enableOptions(PinOptions.AllowAny)
-        self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
+        self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, "ExecPin")
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('AnyPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("AnyPin")
+        helper.addOutputDataType("ExecPin")
         helper.addInputStruct(StructureType.Multi)
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
@@ -43,11 +46,11 @@ class consoleOutput(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return "Common"
 
     @staticmethod
     def keywords():
-        return ['print']
+        return ["print"]
 
     @staticmethod
     def description():
@@ -58,15 +61,15 @@ class consoleOutput(NodeBase):
         if self.getWrapper() is not None and redirectionEnabled:
             data = str(self.entity.getData())
             if self.entity.dataType != "StringPin":
-                data = data.encode('unicode-escape')
-            if IS_PYTHON2:
-                data = data.replace("\\n", "<br/>")
-            else:
-                if isinstance(data, bytes):
-                    data = data.decode("utf-8")
-                data = str(data).replace("\\n", "<br/>")
+                data = data.encode("unicode-escape")
+            if isinstance(data, bytes):
+                data = data.decode("utf-8")
+            data = str(data).replace("\\n", "<br/>")
 
-            errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>""" % (self.name, "<br/>%s" % data)
+            errorLink = (
+                """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>"""
+                % (self.name, "<br/>%s" % data)
+            )
             logging.getLogger(None).consoleoutput(errorLink)
         else:
             print(self.entity.getData())

@@ -13,9 +13,7 @@
 ## limitations under the License.
 
 
-import uuid
 from blinker import Signal
-from collections import OrderedDict
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.Common import SingletonDecorator
@@ -25,6 +23,7 @@ from PyFlow.ConfigManager import ConfigManager
 
 class _EditorState(object):
     """docstring for _EditorState."""
+
     def __init__(self, text, modify):
         super(_EditorState, self).__init__()
         self.text = text
@@ -42,6 +41,7 @@ class _EditorState(object):
 class EditorHistory(object):
 
     """docstring for EditorHistory."""
+
     def __init__(self, app):
 
         self.statePushed = Signal(object)
@@ -51,7 +51,9 @@ class EditorHistory(object):
         self.app = app
         self.stack = list()
         try:
-            self._capacity = int(ConfigManager().getPrefsValue("PREFS", "General/HistoryDepth"))
+            self._capacity = int(
+                ConfigManager().getPrefsValue("PREFS", "General/HistoryDepth")
+            )
         except:
             self._capacity = 10
 
@@ -98,7 +100,6 @@ class EditorHistory(object):
     def push(self, edState):
 
         if self.currentIndex < self.count() - 1:
-            nextState = None
             while True:
                 index = self.count() - 1
                 nextState = self.stack[index]

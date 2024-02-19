@@ -13,19 +13,19 @@
 ## limitations under the License.
 
 
-from nine import str
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
-from PyFlow.UI.ContextMenuDataBuilder import ContextMenuDataBuilder
 
-from Qt import QtGui
-from Qt.QtWidgets import *
+from qtpy import QtGui
+from qtpy.QtWidgets import *
 
 
 class CompileTool(ShelfTool):
     """docstring for CompileTool."""
+
     def __init__(self):
         super(CompileTool, self).__init__()
+        self.format = None
 
     def onSetFormat(self, fmt):
         self.format = fmt
@@ -40,7 +40,7 @@ class CompileTool(ShelfTool):
 
     @staticmethod
     def name():
-        return str("CompileTool")
+        return "CompileTool"
 
     def do(self):
         for node in self.pyFlowInstance.graphManager.get().getAllNodes():

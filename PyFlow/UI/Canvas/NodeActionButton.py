@@ -13,17 +13,17 @@
 ## limitations under the License.
 
 
-from Qt import QtCore, QtGui
-from Qt import QtSvg
-from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QSizePolicy
-
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QGraphicsWidget
+from qtpy.QtWidgets import QSizePolicy
+from qtpy.QtSvgWidgets import QGraphicsSvgItem
 
 class NodeActionButtonBase(QGraphicsWidget):
     """Base class for all node's actions buttons.
 
     By default it calls action `triggered` signal. Have default svg 10x10 icon.
     """
+
     def __init__(self, svgFilePath, action, uiNode):
         super(NodeActionButtonBase, self).__init__(uiNode)
         self.setAcceptHoverEvents(True)
@@ -31,7 +31,7 @@ class NodeActionButtonBase(QGraphicsWidget):
         self.setGraphicsItem(self)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
         self.action = action
-        self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
+        self.svgIcon = QGraphicsSvgItem(svgFilePath, self)
         self.setToolTip(self.action.toolTip())
         self.hovered = False
         uiNode._actionButtons.add(self)

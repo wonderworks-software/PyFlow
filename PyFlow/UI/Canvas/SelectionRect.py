@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 
 
 class SelectionRect(QtWidgets.QGraphicsWidget):
@@ -51,8 +51,7 @@ class SelectionRect(QtWidgets.QGraphicsWidget):
             topLeft.setY(dragPoint.y())
             bottomRight.setY(self.__mouseDownPos.y())
         self.setPos(topLeft)
-        self.resize(bottomRight.x() - topLeft.x(),
-                    bottomRight.y() - topLeft.y())
+        self.resize(bottomRight.x() - topLeft.x(), bottomRight.y() - topLeft.y())
 
     def paint(self, painter, option, widget):
         rect = self.windowFrameRect()

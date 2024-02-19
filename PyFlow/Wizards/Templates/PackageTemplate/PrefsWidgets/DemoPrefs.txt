@@ -1,4 +1,4 @@
-from Qt.QtWidgets import *
+from qtpy.QtWidgets import *
 
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase

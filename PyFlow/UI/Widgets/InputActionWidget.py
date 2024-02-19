@@ -13,8 +13,8 @@
 ## limitations under the License.
 
 
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
+from qtpy.QtWidgets import *
+from qtpy import QtCore, QtGui
 
 from PyFlow.Input import InputActionType
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
@@ -24,6 +24,7 @@ from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 
 class InputActionWidget(QWidget):
     """docstring for InputActionWidget."""
+
     def __init__(self, parent=None, inputActionRef=None):
         super(InputActionWidget, self).__init__(parent)
         self.currentActionRef = inputActionRef

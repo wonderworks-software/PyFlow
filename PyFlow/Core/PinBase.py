@@ -13,18 +13,15 @@
 ## limitations under the License.
 
 
-from blinker import Signal
+import json
 import uuid
 from copy import copy
-import weakref
-import json
-from nine import str
 
-from PyFlow.Core.Interfaces import IPin
+from blinker import Signal
+
 from PyFlow.Core.Common import *
-from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.EvaluationEngine import EvaluationEngine
-from PyFlow import getPinDefaultValueByType
+from PyFlow.Core.Interfaces import IPin
 
 
 class PinBase(IPin):
@@ -40,7 +37,7 @@ class PinBase(IPin):
     :type _packageName: str
 
     Signals:
-        * **serializationHook** : Fired when Serialize Pin called, so Ui wrapers can append data to the serialization object
+        * **serializationHook** : Fired when Serialize Pin called, so Ui wrappers can append data to the serialization object
         * **onPinConnected** : Fired when a new connection is made to this Pin, sends other Pin
         * **onPinDisconnected** : Fired when some disconnection is made to this Pin, sends other Pin
         * **nameChanged** : Fired when pin.setName() called, sends New Name
@@ -67,6 +64,7 @@ class PinBase(IPin):
     :ivar pinIndex: Position of this pin on node
     :ivar description: Text description of this pin
     """
+
     _packageName = ""
 
     def __init__(self, name, owningNode, direction):
@@ -81,13 +79,13 @@ class PinBase(IPin):
         self.containerTypeChanged = Signal()
         self.dataBeenSet = Signal(object)
         self.dictChanged = Signal(str)
-        self.markedAsDirty =Signal()
+        self.markedAsDirty = Signal()
 
-        self.errorOccured = Signal(object)
+        self.errorOccurred = Signal(object)
         self.errorCleared = Signal()
         self._lastError = None
 
-        ## Access to the node
+        # Access to the node
         self.owningNode = weakref.ref(owningNode)
 
         self._uid = uuid.uuid4()
@@ -176,7 +174,7 @@ class PinBase(IPin):
 
     @group.setter
     def group(self, value):
-        self._group = str(value)
+        self._group = value
 
     def enableOptions(self, *options):
         """Enables flags on pin instance
@@ -249,24 +247,16 @@ class PinBase(IPin):
         result = list()
         if self.direction == PinDirection.Output:
             for i in getConnectedPins(self):
-                connection = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
-                connection["lhsNodeName"] = self.owningNode().getName()
-                connection["lhsNodeUid"] = str(self.owningNode().uid)
-                connection["outPinId"] = self.pinIndex
-                connection["rhsNodeName"] = i.owningNode().getName()
-                connection["rhsNodeUid"] = str(i.owningNode().uid)
-                connection["inPinId"] = i.pinIndex
+                connection = {"lhsNodeName": self.owningNode().getName(), "outPinId": self.pinIndex,
+                              "rhsNodeName": i.owningNode().getName(), "inPinId": i.pinIndex,
+                              "lhsNodeUid": str(self.owningNode().uid), "rhsNodeUid": str(i.owningNode().uid)}
                 result.append(connection)
 
         if self.direction == PinDirection.Input:
             for i in getConnectedPins(self):
-                connection = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
-                connection["lhsNodeName"] = i.owningNode().getName()
-                connection["lhsNodeUid"] = str(i.owningNode().uid)
-                connection["outPinId"] = i.pinIndex
-                connection["rhsNodeName"] = self.owningNode().getName()
-                connection["rhsNodeUid"] = str(self.owningNode().uid)
-                connection["inPinId"] = self.pinIndex
+                connection = {"lhsNodeName": i.owningNode().getName(), "outPinId": i.pinIndex,
+                              "rhsNodeName": self.owningNode().getName(), "inPinId": self.pinIndex,
+                              "lhsNodeUid": str(i.owningNode().uid), "rhsNodeUid": str(self.owningNode().uid)}
                 result.append(connection)
         return result
 
@@ -294,8 +284,8 @@ class PinBase(IPin):
     def initAsDict(self, bIsDict):
         """Sets this pins to be a dict always
 
-        :param bIsArray: Define as dict
-        :type bIsArray: bool
+        :param bIsDict: Define as dict
+        :type bIsDict: bool
         """
         self._alwaysDict = bool(bIsDict)
         if bool(bIsDict):
@@ -328,8 +318,8 @@ class PinBase(IPin):
     def setAsDict(self, bIsDict):
         """Sets this pins to be a dict
 
-        :param bIsArray: Define as Array
-        :type bIsArray: bool
+        :param bIsDict: Define as Array
+        :type bIsDict: bool
         """
         bIsDict = bool(bIsDict)
         if self._isDict == bIsDict:
@@ -383,7 +373,7 @@ class PinBase(IPin):
         :type jsonData: dict
         """
         self.setName(jsonData["name"])
-        self.uid = uuid.UUID(jsonData['uuid'])
+        self.uid = uuid.UUID(jsonData["uuid"])
 
         for opt in PinOptions:
             if opt.value in jsonData["options"]:
@@ -392,12 +382,12 @@ class PinBase(IPin):
                 self.disableOptions(opt)
 
         self.changeStructure(jsonData["structure"])
-        self._alwaysList = jsonData['alwaysList']
-        self._alwaysSingle = jsonData['alwaysSingle']
-        self._alwaysDict = jsonData['alwaysDict']
+        self._alwaysList = jsonData["alwaysList"]
+        self._alwaysSingle = jsonData["alwaysSingle"]
+        self._alwaysDict = jsonData["alwaysDict"]
 
         try:
-            self.setData(json.loads(jsonData['value'], cls=self.jsonDecoderClass()))
+            self.setData(json.loads(jsonData["value"], cls=self.jsonDecoderClass()))
         except Exception as e:
             self.setData(self.defaultValue())
 
@@ -414,25 +404,26 @@ class PinBase(IPin):
         serializedData = None
         if not self.dataType == "AnyPin":
             if storable:
-                serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
-            #else:
+                serializedData = json.dumps(self.currentData(),
+                    cls=self.jsonEncoderClass())
+            # else:
             #    serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
 
         data = {
-            'name': self.name,
-            'package': self.packageName,
-            'fullName': self.getFullName(),
-            'dataType': self.__class__.__name__,
-            'direction': int(self.direction),
-            'value': serializedData,
-            'uuid': str(self.uid),
-            'linkedTo': list(self.linkedTo),
-            'pinIndex': self.pinIndex,
-            'options': [i.value for i in PinOptions if self.optionEnabled(i)],
-            'structure': int(self._currStructure),
-            'alwaysList': self._alwaysList,
-            'alwaysSingle': self._alwaysSingle,
-            'alwaysDict': self._alwaysDict
+            "name": self.name,
+            "package": self.packageName,
+            "fullName": self.getFullName(),
+            "dataType": self.__class__.__name__,
+            "direction": int(self.direction),
+            "value": serializedData,
+            "uuid": str(self.uid),
+            "linkedTo": list(self.linkedTo),
+            "pinIndex": self.pinIndex,
+            "options": [i.value for i in PinOptions if self.optionEnabled(i)],
+            "structure": int(self._currStructure),
+            "alwaysList": self._alwaysList,
+            "alwaysSingle": self._alwaysSingle,
+            "alwaysDict": self._alwaysDict,
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -442,7 +433,7 @@ class PinBase(IPin):
         if wrapperData is not None:
             if len(wrapperData) > 0:
                 # We take return value from one wrapper
-                data['wrapper'] = wrapperData[0][1]
+                data["wrapper"] = wrapperData[0][1]
         return data
 
     @property
@@ -481,12 +472,12 @@ class PinBase(IPin):
 
         :rtype: str
         """
-        return self.owningNode().name + '_' + self.name
+        return self.owningNode().name + "_" + self.name
 
-    def allowedDataTypes(self, checked=[], dataTypes=[], selfCheck=True, defaults=False):
+    def allowedDataTypes(self, checked=None, dataTypes=None, selfCheck=True, defaults=False):
         return list(self.supportedDataTypes())
 
-    def checkFree(self, checked=[], selfCheck=True):
+    def checkFree(self, checked=None, selfCheck=True):
         return False
 
     def defaultValue(self):
@@ -521,8 +512,8 @@ class PinBase(IPin):
         :param err: Error message
         :type err: str
         """
-        self._lastError = str(err)
-        self.errorOccured.send(self._lastError)
+        self._lastError = err
+        self.errorOccurred.send(self._lastError)
 
     def validateArray(self, array, func):
         valid = True
@@ -555,9 +546,9 @@ class PinBase(IPin):
                         self._data = self.super.processData(data)
             elif self.isArray():
                 if isinstance(data, list):
-                    #if self.validateArray(data, self.super.processData):
+                    # if self.validateArray(data, self.super.processData):
                     self._data = data
-                    #else:
+                    # else:
                     #    raise Exception("Some Array Input is not valid Data")
                 else:
                     self._data = [self.super.processData(data)]
@@ -577,7 +568,7 @@ class PinBase(IPin):
             elif self.direction == PinDirection.Input and self.owningNode().__class__.__name__ == "compound":
                 for i in self.affects:
                     i.setData(self.currentData())
-            
+
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)
             self.clearError()
@@ -707,20 +698,22 @@ class PinBase(IPin):
         if free:
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
-    def canChangeStructure(self, newStruct, checked=[], selfCheck=True, init=False):
+    def canChangeStructure(self, newStruct, checked=None, selfCheck=True, init=False):
         """Recursive function to determine if pin can change its structure
 
         :param newStruct: New structure we want to apply
-        :type newStruct: string
+        :type newStruct: :class:`~PyFlow.Core.Common.StructureType`
         :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param selfCheck: Define if check pin itself for connected pins, defaults to True
         :type selfCheck: bool, optional
-        :param init: Initialization flag, if set multi pins can became other structure and don't be able to change after new call with init=True, defaults to False
+        :param init: Initialization flag, if set multi pins can become other structure and don't be able to change after new call with init=True, defaults to False
         :type init: bool, optional
         :returns: True if pin can change structure to newStruct
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
             return False
         if self.structConstraint is None or self.structureType == StructureType.Multi:
@@ -736,10 +729,10 @@ class PinBase(IPin):
                         if c not in checked:
                             con.append(c)
             else:
-                free = True
                 checked.append(self)
             free = True
             if selfCheck:
+
                 def testfree():
                     free = False
                     for pin in getConnectedPins(self):
@@ -749,15 +742,36 @@ class PinBase(IPin):
                             free = False
                             break
                     return free
-                if any([self._currStructure == StructureType.Single and newStruct == StructureType.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections(),
-                        self._currStructure == StructureType.Single and newStruct == StructureType.Dict and not self.optionEnabled(PinOptions.DictSupported) and self.hasConnections(),
-                        self._currStructure == StructureType.Array and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == StructureType.Dict and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == StructureType.Array and newStruct == StructureType.Dict and self.hasConnections(),
-                        self._currStructure == StructureType.Dict and newStruct == StructureType.Array and self.hasConnections()]):
+
+                if any(
+                    [
+                        self._currStructure == StructureType.Single
+                        and newStruct == StructureType.Array
+                        and not self.optionEnabled(PinOptions.ArraySupported)
+                        and self.hasConnections(),
+                        self._currStructure == StructureType.Single
+                        and newStruct == StructureType.Dict
+                        and not self.optionEnabled(PinOptions.DictSupported)
+                        and self.hasConnections(),
+                        self._currStructure == StructureType.Array
+                        and newStruct == StructureType.Single
+                        and self.optionEnabled(PinOptions.SupportsOnlyArrays)
+                        and self.hasConnections(),
+                        self._currStructure == StructureType.Dict
+                        and newStruct == StructureType.Single
+                        and self.optionEnabled(PinOptions.SupportsOnlyArrays)
+                        and self.hasConnections(),
+                        self._currStructure == StructureType.Array
+                        and newStruct == StructureType.Dict
+                        and self.hasConnections(),
+                        self._currStructure == StructureType.Dict
+                        and newStruct == StructureType.Array
+                        and self.hasConnections(),
+                    ]
+                ):
                     free = testfree()
             if free:
-                for port in self.owningNode().structConstraints[self.structConstraint] + con:
+                for port in (self.owningNode().structConstraints[self.structConstraint] + con):
                     if port not in checked:
                         checked.append(port)
                         free = port.canChangeStructure(newStruct, checked, True, init=init)
@@ -766,11 +780,10 @@ class PinBase(IPin):
             return free
 
     def updateConstrainedPins(self, traversed, newStruct, init=False, connecting=False):
-        nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
         else:
-            nodePins = set([self])
+            nodePins = {self}
         for connectedPin in getConnectedPins(self):
             if connectedPin.structureType == StructureType.Multi:
                 if connectedPin.canChangeStructure(self._currStructure, init=init):
@@ -790,7 +803,7 @@ class PinBase(IPin):
                     if newStruct == StructureType.Array:
                         neighbor.enableOptions(PinOptions.ArraySupported)
                     elif newStruct == StructureType.Dict:
-                        neighbor.enableOptions(PinOptions.DictSupported)   
+                        neighbor.enableOptions(PinOptions.DictSupported)
                     elif newStruct == StructureType.Multi:
                         neighbor.enableOptions(PinOptions.ArraySupported)
                         neighbor.enableOptions(PinOptions.DictSupported)
@@ -800,32 +813,39 @@ class PinBase(IPin):
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
                 traversed.add(neighbor)
-                neighbor.setData(neighbor.defaultValue())
+                try:
+                    neighbor.setData(neighbor.getData())
+                except:
+                    neighbor.setData(neighbor.defaultValue())
                 neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
 
     def pinConnected(self, other):
-        push(self)
+        #push(self)
         if self.isDict():
             self.updateConnectedDicts([], self._data.keyType)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
-        push(other)
+        #push(other)
 
-    def canChangeTypeOnConnection(self, checked=[], can=True, extraPins=[], selfCheck=True):
+    def canChangeTypeOnConnection(self, checked=None, can=True, extraPins=None, selfCheck=True):
         """Recursive function to determine if pin can change its dataType
 
         :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param can: Variable Updated during iteration, defaults to True
         :type can: bool, optional
-        :param extraPins: extra pins, non constrained or connected to this pin but that want to check also, defaults to []
+        :param extraPins: extra pins, non-constrained or connected to this pin but that want to check also, defaults to []
         :type extraPins: list, optional
         :param selfCheck: Define if check pin itself for connected pins, defaults to True
         :type selfCheck: bool, optional
-        :returns: True if pin can becabe other dataType
+        :returns: True if pin can become other dataType
         :rtype: bool
         """
+        if checked is None:
+            checked = []
+        if extraPins is None:
+            extraPins = []
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             return False
         con = []
@@ -845,14 +865,17 @@ class PinBase(IPin):
                 can = port.canChangeTypeOnConnection(checked, can, selfCheck=True)
         return can
 
-    def getDictElementNode(self, checked=[], node=None):
-        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this pin recursively
+    def getDictElementNode(self, checked=None, node=None):
+        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this
+        pin recursively
 
         :param checked: Currently visited pins, defaults to []
         :type checked: list, optional
         :param node: founded node, defaults to None
         :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase` or None
         """
+        if checked is None:
+            checked = []
         if self.owningNode().__class__.__name__ == "makeDictElement":
             return self.owningNode()
         con = []
@@ -864,12 +887,12 @@ class PinBase(IPin):
         if self.constraint:
             neis = self.owningNode().constraints[self.constraint]
         for port in con + neis:
-            if port not in checked and node == None:
+            if port not in checked and node is None:
                 checked.append(port)
                 node = port.getDictElementNode(checked, node)
         return node
 
-    def getDictNode(self, checked=[], node=None):
+    def getDictNode(self, checked=None, node=None):
         """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDict.makeDict` or
         :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict.makeAnyDict` to this pin recursively
 
@@ -878,6 +901,8 @@ class PinBase(IPin):
         :param node: founded node, defaults to None
         :returns: founded node or None if not found
         """
+        if checked is None:
+            checked = []
         if self.owningNode().__class__.__name__ in ["makeDict", "makeAnyDict"]:
             return self.owningNode()
         con = []
@@ -889,12 +914,12 @@ class PinBase(IPin):
         if self.constraint:
             neis = self.owningNode().constraints[self.constraint]
         for port in con + neis:
-            if port not in checked and node == None:
+            if port not in checked and node is None:
                 checked.append(port)
                 node = port.getDictNode(checked, node)
         return node
 
-    def supportDictElement(self, checked=[], can=True, selfCheck=True):
+    def supportDictElement(self, checked=None, can=True, selfCheck=True):
         """Iterative functions that search in all connected pins to see if they support DictElement nodes.
 
         :param checked: Already visited pins, defaults to []
@@ -906,6 +931,8 @@ class PinBase(IPin):
         :returns: True if can connect DictElement nodes to this pin
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if not self.optionEnabled(PinOptions.DictElementSupported):
             return False
         con = []
@@ -925,9 +952,9 @@ class PinBase(IPin):
                 can = port.supportDictElement(checked, can, selfCheck=True)
         return can
 
-    def supportOnlyDictElement(self, checked=[], can=False, selfCheck=True):
+    def supportOnlyDictElement(self, checked=None, can=False, selfCheck=True):
         """Iterative Functions that search in all connected pins to see if they support only DictElement nodes, this
-        is done for nodes like makeDict and simmilars.
+        is done for nodes like makeDict and similar.
 
         :param checked: Already Visited Pins, defaults to []
         :type checked: list, optional
@@ -938,6 +965,8 @@ class PinBase(IPin):
         :returns: True if can connect only DictElement and Dicts nodes to this Pin
         :rtype: bool
         """
+        if checked is None:
+            checked = []
         if self.isDict():
             return True
         con = []
@@ -957,7 +986,7 @@ class PinBase(IPin):
                 can = port.supportOnlyDictElement(checked, can, selfCheck=True)
         return can
 
-    def updateConnectedDicts(self, checked=[], keyType=None):
+    def updateConnectedDicts(self, checked=None, keyType=None):
         """Iterate over connected dicts pins and DictElements pins updating key data type
 
         :param checked: Already visited pins, defaults to []
@@ -965,6 +994,8 @@ class PinBase(IPin):
         :param keyType: KeyDataType to set, defaults to None
         :type keyType: string, optional
         """
+        if checked is None:
+            checked = []
         if not self.isDict():
             return
         con = []
@@ -990,7 +1021,7 @@ class PinBase(IPin):
         """Sets dirty flag to True
         """
         self.dirty = False
-        #if self.direction == PinDirection.Output:
+        # if self.direction == PinDirection.Output:
         #    for i in self.affects:
         #        i.dirty = False
 
@@ -1057,7 +1088,7 @@ class PinBase(IPin):
         :rtype: tuple(str, object)
         :raises NotImplementedError: If not implemented
         """
-        raise NotImplementedError('pinDataTypeHint method of PinBase is not implemented')
+        raise NotImplementedError("pinDataTypeHint method of PinBase is not implemented")
 
     @staticmethod
     def supportedDataTypes():

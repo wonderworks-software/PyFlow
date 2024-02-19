@@ -21,57 +21,58 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_ORANGE
 
 import threading
 
+
 class forLoopBegin(NodeBase):
     def __init__(self, name):
         super(forLoopBegin, self).__init__(name)
         self._working = False
         self.currentIndex = 0
         self.prevIndex = -1
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.firstIndex = self.createInputPin('Start', 'IntPin')
-        self.lastIndex = self.createInputPin('Stop', 'IntPin')
-        self.loopEndNode = self.createInputPin('Paired block', 'StringPin')
-        self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.inExec = self.createInputPin("inExec", "ExecPin", None, self.compute)
+        self.firstIndex = self.createInputPin("Start", "IntPin")
+        self.lastIndex = self.createInputPin("Stop", "IntPin")
+        self.loopEndNode = self.createInputPin("Paired block", "StringPin")
+        self.loopEndNode.setInputWidgetVariant("ObjectPathWidget")
 
-        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.index = self.createOutputPin('Index', 'IntPin')
+        self.loopBody = self.createOutputPin("LoopBody", "ExecPin")
+        self.index = self.createOutputPin("Index", "IntPin")
         self.headerColor = FLOW_CONTROL_ORANGE
         self.setExperimental()
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
-        helper.addInputDataType('ExecPin')
-        helper.addInputDataType('IntPin')
-        helper.addOutputDataType('ExecPin')
-        helper.addOutputDataType('IntPin')
+        helper.addInputDataType("ExecPin")
+        helper.addInputDataType("IntPin")
+        helper.addOutputDataType("ExecPin")
+        helper.addOutputDataType("IntPin")
         helper.addInputStruct(StructureType.Single)
         helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return "FlowControl"
 
     @staticmethod
     def keywords():
-        return ['iter']
+        return ["iter"]
 
     @staticmethod
     def description():
-        return 'For loop begin block'
+        return "For loop begin block"
 
     def reset(self):
         self.currentIndex = 0
         self.prevIndex = -1
-        #self._working = False
+        # self._working = False
 
     def isDone(self):
         indexTo = self.lastIndex.getData()
         if self.currentIndex >= indexTo:
             self.reset()
-            #loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
-            #loopEndNode.completed.call()
+            # loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
+            # loopEndNode.completed.call()
             self._working = False
             return True
         return False
@@ -80,7 +81,7 @@ class forLoopBegin(NodeBase):
         while not self.isDone():
             if self.currentIndex > self.prevIndex:
                 self.index.setData(self.currentIndex)
-                self.prevIndex = self.currentIndex 
+                self.prevIndex = self.currentIndex
                 self.loopBody.call()
 
     def compute(self, *args, **kwargs):
@@ -99,7 +100,9 @@ class forLoopBegin(NodeBase):
         else:
             self.setError("{} not found".format(endNodePath))
         if not self._working:
-            self.thread = threading.Thread(target=self.onNext,args=(self, args, kwargs))
-            self.thread.start() 
+            self.thread = threading.Thread(
+                target=self.onNext, args=(self, args, kwargs)
+            )
+            self.thread.start()
             self._working = True
-        #self.onNext(*args, **kwargs)
+        # self.onNext(*args, **kwargs)
