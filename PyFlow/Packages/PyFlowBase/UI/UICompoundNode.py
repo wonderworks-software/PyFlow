@@ -22,7 +22,7 @@ from qtpy.QtWidgets import QInputDialog
 from qtpy.QtWidgets import QMessageBox
 
 from PyFlow import GET_PACKAGE_PATH, GET_PACKAGES
-from PyFlow.UI.Canvas.UICommon import validateGraphDataPackages
+from PyFlow.Core.Common import validateGraphDataPackages
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import Colors
