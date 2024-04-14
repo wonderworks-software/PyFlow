@@ -25,7 +25,7 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         super(DefaultEvaluationEngine_Impl, self).__init__()
 
     @staticmethod
-    def old_getPinData(pin):
+    def getPinData(pin):
         if not pin.hasConnections():
             return pin.currentData()
 
@@ -42,7 +42,7 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         return pin.currentData()
 
     @staticmethod
-    def getPinData(pin):
+    def TEST_getPinData(pin):
         if not pin.hasConnections():
             return pin.currentData()
 
