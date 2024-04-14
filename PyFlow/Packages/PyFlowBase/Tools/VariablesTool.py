@@ -28,13 +28,6 @@ class VariablesTool(DockTool):
         super(VariablesTool, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))
         self.varsWidget = None
-        self.content = QWidget()
-        self.content.setObjectName("VariablesToolContent")
-        self.verticalLayout = QVBoxLayout(self.content)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.setWidget(self.content)
 
     @staticmethod
     def isSingleton():
@@ -44,7 +37,8 @@ class VariablesTool(DockTool):
         super(VariablesTool, self).onShow()
         self.varsWidget = VariablesWidget(self.pyFlowInstance)
         self.pyFlowInstance.fileBeenLoaded.connect(self.varsWidget.actualize)
-        self.verticalLayout.addWidget(self.varsWidget)
+        self.varsWidget.setObjectName("VariablesWidget")
+        self.setWidget(self.varsWidget)
         self.varsWidget.actualize()
 
     def showEvent(self, event):
