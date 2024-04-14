@@ -25,7 +25,7 @@ setup(
     },
     classifiers=["License :: Appache-2.0"],
     install_requires=[
-        "PySide6",
+        "PySide6==6.6.1",
         "qtpy",
         "blinker",
         "docutils",
