@@ -1,4 +1,0 @@
-Qt.py
-blinker
-docutils
-ptvsd

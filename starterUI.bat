@@ -1,3 +1,3 @@
-pip install -r requirements/requirements-standalone.txt
+pip install -r requirements.txt
 python.exe %cd%/pyflow.py
 pause
