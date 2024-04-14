@@ -25,11 +25,11 @@ setup(
     },
     classifiers=["License :: Appache-2.0"],
     install_requires=[
+        "PySide6",
         "qtpy",
         "blinker",
         "docutils",
         "SQLAlchemy",
         "requests",
     ],
-    extra_requires=["PySide6"],
 )
