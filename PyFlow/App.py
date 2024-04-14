@@ -701,7 +701,7 @@ class PyFlow(QMainWindow):
                         showToolAction.setIcon(icon)
                     showToolAction.triggered.connect(
                         lambda pkgName=packageName, toolName=ToolClass.name(): instance.invokeDockToolByName(
-                            pkgName, toolName
+                            packageName, toolName
                         )
                     )
 
