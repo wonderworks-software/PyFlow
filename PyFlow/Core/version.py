@@ -78,4 +78,4 @@ class Version(object):
 def currentVersion():
     """Returns current version of program
     """
-    return Version(2, 0, 1)
+    return Version(3, 0, 0)
