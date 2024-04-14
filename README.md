@@ -52,9 +52,7 @@ We want to have most python standard library wrapped into a nodes!
 
 1. Clone or download repository.
 
-2. Install requirements for your use case.
-
-    requirement lists can be found under `PyFlow/requirements`
+2. Install requirements `requirements.txt`
 
 3. To run the program in standalone mode, run `pyflow.py`. It can be found in the root folder of repository.
 
