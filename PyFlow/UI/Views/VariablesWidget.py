@@ -63,7 +63,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.setupUi(self)
         self.pyFlowInstance = pyFlowInstance
         self.pyFlowInstance.graphManager.get().graphChanged.connect(self.onGraphChanged)
-        self.pbNewVar.clicked.connect(self.createVariable)
+        self.pbNewVar.clicked.connect(lambda : self.createVariable())
         self.listWidget = VariablesListWidget()
         self.lytListWidget.addWidget(self.listWidget)
         self.pyFlowInstance.newFileExecuted.connect(self.actualize)
@@ -100,8 +100,9 @@ class VariablesWidget(QWidget, Ui_Form):
         return uiVariable
 
     def createVariable(
-        self, dataType="BoolPin", accessLevel=AccessLevel.public, uid=None
+        self, dataType="AnyPin", accessLevel=AccessLevel.public, uid=None
     ):
+        print(dataType)
         rawVariable = (
             self.pyFlowInstance.graphManager.get()
             .activeGraph()
