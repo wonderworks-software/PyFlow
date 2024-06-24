@@ -544,7 +544,7 @@ class NodesBox(QFrame):
             item = self.treeWidget.topLevelItem(i)
             if item.text(0) in self.treeWidget.categoryPaths:
                 index = self.treeWidget.indexFromItem(item)
-                self.treeWidget.setExpanded(index, True)
+                self.treeWidget.expandRecursively(index)
 
     def leTextChanged(self):
         if self.lineEdit.text() == "":
