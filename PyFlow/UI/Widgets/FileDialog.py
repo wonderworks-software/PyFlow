@@ -15,7 +15,7 @@ class FileDialog(QFileDialog):
                     but.clicked.connect(self.chooseClicked)
 
         elif mode == "file":
-            self.setFileMode(QFileDialog.ExistingFile)
+            self.setFileMode(QFileDialog.AnyFile)
 
         elif mode == "directory":
             self.setFileMode(QFileDialog.DirectoryOnly)
