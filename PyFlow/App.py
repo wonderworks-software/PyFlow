@@ -21,6 +21,8 @@ import json
 import shutil
 from string import ascii_letters
 import random
+from datetime import datetime
+
 
 from qtpy import QtGui
 from qtpy import QtCore
@@ -413,10 +415,29 @@ class PyFlow(QMainWindow):
             self.currentFileName += ".pygraph"
 
         if not self.currentFileName == "":
-            with open(self.currentFileName, "w") as f:
-                saveData = self.graphManager.get().serialize()
-                json.dump(saveData, f, indent=4)
-            print(str("// saved: '{0}'".format(self.currentFileName)))
+            # Get the current time and format it as a string
+            current_time = datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+
+            tempFileName = self.currentFileName.replace(".pygraph", "") + f"-tempfile-{current_time}.pygraph"
+
+            # Open the temp file in 'w+' mode and the target file in 'w' mode
+            with open(tempFileName, "w+") as tempPtr, open(self.currentFileName, "r+") as filePtr:
+                try:
+                    saveData = self.graphManager.get().serialize()
+                    json.dump(saveData, tempPtr, indent=4)
+                    
+                    # Move the file pointer to the beginning of the temp file before reading
+                    tempPtr.seek(0)
+                    filePtr.write(tempPtr.read())
+                    tempPtr.close()
+                    
+                    # If everything goes well, delete the temp file
+                    os.remove(tempFileName)
+                    
+                    print(f"// saved: '{self.currentFileName}'")
+                except Exception as e:
+                    raise RuntimeError(f'JSON serialization failed.\nCould not save file \"{self.currentFileName}\"') from e
+
             self.modified = False
             self.updateLabel()
             return True
