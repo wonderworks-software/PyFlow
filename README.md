@@ -31,6 +31,19 @@ and algorithms to work with those structures.
 
 Code generation is probably the future of PyFlow.
 
+### 🚀 Current Development Focus: Python Visual Debugger
+
+We are building a **Python Visual Debugger** that converts Python source code into visual PyFlow nodes. This feature enables:
+
+- **Code Visualization** - See your Python code as a visual node graph
+- **Execution Flow Understanding** - Follow the flow of execution through nodes
+- **Variable Tracking** - Watch how data flows between operations
+- **Interactive Debugging** - Edit code and update nodes in real-time
+
+See `DEVELOPMENT_LOG.md` for detailed progress tracking.
+
+### Future Plans
+
 We are going to implement more building blocks.
 **Functions** - which unlike subgraphs will have single definition and multiple
 entry points across the program.
@@ -202,6 +215,27 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 
     ![cmdAddition](https://i.imgur.com/L49OuWa.png)
     ![cmdHelp](https://i.imgur.com/5IMWaqx.png)
+
+* **Python Visual Debugger** *(NEW)*
+
+    *Convert Python code to visual nodes for debugging and understanding code flow*
+
+    - Load any Python file and visualize its structure as nodes
+    - Editable code editor with live updates
+    - Auto-connection of nodes based on execution flow
+    - Support for loops, branches, assignments, and function calls
+    - Update nodes in-place when code changes
+
+    **Custom Code Visualization Nodes:**
+    - `codeAssign` - Variable assignments (x = 5)
+    - `codeArray` - Array/list literals ([1, 2, 3])
+    - `codeArrayAccess` - Array indexing (arr[i])
+    - `codeCompare` - Comparisons (a > b)
+    - `codePrint` - print() statements
+    - `codeForLoop` - For loop visualization
+    - `codeBranch` - If/else branches
+
+    *Access via Tools → Python Debugger*
 
 * **Convenient wires interaction**
 

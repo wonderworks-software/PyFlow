@@ -165,6 +165,12 @@ class PyFlow(QMainWindow):
             # create app folder in documents
             # random string used for cases when multiple instances of app are running in the same time
             tempDirPath = ConfigManager().getPrefsValue("PREFS", "GeneralPreferences/TempFilesDir")
+            
+            # Handle None or empty tempDirPath - use system temp directory as fallback
+            if tempDirPath is None or tempDirPath == "":
+                import tempfile
+                tempDirPath = os.path.join(tempfile.gettempdir(), "PyFlow")
+            
             if tempDirPath[-1:] in ("/", "\\"):
                 tempDirPath = tempDirPath[:-1]
             self.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
@@ -233,6 +239,14 @@ class PyFlow(QMainWindow):
         packagePlugin = pluginsMenu.addAction("Create package...")
         packagePlugin.triggered.connect(PackageWizard.run)
 
+        # Debug menu for Python debugging tools
+        debugMenu = self.menuBar.addMenu("Debug")
+        pythonDebuggerAction = debugMenu.addAction("🔍 Python Visual Debugger")
+        pythonDebuggerAction.triggered.connect(self.openPythonDebugger)
+        
+        loadPythonAction = debugMenu.addAction("📂 Load Python File...")
+        loadPythonAction.triggered.connect(self.loadPythonFileForDebug)
+
         helpMenu = self.menuBar.addMenu("Help")
         helpMenu.addAction("Homepage").triggered.connect(
             lambda _=False, url="https://pedrocabrera.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(
@@ -247,6 +261,36 @@ class PyFlow(QMainWindow):
 
     def showPreferencesWindow(self):
         self.preferencesWindow.show()
+
+    def openPythonDebugger(self):
+        """Open the Python Visual Debugger tool."""
+        # Find or create the Python Debugger tool
+        debuggerTools = self.getRegisteredTools(classNameFilters=["PythonDebuggerTool"])
+        if debuggerTools:
+            # Show existing debugger
+            for tool in debuggerTools:
+                tool.show()
+                tool.raise_()
+        else:
+            # Create new debugger tool instance
+            try:
+                from PyFlow.Packages.PyFlowBase.Tools.PythonDebuggerTool import PythonDebuggerTool
+                tool = PythonDebuggerTool()
+                tool.setAppInstance(self)
+                self.registerToolInstance(tool)
+                self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, tool)
+                tool.setWindowTitle("Python Debugger")
+                tool.show()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to open Python Debugger:\n{str(e)}")
+
+    def loadPythonFileForDebug(self):
+        """Load a Python file directly into the debugger."""
+        self.openPythonDebugger()
+        debuggerTools = self.getRegisteredTools(classNameFilters=["PythonDebuggerTool"])
+        if debuggerTools:
+            for tool in debuggerTools:
+                tool.load_file()
 
     def registerToolInstance(self, instance):
         """Registers tool instance reference

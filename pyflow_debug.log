@@ -1,0 +1,118 @@
+=== PyFlow Debug Log ===
+Started: 2026-01-25 10:54:02
+Log file: C:\Users\ADMIN\Downloads\Pyflow2.4\PyFlow\pyflow_debug.log
+==================================================
+
+
+==================================================
+  UPDATE VISUAL NODES
+==================================================
+[10:54:02.506] Source code length: 116 chars
+[10:54:02.506] Existing nodes: 6
+[10:54:02.511] New specs: 7
+[10:54:02.511] Existing patterns: ['codeArray_1', 'codeForLoop_4', 'codeCompare_5', 'codeBranch_5', 'codeArrayAccess_6', 'codePrint_8']
+[10:54:02.511] Processing: codeArray_1
+[10:54:02.514] OK: Updated: arr = [10, 324, 45]
+[10:54:02.514] Processing: codeArrayAccess_2
+[10:54:02.514]   Template: type=codeArrayAccess, name=res_=_arr0
+[10:54:02.526]   Node created: <class[codeArrayAccess]; name[res_=_arr1]; graph[root]>
+[10:54:02.526]     Inputs: [UUID('c9f5462c-7bb9-4d5d-a9f1-5322ed076935'), UUID('15a04905-989a-42bb-8bc5-80a61532574a'), UUID('019a9918-b765-4450-bea9-586d0dea04c2')]
+[10:54:02.526]     Outputs: [UUID('a392f264-53ff-4a15-baea-07a1a331709b'), UUID('8ced8ec1-9996-4bf7-91e9-ff8e9f4cd308')]
+[10:54:02.526]     Properties set: ['varName', 'sourceCode', 'array_name']
+[10:54:02.526] OK: Created new: res = arr[0]
+[10:54:02.526] Processing: codeForLoop_4
+[10:54:02.526] OK: Updated: for i in range(1, len(arr))
+[10:54:02.526] Processing: codeCompare_5
+[10:54:02.530] OK: Updated: arr[...] > res
+[10:54:02.530] Processing: codeBranch_5
+[10:54:02.530] OK: Updated: if arr[i] > res
+[10:54:02.530] Processing: codeArrayAccess_6
+[10:54:02.531] OK: Updated: res = arr[i]
+[10:54:02.531] Processing: codePrint_8
+[10:54:02.531] OK: Updated: print(res)
+
+==================================================
+  AUTO-CONNECTING NODES
+==================================================
+[10:54:02.532] Connecting 7 nodes
+[10:54:02.532]   Node[0] pins: IN=[UUID('0ecd4b7b-ebbd-400e-a989-752ae6a00966')], OUT=[UUID('52bc44ac-6b70-4001-8339-8d42dad3fc50'), UUID('60069c97-1bb7-4e92-ac30-322f3c044de7')]
+[10:54:02.532]   Node[0]: arr = [10, 324, 45], loop=False, branch=False, out=True, in=True
+[10:54:02.532]   Node[1] pins: IN=[UUID('c9f5462c-7bb9-4d5d-a9f1-5322ed076935'), UUID('15a04905-989a-42bb-8bc5-80a61532574a'), UUID('019a9918-b765-4450-bea9-586d0dea04c2')], OUT=[UUID('a392f264-53ff-4a15-baea-07a1a331709b'), UUID('8ced8ec1-9996-4bf7-91e9-ff8e9f4cd308')]
+[10:54:02.532]   Node[1]: res = arr[0], loop=False, branch=False, out=True, in=True
+[10:54:02.532]   Node[2] pins: IN=[UUID('da120038-d50a-4e76-9dc9-c0a8aaef5ccd'), UUID('2859c8f2-1ded-4ac4-aa87-dc3fcb471068'), UUID('c945d8c1-0528-4bcc-978e-2b366cbce907'), UUID('a26c206c-4560-4be7-981d-9bbdafc56eff')], OUT=[UUID('cdd0c5cf-3757-4f95-8bfb-32615ad70150'), UUID('e88f3d97-9861-4870-b710-8f0b0c8da8d0'), UUID('fd77f4f3-57b6-47e7-9463-1dae9033abea')]
+[10:54:02.532]   Node[2]: for i in range(1, len(arr)), loop=True, branch=False, out=True, in=True
+[10:54:02.532]   Node[3] pins: IN=[UUID('c8c62649-600c-4202-90f7-2d15e615c7ca'), UUID('67b49686-b7b4-48d8-96d4-cb20184c8389')], OUT=[UUID('687f96c5-0b41-4484-84ea-b7e59e111e39')]
+[10:54:02.532]   Node[3]: arr[...] > res, loop=False, branch=False, out=False, in=False
+[10:54:02.532]   Node[4] pins: IN=[UUID('df0cf0e0-ee6b-481a-b8bb-69466f9fd15e'), UUID('738481be-1c01-45a1-9ef4-104e24c2dd15')], OUT=[UUID('c3e49366-3574-4ef8-a1b0-fbac66c8c5fa'), UUID('47e7b790-921a-4961-85f4-815f3a7085cd')]
+[10:54:02.532]   Node[4]: if arr[i] > res, loop=False, branch=True, out=True, in=True
+[10:54:02.532]   Node[5] pins: IN=[UUID('a234e02b-e8d2-4a00-9342-8a40a41f7cb7'), UUID('9cac2e96-37cc-4252-af18-605dcaf84f81'), UUID('2beffa54-3598-4e2a-ac41-af5c25cb5d33')], OUT=[UUID('39052f64-79e0-4cf4-bd79-54465d2b1dfa'), UUID('6c113d8c-66a0-4980-aad5-74dd85ed6b7c')]
+[10:54:02.532]   Node[5]: res = arr[i], loop=False, branch=False, out=True, in=True
+[10:54:02.532]   Node[6] pins: IN=[UUID('5e7afcdb-3b75-4f05-b37a-0d4a14e086d9'), UUID('3a31b121-ae67-4c0d-8b78-365e28cffcba')], OUT=[UUID('b2624dd0-f4eb-43b7-8132-9ea3a4860f41')]
+[10:54:02.532]   Node[6]: print(res), loop=False, branch=False, out=True, in=True
+[10:54:02.532] 
+--- Execution Flow ---
+[10:54:02.532] ERROR:     Exec connection error: 'UUID' object has no attribute 'lower'
+[10:54:02.532] ERROR: Traceback (most recent call last):
+  File "C:\Users\ADMIN\Downloads\Pyflow2.4\PyFlow\PyFlow\Packages\PyFlowBase\Tools\PythonDebuggerTool.py", line 1958, in _try_connect_exec
+    if 'out' in pin_name.lower() or out_exec is None:
+AttributeError: 'UUID' object has no attribute 'lower'
+
+[10:54:02.532] ERROR: Node[0] -> Node[1]
+[10:54:02.532] ERROR:     Exec connection error: 'UUID' object has no attribute 'lower'
+[10:54:02.532] ERROR: Traceback (most recent call last):
+  File "C:\Users\ADMIN\Downloads\Pyflow2.4\PyFlow\PyFlow\Packages\PyFlowBase\Tools\PythonDebuggerTool.py", line 1958, in _try_connect_exec
+    if 'out' in pin_name.lower() or out_exec is None:
+AttributeError: 'UUID' object has no attribute 'lower'
+
+[10:54:02.532] ERROR: Node[1] -> Node[2]
+[10:54:02.532]   Skip [3]: no input exec
+[10:54:02.532]   Skip [3]: no output exec
+[10:54:02.538] ERROR:     Specific exec connection error: 'UUID' object has no attribute 'lower'
+[10:54:02.538] ERROR: Traceback (most recent call last):
+  File "C:\Users\ADMIN\Downloads\Pyflow2.4\PyFlow\PyFlow\Packages\PyFlowBase\Tools\PythonDebuggerTool.py", line 1899, in _try_connect_specific_exec
+    if out_pin_name is None or pin_name == out_pin_name or out_pin_name.lower() in pin_name.lower():
+AttributeError: 'UUID' object has no attribute 'lower'
+
+[10:54:02.538] ERROR: Branch[4] True -> Node[5]
+[10:54:02.538] ERROR:     Exec connection error: 'UUID' object has no attribute 'lower'
+[10:54:02.538] ERROR: Traceback (most recent call last):
+  File "C:\Users\ADMIN\Downloads\Pyflow2.4\PyFlow\PyFlow\Packages\PyFlowBase\Tools\PythonDebuggerTool.py", line 1958, in _try_connect_exec
+    if 'out' in pin_name.lower() or out_exec is None:
+AttributeError: 'UUID' object has no attribute 'lower'
+
+[10:54:02.538] ERROR: Node[5] -> Node[6]
+[10:54:02.538] 
+--- Data Flow ---
+[10:54:02.538] Found 9 data flow edges
+[10:54:02.538] ERROR: Data connection error for arr: 'UUID' object has no attribute 'lower'
+[10:54:02.538] ERROR: Data: arr [0] -> [1]
+[10:54:02.538] ERROR: Data connection error for arr: 'UUID' object has no attribute 'lower'
+[10:54:02.538] ERROR: Data: arr [0] -> [2]
+[10:54:02.538] ERROR: Data connection error for arr: 'UUID' object has no attribute 'lower'
+[10:54:02.538] ERROR: Data: arr [0] -> [3]
+[10:54:02.541] ERROR: Data connection error for i: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: i [2] -> [3]
+[10:54:02.541] ERROR: Data connection error for res: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: res [5] -> [3]
+[10:54:02.541] ERROR: Data connection error for _condition: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: _condition [3] -> [4]
+[10:54:02.541] ERROR: Data connection error for arr: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: arr [0] -> [5]
+[10:54:02.541] ERROR: Data connection error for i: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: i [2] -> [5]
+[10:54:02.541] ERROR: Data connection error for res: 'UUID' object has no attribute 'lower'
+[10:54:02.541] ERROR: Data: res [5] -> [6]
+
+==================================================
+  CONNECTION SUMMARY
+==================================================
+[10:54:02.541] Exec connections: 0
+[10:54:02.541] Data connections: 0
+[10:54:02.541] Total: 0
+
+==================================================
+  UPDATE COMPLETE
+==================================================
+[10:54:02.541] Updated: 6
+[10:54:02.541] Created: 1
+[10:54:02.541] Removed: 0

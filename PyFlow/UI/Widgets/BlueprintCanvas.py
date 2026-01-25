@@ -43,6 +43,7 @@ from PyFlow.UI.Views.VariablesWidget import VARIABLE_TAG, VARIABLE_DATA_TAG
 
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
+from PyFlow.UI.Widgets.MinimapOverlay import MinimapOverlay
 
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
@@ -2089,6 +2090,24 @@ class BlueprintCanvasWidget(QWidget):
         self.updateGraphTreeLocation()
 
         self.pyFlowInstance.fileBeenLoaded.connect(self.onFileBeenLoaded)
+
+        # Create minimap overlay (GTA5-style corner minimap)
+        self.minimapOverlay = MinimapOverlay(self.canvas, self)
+        self._positionMinimap()
+
+    def resizeEvent(self, event):
+        """Reposition minimap when widget is resized."""
+        super(BlueprintCanvasWidget, self).resizeEvent(event)
+        self._positionMinimap()
+
+    def _positionMinimap(self):
+        """Position the minimap overlay in the bottom-right corner."""
+        if hasattr(self, 'minimapOverlay'):
+            margin = 15
+            x = self.width() - self.minimapOverlay.width() - margin
+            y = self.height() - self.minimapOverlay.height() - margin
+            self.minimapOverlay.move(x, y)
+            self.minimapOverlay.raise_()  # Keep on top
 
     def shoutDown(self):
         self.canvas.shutDown()
