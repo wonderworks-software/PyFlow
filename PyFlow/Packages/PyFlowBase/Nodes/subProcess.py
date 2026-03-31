@@ -16,6 +16,7 @@
 import asyncio
 import time
 import uuid
+from PyFlow.Core.AsyncLoop import get_or_create_event_loop
 from PyFlow.Core import NodeBase, PinBase
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
@@ -133,7 +134,10 @@ class subProcess(NodeBase):
             self.proc_task_args = args
             self.proc_task_kwargs = kwargs
             self.is_running.setData(True)
-            self.proc_task = asyncio.get_event_loop().create_task(self._run_cmd(self.proc_task_uuid, cmd, self.cwd.getData()))
+            loop = get_or_create_event_loop()
+            self.proc_task = loop.create_task(
+                self._run_cmd(self.proc_task_uuid, cmd, self.cwd.getData())
+            )
         
     async def _run_cmd(self, _uuid, cmd, cwd):
         if None != self.proc and None == self.proc.returncode:

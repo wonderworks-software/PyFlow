@@ -35,6 +35,7 @@ from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.Core.Common import currentProcessorTime
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.Common import validateGraphDataPackages
+from PyFlow.Core.AsyncLoop import close_event_loop, get_or_create_event_loop
 from PyFlow.UI.Canvas.UICommon import SessionDescriptor
 from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
@@ -486,7 +487,7 @@ class PyFlow(QMainWindow):
         self.tick_timer.timeout.disconnect()
 
     def mainLoop(self):
-        asyncio.get_event_loop().run_until_complete(self._tick_asyncio())
+        get_or_create_event_loop().run_until_complete(self._tick_asyncio())
         
         deltaTime = currentProcessorTime() - self._lastClock
         ds = deltaTime * 1000.0
@@ -634,6 +635,7 @@ class PyFlow(QMainWindow):
         if os.path.exists(self.currentTempDir):
             shutil.rmtree(self.currentTempDir)
 
+        close_event_loop()
         SingletonDecorator.destroyAll()
 
         PyFlow.appInstance = None
